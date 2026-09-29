@@ -36,28 +36,13 @@ declare module 'vue-router/auto-routes' {
       '/',
       Record<never, never>,
       Record<never, never>,
-      | '//(index)'
-      | '//second'
-    >,
-    '//(index)': RouteRecordInfo<
-      '//(index)',
-      '/',
-      Record<never, never>,
-      Record<never, never>,
       | never
     >,
-    '//second': RouteRecordInfo<
-      '//second',
-      '/second',
+    '/events': RouteRecordInfo<
+      '/events',
+      '/events',
       Record<never, never>,
       Record<never, never>,
-      | never
-    >,
-    '/[...path]': RouteRecordInfo<
-      '/[...path]',
-      '/:path(.*)',
-      { path: ParamValue<true> },
-      { path: ParamValue<false> },
       | never
     >,
   }
@@ -76,36 +61,18 @@ declare module 'vue-router/auto-routes' {
     'src/pages/index.vue': {
       routes:
         | '/'
-        | '//(index)'
-        | '//second'
-      views:
-        | 'default'
-      pathParamNames:
-        | never
-    }
-    'src/pages/index/(index).vue': {
-      routes:
-        | '//(index)'
       views:
         | never
       pathParamNames:
         | never
     }
-    'src/pages/index/second.vue': {
+    'src/pages/events.vue': {
       routes:
-        | '//second'
+        | '/events'
       views:
         | never
       pathParamNames:
         | never
-    }
-    'src/pages/[...path].vue': {
-      routes:
-        | '/[...path]'
-      views:
-        | never
-      pathParamNames:
-        | 'path'
     }
   }
 
