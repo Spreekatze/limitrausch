@@ -1,0 +1,56 @@
+.calendar-table {
+  width: 100%;
+  max-width: 1500px;
+  margin-inline: auto;
+  table-layout: fixed;
+
+  .calendar-day {
+    border: 1px solid var(--app-border-color);
+    padding: 8px;
+    vertical-align: top;
+    height: var(--calendar-day-height, 180px);
+    overflow-y: auto;
+    background-color: var(--app-surface);
+    color: var(--app-text-color);
+
+    .calendar-day--number--inactive {
+      color: var(--app-muted-text-color);
+    }
+
+    .calendar-event {
+      margin-top: 4px;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      color: var(--calendar-event-text-color);
+
+      &--casual {
+        background-color: var(--calendar-event-color-casual);
+      }
+
+      &--raids {
+        background-color: var(--calendar-event-color-raids);
+      }
+
+      &--ultimates {
+        background-color: var(--calendar-event-color-ultimates);
+      }
+
+      &--archiv {
+        background-color: var(--calendar-event-color-archiv);
+      }
+
+      &--other {
+        background-color: var(--calendar-event-color-other);
+      }
+    }
+  }
+
+  &--monthly {
+    --calendar-day-height: 100px;
+  }
+
+  &--weekly {
+    --calendar-day-height: 180px;
+  }
+}

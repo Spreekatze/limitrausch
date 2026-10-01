@@ -1,0 +1,97 @@
+:root {
+  color-scheme: light;
+
+  --find-me: #ff0101;
+
+  --app-background: #f4f7f4;
+  --app-surface: #ffffff;
+  --app-text-color: #18352d;
+  --app-muted-text-color: #68756e;
+  --app-border-color: #cbd5cf;
+  --app-header-background: #551155;
+  --app-header-text: #f6e4cb;
+  --app-header-hover: #ffffff24;
+
+  --calendar-event-color-casual: #07880b40;
+  --calendar-event-color-raids: #7611b040;
+  --calendar-event-color-ultimates: #a51e0c40;
+  --calendar-event-color-archiv: #9e9e9eab;
+  --calendar-event-color-other: #74721eab;
+  --calendar-event-text-color: #020202;
+
+  --calendar-export-gradient-start: #210020;
+  --calendar-export-gradient-middle: #4e224e;
+  --calendar-export-gradient-end: #a954a9;
+  --calendar-export-surface: #ffffff;
+  --calendar-export-card: #f5f7f5;
+  --calendar-export-text: #000000;
+  --calendar-export-text-muted: #363837;
+  --calendar-export-empty: #89948d;
+  --calendar-export-title-start: var(--app-header-text);
+  --calendar-export-title-end: #937b59;
+  --calendar-export-title-outline: #090909;
+  --calendar-export-title-shadow: #000000a0;
+  --calendar-export-panel-shadow: #00000024;
+  --calendar-export-font-family: 'Cinzel', 'Arial Narrow', sans-serif;
+}
+
+body.body--dark {
+  color-scheme: dark;
+  --app-background: #111a16;
+  --app-surface: #1b2822;
+  --app-text-color: #e6eee9;
+  --app-muted-text-color: #aab8b0;
+  --app-border-color: #3b4c43;
+  --app-header-background: #0c1410;
+  --app-header-text: #f6e4cb;
+  --app-header-hover: #ffffff20;
+
+  --calendar-event-color-casual: #166534;
+  --calendar-event-color-raids: #6b21a8;
+  --calendar-event-color-ultimates: #991b1b;
+  --calendar-event-color-archiv: #4b5563;
+  --calendar-event-color-other: #854d0e;
+  --calendar-event-text-color: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  body:not(.body--light):not(.body--dark) {
+    color-scheme: dark;
+    --app-background: #111a16;
+    --app-surface: #1b2822;
+    --app-text-color: #e6eee9;
+    --app-muted-text-color: #aab8b0;
+    --app-border-color: #3b4c43;
+    --app-header-background: #0c1410;
+    --app-header-text: #f3f7f4;
+    --app-header-hover: #ffffff20;
+
+    --calendar-event-color-casual: #166534;
+    --calendar-event-color-raids: #6b21a8;
+    --calendar-event-color-ultimates: #991b1b;
+    --calendar-event-color-archiv: #4b5563;
+    --calendar-event-color-other: #854d0e;
+    --calendar-event-text-color: #ffffff;
+  }
+}
+
+body,
+.q-layout,
+.q-page-container,
+.q-page {
+  background-color: var(--app-background);
+  color: var(--app-text-color);
+}
+
+.app-header {
+  background-color: var(--app-header-background);
+  color: var(--app-header-text);
+}
+
+.app-header__button {
+  color: var(--app-header-text);
+
+  &:hover {
+    background-color: var(--app-header-hover);
+  }
+}
