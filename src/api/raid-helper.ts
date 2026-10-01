@@ -46,17 +46,14 @@ function isRaidHelperEvent(value: unknown): value is RaidHelperEvent {
     value.coLeaders.every(isDiscordUser) &&
     typeof value.color === 'string' &&
     isDiscordUser(value.creator) &&
-    typeof value.description === 'string' &&
     typeof value.endTime === 'number' &&
     typeof value.id === 'string' &&
-    typeof value.imageUrl === 'string' &&
     typeof value.lastUpdated === 'number' &&
     typeof value.leaderId === 'string' &&
     typeof value.leaderName === 'string' &&
     typeof value.signUpCount === 'string' &&
     typeof value.startTime === 'number' &&
-    typeof value.templateId === 'string' &&
-    typeof value.title === 'string'
+    typeof value.templateId === 'string'
   );
 }
 
@@ -72,7 +69,7 @@ function isEventsResponse(value: unknown): value is RaidHelperEventsResponse {
   );
 }
 
-export async function fetchRaidHelperEvents(): Promise<RaidHelperEventsResponse> {
+export async function fetchRaidHelperEvents(date: Date): Promise<RaidHelperEventsResponse> {
   // TODO: Replace with your actual API endpoint and authorization token
   /* Authorization token can be found via '/apikey show' on the respective discord server
    * Time needs to be a unix timestamp in seconds
@@ -81,7 +78,7 @@ export async function fetchRaidHelperEvents(): Promise<RaidHelperEventsResponse>
     method: 'GET',
     headers: {
       Authorization: 'i2fYQRAo3ltEv7yUhlIzucIt8TDvalPz958GFR4X',
-      StartTimeFilter: String(Math.floor(Date.now() / 1000)),
+      StartTimeFilter: String(Math.floor(date.getTime() / 1000)),
     },
   });
 
