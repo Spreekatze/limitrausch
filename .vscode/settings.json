@@ -10,5 +10,8 @@
     "dist/": true,
     ".quasar/": true,
     "/quasar.config.js.temporary.*": true
+  },
+  "chat.tools.terminal.autoApprove": {
+    "npm run typecheck": true
   }
 }
