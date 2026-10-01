@@ -1,38 +1,25 @@
-# Aetheris (aetheris)
+# Aetheris
 
-## Install the dependencies
+The project is split into `frontend/` (Quasar/Vue) and `backend/` (Express).
 
-```bash
-pnpm install
-# or: yarn/npm/bun install
-```
-
-### Start the app in development mode (HMR, error reporting, etc.)
+## Frontend
 
 ```bash
-quasar dev
+cd frontend
+npm install
+npm run dev
 ```
 
-### Format & Lint the files
+Useful commands: `npm run typecheck`, `npm run lint:check`, and `npm run build`.
+See [Quasar configuration](https://v2.quasar.dev/quasar-cli-vite/quasar-config-file).
+
+## Backend
 
 ```bash
-pnpm run lint
-# or: yarn/npm/bun run lint
+cd backend
+npm install
+npm run dev
 ```
 
-...or just check formatting & linting:
-
-```bash
-pnpm run lint:check
-# or: yarn/npm/bun run lint:check
-```
-
-### Build the app for production
-
-```bash
-quasar build
-```
-
-### Customize the configuration
-
-See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-file).
+The server listens on port `3001` by default (override with `PORT`) and exposes
+`GET /api/health`.
