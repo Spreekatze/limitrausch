@@ -100,9 +100,10 @@ export default defineConfig((ctx) => {
       open: true, // opens browser window automatically
       proxy: {
         '/api': {
-          target: 'https://raid-helper.xyz/',
+          target: 'http://localhost:3000/',
           changeOrigin: true,
-          secure: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/api/, ''),
         },
       },
     },

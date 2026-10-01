@@ -70,17 +70,9 @@ function isEventsResponse(value: unknown): value is RaidHelperEventsResponse {
 }
 
 export async function fetchRaidHelperEvents(date: Date): Promise<RaidHelperEventsResponse> {
-  // TODO: Replace with your actual API endpoint and authorization token
-  /* Authorization token can be found via '/apikey show' on the respective discord server
-   * Time needs to be a unix timestamp in seconds
-   */
-  const response = await fetch('/api/v4/servers/1408172814879559721/events', {
-    method: 'GET',
-    headers: {
-      Authorization: 'i2fYQRAo3ltEv7yUhlIzucIt8TDvalPz958GFR4X',
-      StartTimeFilter: String(Math.floor(date.getTime() / 1000)),
-    },
-  });
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+  const startTime = Math.floor(date.getTime() / 1000);
+  const response = await fetch(`${apiBaseUrl}/raid-helper/events?startTime=${startTime}`);
 
   if (!response.ok) {
     const text = await response.text();
@@ -88,7 +80,6 @@ export async function fetchRaidHelperEvents(date: Date): Promise<RaidHelperEvent
   }
 
   const data: unknown = await response.json();
-  console.log('Received data from Raid Helper API:', data);
   if (!isEventsResponse(data)) {
     throw new Error('The events API returned an unexpected response format.');
   }

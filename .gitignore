@@ -4,11 +4,13 @@ node_modules
 
 # .env files
 .env*
+!.env.example
 
 # Quasar core related directories
 .quasar
 /dist
 /frontend/dist
+/backend/dist
 /quasar.config.*.temporary.compiled*
 
 # Cordova related directories and files
