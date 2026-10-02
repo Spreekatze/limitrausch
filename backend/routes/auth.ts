@@ -126,4 +126,6 @@ router.get("/logout", (request, response) => {
   });
 });
 
+//TODO: think about expiration of access token, refresh and revoke token
+
 export default router;

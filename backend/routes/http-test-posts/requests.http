@@ -1,13 +1,52 @@
 # This file contains HTTP requests for testing the backend endpoints. 
 # You can use a tool like VS Code's REST Client extension to run these requests directly from this file.
 
-POST http://localhost:3000/playground/event
-Content-Type: application/json
+@baseUrl = http://localhost:3000
 # Replace the value of the cookie with the actual session cookie you received after logging in on the frontend.
 # You can find this cookie in your browser's developer tools under the "Application" or "Storage" tab, in the "Cookies" section.
-Cookie: connect.sid=s%3AgjqNWI6bsAx8VtaapTXBizu6b7wuUfSe.prxyiTlIhhJ7yN9CYRjBAI4VoLTXP3fCNCyFL5ExX2c
+@userCookie = s%3ArZDCVpBNLWxsYs6DzK3pACfZNKM5oOwD.ffAG13PmVgZKUxrrk7MWhtJowm50q9Xd0rHEUus4NhE
+# Replace id by actual id from any previous creation response
+@eventUuid = 33116726-0cc3-4546-abf3-055d4c8beb07
+
+### Create event
+POST {{baseUrl}}/events/new
+Content-Type: application/json
+Cookie: connect.sid={{userCookie}}
 
 {
   "event": "test_event",
   "date": "2024-06-15T12:00:00Z"
 }
+
+### Get all events
+GET {{baseUrl}}/events/
+
+### Get single event with wrong id
+GET {{baseUrl}}/events/abc
+
+### Get single event
+GET {{baseUrl}}/events/{{eventUuid}}
+
+### Edit single event by id
+PUT {{baseUrl}}/events/{{eventUuid}}
+Content-Type: application/json
+Cookie: connect.sid={{userCookie}}
+
+{
+  "event":"changed_event",
+  "date": "2025-08-10T5:00:00Z"
+}
+
+### Edit single event with wrong id
+PUT {{baseUrl}}/events/abc
+Content-Type: application/json
+Cookie: connect.sid={{userCookie}}
+
+{
+  "event":"changed_event",
+  "date": "2025-08-10T5:00:00Z"
+}
+
+### Delete single event by id
+DELETE {{baseUrl}}/events/{{eventUuid}}
+Cookie: connect.sid={{userCookie}}
