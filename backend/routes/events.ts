@@ -1,48 +1,76 @@
 import express from "express";
 import requireAdmin from "../middleware/auth.js";
-import getRaidHelperEvents from "../utils/raidhelper.js";
-import type { Event } from "../types/event.js";
+import type { Event } from "../types/eventSchema.js";
 import { randomUUID } from "crypto";
+import { createEventSchema, updateEventSchema } from "../types/eventSchema.js";
+import { raidHelperEventsResponseSchema } from "../types/raidhelperSchema.js";
+import { mapRaidHelperEventToEvent } from "../mapping/eventTypeMapping.js";
+import { importRaidHelperEvents } from "../services/raidHelperImport.js";
+import { HttpError } from "../errors/httpError.js";
+import {
+  addEvent,
+  deleteEvent,
+  getEventById,
+  getEvents,
+  updateEvent,
+} from "../store/eventStore.js";
 
 const router = express.Router();
-const events: Event[] = [];
 
-// Request events from raid-helper
-//TODO: add proper authentication and authorization for this route
-router.get("/raid-helper", async (request, response) => {
-  const startTime = request.query.startTime as string | undefined;
-  const result = await getRaidHelperEvents(startTime);
-  //TODO: set up proper failsafe for the Raid Helper API route
-  if (result.error) {
-    response.status(result.status).json({ error: result.error });
+// Request events from raid-helper by serverId
+router.get("/raid-helper/:id", requireAdmin, async (request, response) => {
+  const serverId = request.params.id;
+  if (typeof serverId !== "string") {
+    response.status(400).json({ error: "Invalid server id" });
     return;
   }
-  response.json(result.data);
+
+  try {
+    const result = await importRaidHelperEvents(serverId);
+
+    response.status(200).json({ success: true, ...result });
+  } catch (error) {
+    console.error("Raidhelper import failed:", error);
+
+    if (error instanceof HttpError) {
+      return response.status(error.status).json({ error: error.message });
+    }
+
+    return response.status(502).json({ error: "Raidhelper import failed" });
+  }
 });
 
 // Get all events
 router.get("/", (request, response) => {
-  response.json(events);
+  response.json(getEvents());
 });
 
 // Create an event
 router.post("/new", requireAdmin, (request, response) => {
-  console.log("New event:", request.body);
-  const event = (Event = {
-    ...request.body,
+  const result = createEventSchema.safeParse(request.body);
+  if (!result.success) {
+    response.status(400).json({
+      error: "Invalid event data",
+      details: result.error.issues,
+    });
+    return;
+  }
+
+  const event: Event = {
+    ...result.data,
     id: randomUUID(),
-  });
+    lastUpdated: Date.now(),
+    signUpCount: "0",
+  };
 
-  //TODO: Replace with actual DB logic
-  events.push(event);
+  addEvent(event);
 
-  response.status(201).json({ message: "Event received", event: event });
+  response.status(201).json({ event: event });
 });
 
 // Get (request) a single event by id
 router.get("/:id", (request, response) => {
-  //TODO: Replace with actual DB logic
-  const event = events.find((event) => event.id === request.params.id);
+  const event = getEventById(request.params.id);
   if (!event) {
     response.status(404).json({ error: "Event not found" });
     return;
@@ -52,39 +80,48 @@ router.get("/:id", (request, response) => {
 });
 
 // Edit (Update) a single event by id
-router.put("/:id", requireAdmin, (request, response) => {
-  //TODO: Replace with actual DB logic
-  const eventIndex = events.findIndex(
-    (event) => event.id === request.params.id,
-  );
-  if (eventIndex === -1) {
+router.patch("/:id", requireAdmin, (request, response) => {
+  const id = request.params.id;
+  if (typeof id !== "string") {
+    response.status(400).json({ error: "Invalid event id" });
+    return;
+  }
+
+  const result = updateEventSchema.safeParse({
+    ...request.body,
+  });
+
+  if (!result.success) {
+    response
+      .status(400)
+      .json({ error: "Invalid event data", details: result.error.issues });
+    return;
+  }
+
+  const updatedEvent = updateEvent(id, {
+    ...result.data,
+    lastUpdated: Date.now(),
+  });
+
+  if (!updatedEvent) {
     response.status(404).json({ error: "Event not found" });
     return;
   }
-  const updatedEvent: Event = {
-    ...request.body,
-    id: request.params.id,
-  };
-
-  //TODO: Replace with actual DB logic
-  events[eventIndex] = updatedEvent;
 
   response.json(updatedEvent);
 });
 
 router.delete("/:id", requireAdmin, (request, response) => {
-  //TODO: Replace with actual DB logic
-  const eventIndex = events.findIndex(
-    (event) => event.id === request.params.id,
-  );
-  if (eventIndex === -1) {
+  const id = request.params.id;
+  if (typeof id !== "string") {
+    response.status(400).json({ error: "Invalid event id" });
+    return;
+  }
+  const deleted = deleteEvent(id);
+  if (!deleted) {
     response.status(404).json({ error: "Event not found" });
     return;
   }
-
-  //TODO: Replace with actual DB logic
-  events.splice(eventIndex, 1);
-
   response.status(204).send();
 });
 

@@ -17,7 +17,9 @@
     "views/**/*.ts",
     "types/**/*.ts",
     "middleware/**/*.ts",
-    "utils/**/*.ts"
+    "services/**/*.ts",
+    "mapping/**/*.ts",
+    "store/**/*.ts"
   ],
   "exclude": ["node_modules", "dist"]
 }

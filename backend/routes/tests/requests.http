@@ -4,9 +4,10 @@
 @baseUrl = http://localhost:3000
 # Replace the value of the cookie with the actual session cookie you received after logging in on the frontend.
 # You can find this cookie in your browser's developer tools under the "Application" or "Storage" tab, in the "Cookies" section.
-@userCookie = s%3ArZDCVpBNLWxsYs6DzK3pACfZNKM5oOwD.ffAG13PmVgZKUxrrk7MWhtJowm50q9Xd0rHEUus4NhE
+@userCookie = s%3AmjcZ2kuOK9IwcQFo2eZYFZ31hIY0SM22.dFPH%2FVs1R4CQCdvj9lpfytKYC72Km8%2FvvQl3CQcBQaA
 # Replace id by actual id from any previous creation response
-@eventUuid = 33116726-0cc3-4546-abf3-055d4c8beb07
+@eventUuid = f9245ae7-80a6-403a-a730-7bb655a030a8
+@serverId = 1408172814879559721
 
 ### Create event
 POST {{baseUrl}}/events/new
@@ -14,8 +15,22 @@ Content-Type: application/json
 Cookie: connect.sid={{userCookie}}
 
 {
-  "event": "test_event",
-  "date": "2024-06-15T12:00:00Z"
+  "creator": {
+    "id": "123",
+    "name": "User"
+  },
+  "leader": {
+    "id": "123",
+    "name": "User"
+  },
+  "coLeaders": [],
+  "title": "Test Event",
+  "description": "Test",
+  "startTime": 1760005000,
+  "endTime": 1760010000,
+  "eventType": "raid",
+  "eventServerId": "111",
+  "channelId": "aaa"
 }
 
 ### Get all events
@@ -28,25 +43,21 @@ GET {{baseUrl}}/events/abc
 GET {{baseUrl}}/events/{{eventUuid}}
 
 ### Edit single event by id
-PUT {{baseUrl}}/events/{{eventUuid}}
+PATCH {{baseUrl}}/events/{{eventUuid}}
 Content-Type: application/json
 Cookie: connect.sid={{userCookie}}
 
 {
-  "event":"changed_event",
-  "date": "2025-08-10T5:00:00Z"
-}
-
-### Edit single event with wrong id
-PUT {{baseUrl}}/events/abc
-Content-Type: application/json
-Cookie: connect.sid={{userCookie}}
-
-{
-  "event":"changed_event",
-  "date": "2025-08-10T5:00:00Z"
+  "title": "NEW NEW NEW"
 }
 
 ### Delete single event by id
 DELETE {{baseUrl}}/events/{{eventUuid}}
 Cookie: connect.sid={{userCookie}}
+
+#### Request Raid-Helper Events
+GET {{baseUrl}}/events/raid-helper/{{serverId}}
+Cookie: connect.sid={{userCookie}}
+
+#### Request Raid-Helper Events with bad server id
+GET {{baseUrl}}/events/raid-helper/abc
