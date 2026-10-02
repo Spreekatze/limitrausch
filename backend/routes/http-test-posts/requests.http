@@ -1,0 +1,13 @@
+# This file contains HTTP requests for testing the backend endpoints. 
+# You can use a tool like VS Code's REST Client extension to run these requests directly from this file.
+
+POST http://localhost:3000/playground/event
+Content-Type: application/json
+# Replace the value of the cookie with the actual session cookie you received after logging in on the frontend.
+# You can find this cookie in your browser's developer tools under the "Application" or "Storage" tab, in the "Cookies" section.
+Cookie: connect.sid=s%3AgjqNWI6bsAx8VtaapTXBizu6b7wuUfSe.prxyiTlIhhJ7yN9CYRjBAI4VoLTXP3fCNCyFL5ExX2c
+
+{
+  "event": "test_event",
+  "date": "2024-06-15T12:00:00Z"
+}

@@ -24,7 +24,7 @@ import '../css/calendar.scss';
 import { computed, onMounted, ref } from 'vue';
 import CalendarMonthly from '../components/CalendarMonthly.vue';
 import CalendarWeekly from '../components/CalendarWeekly.vue';
-import { fetchRaidHelperEvents, type RaidHelperEvent } from '../api/raid-helper';
+import { getEvents, type RaidHelperEvent } from '../api/events';
 import { getMonthlyCalendarStartDate } from '../utils/calendar';
 
 type CalendarView = 'monthly' | 'weekly';
@@ -54,7 +54,7 @@ const eventsByDay = computed(() => {
 });
 
 onMounted(() => {
-  void fetchRaidHelperEvents(getMonthlyCalendarStartDate())
+  void getEvents(getMonthlyCalendarStartDate())
     .then((response) => {
       events.value = response.postedEvents;
     })

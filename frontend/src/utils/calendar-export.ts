@@ -1,4 +1,4 @@
-import type { RaidHelperEvent } from '../api/raid-helper';
+import type { RaidHelperEvent } from '../api/events';
 import { channelClassNames, formatEventTime } from './calendar';
 
 const logoUrl = new URL('../assets/AE.png', import.meta.url).href;

@@ -11,6 +11,13 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["index.ts", "routes/**/*.ts", "views/**/*.ts"],
+  "include": [
+    "index.ts",
+    "routes/**/*.ts",
+    "views/**/*.ts",
+    "types/**/*.ts",
+    "middleware/**/*.ts",
+    "utils/**/*.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

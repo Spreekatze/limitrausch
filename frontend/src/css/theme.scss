@@ -32,7 +32,7 @@
   --calendar-export-title-outline: #090909;
   --calendar-export-title-shadow: #000000a0;
   --calendar-export-panel-shadow: #00000024;
-  --calendar-export-font-family: 'Cinzel', 'Arial Narrow', sans-serif;
+  --calendar-export-font-family: 'Cinzel', sans-serif;
 }
 
 body.body--dark {
@@ -73,6 +73,18 @@ body.body--dark {
     --calendar-event-color-other: #854d0e;
     --calendar-event-text-color: #ffffff;
   }
+}
+
+body {
+  font-family: 'LibreBaskerville', sans-serif;
+  font-size: 16px;
+}
+
+h1,
+h2,
+h3,
+header {
+  font-family: 'Cinzel', sans-serif;
 }
 
 body,
