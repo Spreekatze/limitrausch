@@ -1,7 +1,5 @@
 import { HttpError } from "../errors/httpError.js";
 
-// const serverId = "1408172814879559721";
-
 export async function getRaidHelperEvents(serverId: string): Promise<unknown> {
   const allowedServerIds = new Set(
     (process.env.RAIDHELPER_DISCORDSERVER_ID_WHITELIST ?? "")

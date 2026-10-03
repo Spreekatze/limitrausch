@@ -9,12 +9,13 @@ import { HttpError } from "../errors/httpError.js";
 
 export async function importRaidHelperEvents(
   serverId: string,
+  fetchEvents = getRaidHelperEvents,
 ): Promise<RaidHelperImportResult> {
   let imported = 0;
   let skipped = 0;
   let failed = 0;
 
-  const raidHelperData = await getRaidHelperEvents(serverId);
+  const raidHelperData = await fetchEvents(serverId);
 
   const result = raidHelperEventsResponseSchema.safeParse(raidHelperData);
   if (!result.success) {
