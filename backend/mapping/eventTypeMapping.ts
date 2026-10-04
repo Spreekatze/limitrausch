@@ -51,8 +51,7 @@ export function mapRaidHelperEventToEvent(
     endTime: raidhelperEvent.endTime,
     eventType: eventType,
     discordServerId: serverId,
-    discordTextChannelId: "", //TODO: fetch text channel somehow
-    channelId: raidhelperEvent.channelId,
+    discordTextChannelId: raidhelperEvent.channelId,
     signUpCount: parseInt(raidhelperEvent.signUpCount),
     raidHelperId: raidhelperEvent.id,
   };

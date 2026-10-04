@@ -9,7 +9,7 @@ import eventRoutes from "./routes/events.js";
 import statusRoutes from "./routes/status.js";
 import authRoutes from "./routes/auth.js";
 import { renderRouteRows } from "./views/route-list.js";
-import { testDatabaseConnection } from "./database/database.js";
+import { testDatabaseConnection } from "./database/databaseConnection.js";
 
 // Initialize Express app and configure environment variables
 const app = express();
