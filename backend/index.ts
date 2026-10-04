@@ -71,5 +71,5 @@ app.use("/auth", authRoutes);
 app.use("/events", eventRoutes);
 
 app.listen(port, () => {
-  console.log(`Aetheris backend listening on port ${port}`);
+  console.log(`limitrausch backend listening on port ${port}`);
 });

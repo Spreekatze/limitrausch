@@ -1,8 +1,8 @@
 {
-  "name": "aetheris",
+  "name": "limitrausch",
   "version": "0.0.1",
-  "description": "A Quasar Project",
-  "productName": "Limitrausch",
+  "description": "Event management for Limitrausch",
+  "productName": "limitrausch",
   "author": "Spreekatze <rissaazzuen@gmail.com>",
   "type": "module",
   "private": true,

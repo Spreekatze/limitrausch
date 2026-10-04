@@ -3,22 +3,22 @@ import { eventDataDiscordUserSchema } from "./eventSchema.js";
 
 // This interface represents an event in the form of the answer from Raidhelper-API.
 export const raidHelperEventSchema = z.object({
-  channelId: z.string(),
-  closeTime: z.number(),
-  coLeaders: z.array(eventDataDiscordUserSchema),
-  color: z.string(),
-  creator: eventDataDiscordUserSchema,
-  description: z.string(),
-  endTime: z.number(),
   id: z.string(),
-  imageUrl: z.string().optional(),
-  lastUpdated: z.number(),
+  channelId: z.string(),
   leaderId: z.string(),
   leaderName: z.string(),
-  signUpCount: z.string(),
-  startTime: z.number(),
-  templateId: z.string(),
+  coLeaders: z.array(eventDataDiscordUserSchema),
   title: z.string(),
+  description: z.string(),
+  startTime: z.number(),
+  endTime: z.number(),
+  closeTime: z.number(),
+  templateId: z.string(),
+  color: z.string(),
+  imageUrl: z.string().optional(),
+  lastUpdated: z.number(),
+  creator: eventDataDiscordUserSchema,
+  signUpCount: z.string(),
 });
 export type RaidHelperEvent = z.infer<typeof raidHelperEventSchema>;
 

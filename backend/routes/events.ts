@@ -111,6 +111,7 @@ router.patch("/:id", requireAdmin, (request, response) => {
   response.json(updatedEvent);
 });
 
+// Delete a single event by id
 router.delete("/:id", requireAdmin, (request, response) => {
   const id = request.params.id;
   if (typeof id !== "string") {
@@ -125,4 +126,5 @@ router.delete("/:id", requireAdmin, (request, response) => {
   response.status(204).send();
 });
 
+//TODO: delete by server id
 export default router;

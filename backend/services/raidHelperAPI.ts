@@ -1,6 +1,9 @@
 import { HttpError } from "../errors/httpError.js";
+import { Event } from "../types/eventSchema.js";
 
-export async function getRaidHelperEvents(serverId: string): Promise<unknown> {
+export async function getEventsFromRaidHelper(
+  serverId: string,
+): Promise<unknown> {
   const allowedServerIds = new Set(
     (process.env.RAIDHELPER_DISCORDSERVER_ID_WHITELIST ?? "")
       .split(",")
@@ -25,6 +28,7 @@ export async function getRaidHelperEvents(serverId: string): Promise<unknown> {
       {
         headers: {
           Authorization: apiKey,
+          IncludeSignUps: "true", //TODO: why isnt this working?
         },
         signal: AbortSignal.timeout(10_000),
       },
@@ -62,3 +66,10 @@ export async function getRaidHelperEvents(serverId: string): Promise<unknown> {
     throw new HttpError(502, "Raid Helper API request failed");
   }
 }
+
+//TODO: implement create, update, delete
+export async function createEventAtRaidHelper(event: Event): Promise<void> {}
+
+export async function updateEventAtRaidHelper(event: Event): Promise<void> {}
+
+export async function deleteEventAtRaidHelper(event: Event): Promise<void> {}

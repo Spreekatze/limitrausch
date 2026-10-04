@@ -53,6 +53,7 @@ export function mapRaidHelperEventToEvent(
     eventServerId: serverId,
     channelId: raidhelperEvent.channelId,
     signUpCount: raidhelperEvent.signUpCount,
+    raidHelperId: raidhelperEvent.id,
   };
 
   return event;

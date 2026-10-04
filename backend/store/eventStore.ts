@@ -10,6 +10,10 @@ export function getEventById(id: string): Event | undefined {
   return events.find((event) => event.id === id);
 }
 
+export function getEventByRaidHelperId(id: string): Event | undefined {
+  return events.find((event) => event.raidHelperId === id);
+}
+
 export function addEvent(event: Event): void {
   events.push(event);
 }

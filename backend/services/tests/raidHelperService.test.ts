@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getRaidHelperEvents } from "../raidHelperService.js";
+import { getEventsFromRaidHelper } from "../raidHelperAPI.js";
 import {
   createSuccessfulFetchResponse,
   validServerId,
@@ -38,9 +38,11 @@ describe("getRaidHelperEvents", () => {
   it("allows a whitelisted server id to fetch events", async () => {
     mockSuccessfulFetch();
 
-    await expect(getRaidHelperEvents(validServerId)).resolves.toMatchObject({
-      pages: 1,
-    });
+    await expect(getEventsFromRaidHelper(validServerId)).resolves.toMatchObject(
+      {
+        pages: 1,
+      },
+    );
   });
 
   it("does not call RaidHelper for server ids that are not on the whitelist", async () => {
@@ -48,7 +50,9 @@ describe("getRaidHelperEvents", () => {
       .fn()
       .mockResolvedValue(createSuccessfulFetchResponse());
     vi.stubGlobal("fetch", fetchMock);
-    await expect(getRaidHelperEvents("not-whitelisted")).rejects.toMatchObject({
+    await expect(
+      getEventsFromRaidHelper("not-whitelisted"),
+    ).rejects.toMatchObject({
       name: "HttpError",
       status: 403,
       message:
@@ -67,7 +71,7 @@ describe("getRaidHelperEvents", () => {
       }),
     );
 
-    await expect(getRaidHelperEvents(validServerId)).rejects.toMatchObject({
+    await expect(getEventsFromRaidHelper(validServerId)).rejects.toMatchObject({
       name: "HttpError",
       status: 502,
       message: "Raid Helper API response is not JSON",
@@ -86,7 +90,7 @@ describe("getRaidHelperEvents", () => {
       }),
     );
 
-    await expect(getRaidHelperEvents(validServerId)).rejects.toMatchObject({
+    await expect(getEventsFromRaidHelper(validServerId)).rejects.toMatchObject({
       name: "HttpError",
       status: 502,
       message: "Raid Helper API returned invalid JSON",
@@ -109,9 +113,11 @@ describe("getRaidHelperEvents", () => {
       }),
     );
 
-    await expect(getRaidHelperEvents(validServerId)).resolves.toMatchObject({
-      pages: 1,
-    });
+    await expect(getEventsFromRaidHelper(validServerId)).resolves.toMatchObject(
+      {
+        pages: 1,
+      },
+    );
   });
 
   it("rejects timeout/network errors with 504", async () => {
@@ -124,7 +130,7 @@ describe("getRaidHelperEvents", () => {
       ),
     );
 
-    await expect(getRaidHelperEvents(validServerId)).rejects.toMatchObject({
+    await expect(getEventsFromRaidHelper(validServerId)).rejects.toMatchObject({
       name: "HttpError",
       status: 504,
       message: "Raid Helper API request timed out",
@@ -141,7 +147,7 @@ describe("getRaidHelperEvents", () => {
         ),
     );
 
-    await expect(getRaidHelperEvents(validServerId)).rejects.toMatchObject({
+    await expect(getEventsFromRaidHelper(validServerId)).rejects.toMatchObject({
       name: "HttpError",
       status: 502,
       message: "Raid Helper API request failed",
@@ -154,7 +160,7 @@ describe("getRaidHelperEvents", () => {
       .mockResolvedValue(createSuccessfulFetchResponse());
     vi.stubGlobal("fetch", fetchMock);
 
-    await getRaidHelperEvents(validServerId);
+    await getEventsFromRaidHelper(validServerId);
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock).toHaveBeenCalledWith(
@@ -173,7 +179,7 @@ describe("getRaidHelperEvents", () => {
     vi.stubEnv("RAIDHELPER_DISCORDSERVER_ID_WHITELIST", validServerId);
 
     mockSuccessfulFetch();
-    await expect(getRaidHelperEvents(validServerId)).rejects.toMatchObject({
+    await expect(getEventsFromRaidHelper(validServerId)).rejects.toMatchObject({
       name: "HttpError",
       status: 503,
       message: "Raid Helper API key is not configured",

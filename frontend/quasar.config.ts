@@ -245,7 +245,7 @@ export default defineConfig((ctx) => {
       builder: {
         // https://www.electron.build/configuration
 
-        appId: 'aetheris',
+        appId: 'limitrausch',
       },
     },
 

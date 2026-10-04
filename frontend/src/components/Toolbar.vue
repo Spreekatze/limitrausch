@@ -31,7 +31,7 @@
 import { Dark } from 'quasar';
 import { ref, watch } from 'vue';
 
-const darkModeStorageKey = 'aetheris-dark-mode';
+const darkModeStorageKey = 'limitrausch-dark-mode';
 const darkMode = ref(localStorage.getItem(darkModeStorageKey) === 'false' ? false : true);
 
 Dark.set(darkMode.value);

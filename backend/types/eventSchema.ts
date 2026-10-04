@@ -16,6 +16,7 @@ export const eventDataDiscordUserSchema = z.object({
   id: z.string(),
   name: z.string(),
 });
+
 export type EventDataDiscordUser = z.infer<typeof eventDataDiscordUserSchema>;
 
 export const eventSchema = z.object({
@@ -33,6 +34,7 @@ export const eventSchema = z.object({
   eventServerId: z.string(), //TODO: check what type it actually is you get from discord
   channelId: z.string(),
   signUpCount: z.string(),
+  raidHelperId: z.string().optional(),
 });
 export type Event = z.infer<typeof eventSchema>;
 
@@ -40,11 +42,13 @@ export const createEventSchema = eventSchema.omit({
   id: true,
   lastUpdated: true,
   signUpCount: true,
+  raidHelperId: true,
 });
 
 export const updateEventSchema = eventSchema
   .omit({
     id: true,
     lastUpdated: true,
+    raidHelperId: true,
   })
   .partial();
