@@ -1,7 +1,7 @@
+import "./config/loadEnv.js";
 import { readFile } from "node:fs/promises";
 import { basename, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import dotenv from "dotenv";
 import express from "express";
 import session from "express-session";
 import playgroundRoutes from "./routes/playground.js";
@@ -9,6 +9,7 @@ import eventRoutes from "./routes/events.js";
 import statusRoutes from "./routes/status.js";
 import authRoutes from "./routes/auth.js";
 import { renderRouteRows } from "./views/route-list.js";
+import { testDatabaseConnection } from "./database/database.js";
 
 // Initialize Express app and configure environment variables
 const app = express();
@@ -18,7 +19,6 @@ const backendDirectory =
   basename(currentDirectory) === "dist"
     ? resolve(currentDirectory, "..")
     : currentDirectory;
-dotenv.config({ path: resolve(backendDirectory, ".env") });
 const backendPageTemplate = await readFile(
   resolve(backendDirectory, "views", "index.html"),
   "utf8",
@@ -70,6 +70,13 @@ app.use("/status", statusRoutes);
 app.use("/auth", authRoutes);
 app.use("/events", eventRoutes);
 
-app.listen(port, () => {
-  console.log(`limitrausch backend listening on port ${port}`);
-});
+testDatabaseConnection()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`limitrausch backend listening on port ${port}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Database connection failed:", error);
+    process.exit(1);
+  });

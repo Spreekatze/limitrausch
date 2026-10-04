@@ -31,9 +31,10 @@ export const eventSchema = z.object({
   startTime: z.number(),
   endTime: z.number(),
   eventType: eventTypeSchema,
-  eventServerId: z.string(), //TODO: check what type it actually is you get from discord
+  discordServerId: z.string(),
+  discordTextChannelId: z.string(),
   channelId: z.string(),
-  signUpCount: z.string(),
+  signUpCount: z.number(),
   raidHelperId: z.string().optional(),
 });
 export type Event = z.infer<typeof eventSchema>;

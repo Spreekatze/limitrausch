@@ -19,7 +19,9 @@
     "middleware/**/*.ts",
     "services/**/*.ts",
     "mapping/**/*.ts",
-    "store/**/*.ts"
+    "store/**/*.ts",
+    "config/**/*.ts",
+    "database/**/*.ts"
   ],
   "exclude": ["node_modules", "dist"]
 }

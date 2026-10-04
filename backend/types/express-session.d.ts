@@ -6,3 +6,5 @@ declare module "express-session" {
     discordOAuthState?: string; // Store the state parameter for CSRF protection
   }
 }
+
+//TODO: postgresql session store für dauerhafte login sessions
