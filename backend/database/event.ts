@@ -6,16 +6,16 @@ export async function insertEvent(
     id: string;
     lastUpdated: number;
     creatorId: string;
-    leaderId: string;
+    leaderId?: string;
     title: string;
-    description?: string;
+    description: string;
     imageUrl?: string;
     startTime: number;
     endTime: number;
     eventType: number;
     discordServerId?: string;
     discordTextChannelId?: string;
-    signUpCount: number;
+    signUpCount?: number;
     raidHelperId?: string;
   },
   client: Pool | PoolClient = pool,

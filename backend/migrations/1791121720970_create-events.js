@@ -115,9 +115,11 @@ export const up = (pgm) => {
       },
       startTime: {
         type: "bigint",
+        notNull: true,
       },
       endTime: {
         type: "bigint",
+        notNull: true,
       },
       eventType: {
         type: "integer",

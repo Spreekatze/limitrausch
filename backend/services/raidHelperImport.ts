@@ -22,20 +22,19 @@ export async function importRaidHelperEvents(
     throw new HttpError(502, "Invalid answer from raid-helper.xyz");
   }
 
+  const existingEventIds = new Set((await getEvents()).map((event) => event.id));
+
   for (const raidHelperEvent of result.data.postedEvents) {
     try {
       const mappedEvent = mapRaidHelperEventToEvent(raidHelperEvent, serverId);
 
-      const existingEvent = getEvents().find(
-        (event) => event.id === mappedEvent.id,
-      );
-
-      if (existingEvent) {
+      if (existingEventIds.has(mappedEvent.id)) {
         skipped++;
         continue;
       }
 
-      addEvent(mappedEvent);
+      await addEvent(mappedEvent);
+      existingEventIds.add(mappedEvent.id);
       imported++;
     } catch (error) {
       failed++;

@@ -4,7 +4,7 @@
 @baseUrl = http://localhost:3000
 # Replace the value of the cookie with the actual session cookie you received after logging in on the frontend.
 # You can find this cookie in your browser's developer tools under the "Application" or "Storage" tab, in the "Cookies" section.
-@userCookie = s%3AV5TgqMTXncfvo6Km6uSGMuTL5IUxjvU7.OOooPAU7IWn4uaA121Jp%2FMr3GundJRoE%2FjBP9j3587I
+@userCookie = s%3AVQDumOBbBSNfq1LtWky6nIQkiBPkeHmP.%2BiX70mtAzNdymflZs4JZa04rFlVsztbCPI%2B6E%2FasVEA
 # Replace id by actual id from any previous creation response
 @eventUuid = f9245ae7-80a6-403a-a730-7bb655a030a8
 @serverId = 1408172814879559721

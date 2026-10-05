@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { HttpError } from "../../errors/httpError.js";
 import { getEvents } from "../../store/eventStore.js";
 import type { RaidHelperEvent } from "../../types/raidhelperSchema.js";
@@ -7,6 +7,18 @@ import {
   createRaidHelperEvents,
   validServerId,
 } from "./raidHelperTestUtils.js";
+
+const mockStore = vi.hoisted(() => ({
+  events: [] as { id: string; raidHelperId?: string }[],
+}));
+
+vi.mock("../../store/eventStore.js", () => ({
+  getEvents: vi.fn(async () => mockStore.events),
+  addEvent: vi.fn(async (event: { id: string; raidHelperId?: string }) => {
+    mockStore.events.push(event);
+  }),
+}));
+
 const raidHelperEvents = createRaidHelperEvents();
 const buildFetchEvents =
   (postedEvents: RaidHelperEvent[] = raidHelperEvents) =>
@@ -31,7 +43,7 @@ describe("importRaidHelperEvents", () => {
   // - invalid payload shape without postedEvents should throw HttpError 502
 
   beforeEach(() => {
-    getEvents().length = 0;
+    mockStore.events.length = 0;
   });
 
   it("works fine when there are no events in the import", async () => {
@@ -45,7 +57,7 @@ describe("importRaidHelperEvents", () => {
       skipped: 0,
       failed: 0,
     });
-    expect(getEvents()).toHaveLength(0);
+    expect(await getEvents()).toHaveLength(0);
   });
 
   it("imports valid events and counts failed rows without stopping the batch", async () => {
@@ -60,12 +72,13 @@ describe("importRaidHelperEvents", () => {
       failed: 1,
     });
 
-    expect(getEvents()).toHaveLength(2);
-    expect(getEvents().map((event) => event.id)).toEqual([
+    const storedEvents = await getEvents();
+    expect(storedEvents).toHaveLength(2);
+    expect(storedEvents.map((event) => event.id)).toEqual([
       raidHelperEvents[0].id,
       raidHelperEvents[2].id,
     ]);
-    expect(getEvents()[0].raidHelperId).toBe(raidHelperEvents[0].id);
+    expect(storedEvents[0].raidHelperId).toBe(raidHelperEvents[0].id);
   });
 
   it("skips events that were already imported in the store", async () => {

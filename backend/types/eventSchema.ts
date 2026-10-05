@@ -23,7 +23,7 @@ export const eventSchema = z.object({
   id: z.string(),
   lastUpdated: z.number(),
   creator: eventDataDiscordUserSchema,
-  leader: eventDataDiscordUserSchema,
+  leader: eventDataDiscordUserSchema.optional(),
   coLeaders: z.array(eventDataDiscordUserSchema).optional(),
   title: z.string(),
   description: z.string(),
@@ -33,7 +33,7 @@ export const eventSchema = z.object({
   eventType: eventTypeSchema,
   discordServerId: z.string().optional(),
   discordTextChannelId: z.string().optional(),
-  signUpCount: z.number(),
+  signUpCount: z.number().optional(),
   raidHelperId: z.string().optional(),
 });
 export type Event = z.infer<typeof eventSchema>;

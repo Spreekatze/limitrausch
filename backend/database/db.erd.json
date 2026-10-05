@@ -9,7 +9,7 @@
     "originX": 0,
     "originY": 0,
     "zoomLevel": 1,
-    "show": 869,
+    "show": 997,
     "database": 16,
     "databaseName": "limitrausch",
     "canvasType": "ERD",
@@ -375,7 +375,7 @@
         "comment": "",
         "dataType": "text",
         "default": "",
-        "options": 0,
+        "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
@@ -384,7 +384,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1791123160373,
+          "updateAt": 1791184727568,
           "createAt": 1791123155926
         }
       },
@@ -535,7 +535,7 @@
         "comment": "",
         "dataType": "text",
         "default": "",
-        "options": 8,
+        "options": 0,
         "ui": {
           "keys": 2,
           "widthName": 60,
@@ -544,7 +544,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1791123570525,
+          "updateAt": 1791184725924,
           "createAt": 1791123563361
         }
       },
@@ -795,7 +795,7 @@
         "comment": "",
         "dataType": "bigint",
         "default": "",
-        "options": 0,
+        "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 66,
@@ -804,7 +804,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1791123849584,
+          "updateAt": 1791184723500,
           "createAt": 1791123837111
         }
       },
@@ -815,7 +815,7 @@
         "comment": "",
         "dataType": "text",
         "default": "",
-        "options": 0,
+        "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 61,
@@ -824,7 +824,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1791123965168,
+          "updateAt": 1791184773796,
           "createAt": 1791123851979
         }
       },
@@ -855,7 +855,7 @@
         "comment": "",
         "dataType": "bigint",
         "default": "",
-        "options": 0,
+        "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
@@ -864,7 +864,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1791123978928,
+          "updateAt": 1791184778680,
           "createAt": 1791123852320
         }
       },
@@ -875,7 +875,7 @@
         "comment": "",
         "dataType": "bigint",
         "default": "",
-        "options": 0,
+        "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
@@ -884,7 +884,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1791123984626,
+          "updateAt": 1791184779623,
           "createAt": 1791123852612
         }
       },
@@ -895,7 +895,7 @@
         "comment": "",
         "dataType": "integer",
         "default": "",
-        "options": 0,
+        "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
@@ -904,7 +904,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1791123993132,
+          "updateAt": 1791184781084,
           "createAt": 1791123852763
         }
       },
@@ -964,7 +964,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1791125404109,
+          "updateAt": 1791184792284,
           "createAt": 1791123853177
         }
       },
@@ -1055,7 +1055,7 @@
         "comment": "",
         "dataType": "text",
         "default": "",
-        "options": 8,
+        "options": 0,
         "ui": {
           "keys": 2,
           "widthName": 84,
@@ -1064,7 +1064,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1791124102836,
+          "updateAt": 1791184783386,
           "createAt": 1791124067911
         }
       },
@@ -1195,7 +1195,7 @@
         "comment": "",
         "dataType": "text",
         "default": "",
-        "options": 8,
+        "options": 0,
         "ui": {
           "keys": 2,
           "widthName": 121,
@@ -1204,7 +1204,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1791125166226,
+          "updateAt": 1791184784383,
           "createAt": 1791125166226
         }
       },
@@ -1414,7 +1414,7 @@
         "id": "aAQfOTZ4FJaJ00UXvln3G",
         "identification": false,
         "relationshipType": 16,
-        "startRelationshipType": 2,
+        "startRelationshipType": 1,
         "onDelete": 1,
         "onUpdate": 1,
         "start": {
@@ -1422,7 +1422,7 @@
           "columnIds": [
             "512Pn_mFd6THlyFATR92v"
           ],
-          "x": 314,
+          "x": 357,
           "y": 284,
           "direction": 2
         },
@@ -1452,7 +1452,7 @@
           "columnIds": [
             "512Pn_mFd6THlyFATR92v"
           ],
-          "x": 314,
+          "x": 357,
           "y": 266,
           "direction": 2
         },
@@ -1542,7 +1542,7 @@
           "columnIds": [
             "512Pn_mFd6THlyFATR92v"
           ],
-          "x": 206,
+          "x": 227.5,
           "y": 314,
           "direction": 8
         },
@@ -1551,7 +1551,7 @@
           "columnIds": [
             "k3RmiXcEgH4yWZHpklR-V"
           ],
-          "x": 197.29739999999998,
+          "x": 218.79739999999998,
           "y": 465.4937,
           "direction": 4
         },
@@ -1671,7 +1671,7 @@
           "columnIds": [
             "mUvmGHdI7svsCfKIT4sW-"
           ],
-          "x": 315.7974,
+          "x": 358.7974,
           "y": 504.4937,
           "direction": 2
         },
@@ -1714,7 +1714,7 @@
         "id": "tsuS5FB3Dwc4l4_E6YZLq",
         "identification": false,
         "relationshipType": 16,
-        "startRelationshipType": 2,
+        "startRelationshipType": 1,
         "onDelete": 1,
         "onUpdate": 1,
         "start": {
@@ -1731,7 +1731,7 @@
           "columnIds": [
             "4UIzv5xxQLZi882ArFSfh"
           ],
-          "x": 765.6709000000001,
+          "x": 808.6709000000001,
           "y": 310.37969999999996,
           "direction": 2
         },
@@ -1752,7 +1752,7 @@
           "columnIds": [
             "fdqy3xW-WT2gs4orIlbTf"
           ],
-          "x": 974.2404999999999,
+          "x": 995.2404999999999,
           "y": 278.5949,
           "direction": 8
         },
@@ -1761,7 +1761,7 @@
           "columnIds": [
             "zqutFyEemyjPYInxPfI2D"
           ],
-          "x": 982.1455999999998,
+          "x": 1002.6455999999998,
           "y": 367.6836,
           "direction": 4
         },
@@ -1782,7 +1782,7 @@
           "columnIds": [
             "512Pn_mFd6THlyFATR92v"
           ],
-          "x": 314,
+          "x": 357,
           "y": 248,
           "direction": 2
         },
@@ -1821,7 +1821,7 @@
           "columnIds": [
             "w8PwWJayAEedD9uuWplxL"
           ],
-          "x": 708.4114,
+          "x": 751.4114,
           "y": -40.607600000000005,
           "direction": 2
         },
@@ -1834,7 +1834,7 @@
         "id": "9ND6O1yvSs34hgDKght1Y",
         "identification": false,
         "relationshipType": 16,
-        "startRelationshipType": 2,
+        "startRelationshipType": 1,
         "onDelete": 1,
         "onUpdate": 1,
         "start": {
@@ -1851,7 +1851,7 @@
           "columnIds": [
             "RE8q232fsyLh14lLq_tRI"
           ],
-          "x": 765.6709000000001,
+          "x": 808.6709000000001,
           "y": 430.37969999999996,
           "direction": 2
         },
@@ -1872,7 +1872,7 @@
           "columnIds": [
             "512Pn_mFd6THlyFATR92v"
           ],
-          "x": 314,
+          "x": 357,
           "y": 302,
           "direction": 2
         },
@@ -1902,7 +1902,7 @@
           "columnIds": [
             "5wTMQrD3XkiEYh-azTSrI"
           ],
-          "x": 627.1709000000001,
+          "x": 648.6709000000001,
           "y": 553.3797,
           "direction": 8
         },
@@ -1911,7 +1911,7 @@
           "columnIds": [
             "JD4xx8_TyIogEiAIh7tq-"
           ],
-          "x": 627.2785,
+          "x": 648.7785,
           "y": 674.0127,
           "direction": 4
         },

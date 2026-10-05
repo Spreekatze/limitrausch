@@ -3,8 +3,6 @@ import requireAdmin from "../middleware/auth.js";
 import type { Event } from "../types/eventSchema.js";
 import { randomUUID } from "crypto";
 import { createEventSchema, updateEventSchema } from "../types/eventSchema.js";
-import { raidHelperEventsResponseSchema } from "../types/raidhelperSchema.js";
-import { mapRaidHelperEventToEvent } from "../mapping/eventTypeMapping.js";
 import { importRaidHelperEvents } from "../services/raidHelperImport.js";
 import { HttpError } from "../errors/httpError.js";
 import {
@@ -41,12 +39,12 @@ router.get("/raid-helper/:id", requireAdmin, async (request, response) => {
 });
 
 // Get all events
-router.get("/", (request, response) => {
-  response.json(getEvents());
+router.get("/", async (request, response) => {
+  response.json(await getEvents());
 });
 
 // Create an event
-router.post("/new", requireAdmin, (request, response) => {
+router.post("/new", requireAdmin, async (request, response) => {
   const result = createEventSchema.safeParse(request.body);
   if (!result.success) {
     response.status(400).json({
@@ -60,10 +58,10 @@ router.post("/new", requireAdmin, (request, response) => {
     ...result.data,
     id: randomUUID(),
     lastUpdated: Date.now(),
-    signUpCount: "0",
+    signUpCount: 0,
   };
 
-  addEvent(event);
+  await addEvent(event);
 
   response.status(201).json({ event: event });
 });
