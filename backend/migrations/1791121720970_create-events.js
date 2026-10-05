@@ -123,6 +123,7 @@ export const up = (pgm) => {
       },
       eventType: {
         type: "integer",
+        notNull: true,
       },
       discordServerId: {
         type: "text",
@@ -130,7 +131,6 @@ export const up = (pgm) => {
       },
       discordTextChannelId: {
         type: "text",
-        notNull: true,
       },
       signUpCount: {
         type: "integer",
@@ -142,6 +142,8 @@ export const up = (pgm) => {
     },
     {
       constraints: {
+        check:
+          '"discordTextChannelId" IS NULL OR "discordServerId" IS NOT NULL',
         foreignKeys: {
           columns: ["discordTextChannelId", "discordServerId"],
           references: '"DiscordTextChannel"("id", "discordServerId")',

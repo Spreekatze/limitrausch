@@ -8,7 +8,7 @@ export async function insertEvent(
     creatorId: string;
     leaderId?: string;
     title: string;
-    description: string;
+    description?: string;
     imageUrl?: string;
     startTime: number;
     endTime: number;

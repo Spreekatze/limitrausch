@@ -67,8 +67,8 @@ router.post("/new", requireAdmin, async (request, response) => {
 });
 
 // Get (request) a single event by id
-router.get("/:id", (request, response) => {
-  const event = getEventById(request.params.id);
+router.get("/:id", async (request, response) => {
+  const event = await getEventById(request.params.id);
   if (!event) {
     response.status(404).json({ error: "Event not found" });
     return;
@@ -78,7 +78,7 @@ router.get("/:id", (request, response) => {
 });
 
 // Edit (Update) a single event by id
-router.patch("/:id", requireAdmin, (request, response) => {
+router.patch("/:id", requireAdmin, async (request, response) => {
   const id = request.params.id;
   if (typeof id !== "string") {
     response.status(400).json({ error: "Invalid event id" });
@@ -96,7 +96,7 @@ router.patch("/:id", requireAdmin, (request, response) => {
     return;
   }
 
-  const updatedEvent = updateEvent(id, {
+  const updatedEvent = await updateEvent(id, {
     ...result.data,
     lastUpdated: Date.now(),
   });
@@ -110,13 +110,13 @@ router.patch("/:id", requireAdmin, (request, response) => {
 });
 
 // Delete a single event by id
-router.delete("/:id", requireAdmin, (request, response) => {
+router.delete("/:id", requireAdmin, async (request, response) => {
   const id = request.params.id;
   if (typeof id !== "string") {
     response.status(400).json({ error: "Invalid event id" });
     return;
   }
-  const deleted = deleteEvent(id);
+  const deleted = await deleteEvent(id);
   if (!deleted) {
     response.status(404).json({ error: "Event not found" });
     return;

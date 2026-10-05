@@ -11,8 +11,6 @@ import { upsertDiscordUser } from "../database/discordUser.js";
 import { insertEvent } from "../database/event.js";
 import { insertEventCoLeader } from "../database/eventCoLeader.js";
 
-const events: Event[] = [];
-
 export async function getEvents(): Promise<Event[]> {
   const result = await pool.query<DatabaseEventRow>(`
     SELECT
@@ -113,6 +111,7 @@ export async function addEvent(event: Event): Promise<void> {
 
     //TODO: add user for all signed up users
 
+    //TODO: remove this upsert for server and channel and move this to an action for the bot to register a server to the DB
     if (event.discordServerId) {
       //TODO: add fetching discord name
       await upsertDiscordServer(event.discordServerId, "", client);
@@ -161,23 +160,122 @@ export async function addEvent(event: Event): Promise<void> {
   }
 }
 
-export function updateEvent(
+export async function updateEvent(
   id: string,
   update: Partial<Event>,
-): Event | undefined {
-  const event = events.find((event) => event.id === id);
-  if (!event) {
-    return undefined;
+): Promise<Event | undefined> {
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    // Fetch current pair of discord server and textchannel for the event
+    const existingResult = await client.query<{
+      discordServerId: string | null;
+      discordTextChannelId: string;
+    }>(
+      `
+      SELECT "discordServerId", "discordTextChannelId"
+      FROM "Event"
+      WHERE "id" = $1
+      FOR UPDATE
+      `,
+      [id],
+    );
+    const existingEvent = existingResult.rows[0];
+
+    // If event is not found rollback
+    if (!existingEvent) {
+      await client.query("ROLLBACK");
+      return undefined;
+    }
+
+    const hasField = (field: keyof Event) =>
+      Object.prototype.hasOwnProperty.call(update, field);
+
+    if (update.creator) {
+      await upsertDiscordUser(update.creator.id, update.creator.name, client);
+    }
+    if (update.leader) {
+      await upsertDiscordUser(update.leader.id, update.leader.name, client);
+    }
+    if (hasField("coLeaders")) {
+      for (const coLeader of update.coLeaders ?? []) {
+        await upsertDiscordUser(coLeader.id, coLeader.name, client);
+      }
+    }
+
+    const serverId = hasField("discordServerId")
+      ? (update.discordServerId ?? null)
+      : existingEvent.discordServerId;
+    const channelId = hasField("discordTextChannelId")
+      ? (update.discordTextChannelId ?? null)
+      : existingEvent.discordTextChannelId;
+
+    //TODO: remove this upsert for server and channel and move this to an action for the bot to register a server to the DB
+    if (hasField("discordServerId") && serverId) {
+      await upsertDiscordServer(serverId, "", client);
+    }
+    if (hasField("discordTextChannelId") && channelId && serverId) {
+      await upsertDiscordTextChannel(channelId, "", serverId, client);
+    }
+
+    const values: (string | number | null)[] = [];
+    const assignments: string[] = [];
+    const assign = (column: string, value: string | number | undefined) => {
+      values.push(value ?? null);
+      assignments.push(`"${column}" = $${values.length}`);
+    };
+
+    assign("lastUpdated", update.lastUpdated ?? Date.now());
+    if (hasField("creator")) assign("creatorId", update.creator?.id);
+    if (hasField("leader")) assign("leaderId", update.leader?.id);
+    if (hasField("title")) assign("title", update.title);
+    if (hasField("description")) assign("description", update.description);
+    if (hasField("imageUrl")) assign("imageUrl", update.imageUrl);
+    if (hasField("startTime")) assign("startTime", update.startTime);
+    if (hasField("endTime")) assign("endTime", update.endTime);
+    if (hasField("eventType")) assign("eventType", update.eventType);
+    if (hasField("discordServerId")) {
+      assign("discordServerId", update.discordServerId);
+    }
+    if (hasField("discordTextChannelId")) {
+      assign("discordTextChannelId", update.discordTextChannelId);
+    }
+    if (hasField("signUpCount")) assign("signUpCount", update.signUpCount);
+    if (hasField("raidHelperId")) assign("raidHelperId", update.raidHelperId);
+
+    values.push(id);
+    await client.query(
+      `UPDATE "Event" SET ${assignments.join(", ")} WHERE "id" = $${values.length}`,
+      values,
+    );
+
+    if (hasField("coLeaders")) {
+      await client.query('DELETE FROM "EventCoLeader" WHERE "eventId" = $1', [
+        id,
+      ]);
+      for (const coLeader of update.coLeaders ?? []) {
+        await insertEventCoLeader(coLeader.id, id, client);
+      }
+    }
+
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
   }
-  Object.assign(event, update);
-  return event;
+
+  return getEventById(id);
 }
 
-export function deleteEvent(id: string): boolean {
-  const index = events.findIndex((event) => event.id === id);
-  if (index === -1) {
-    return false;
-  }
-  events.splice(index, 1);
-  return true;
+export async function deleteEvent(id: string): Promise<boolean> {
+  const result = await pool.query(
+    'DELETE FROM "Event" WHERE "id" = $1 RETURNING "id"',
+    [id],
+  );
+
+  return result.rowCount === 1;
 }

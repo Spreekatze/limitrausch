@@ -43,7 +43,7 @@ export function mapDatabaseEventRowToEvent(
         }
       : undefined,
     title: row.title,
-    description: row.description ?? "",
+    description: row.description ?? undefined,
     imageUrl: row.imageUrl ?? undefined,
     startTime: Number(row.startTime),
     endTime: Number(row.endTime),

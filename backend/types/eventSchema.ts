@@ -26,7 +26,7 @@ export const eventSchema = z.object({
   leader: eventDataDiscordUserSchema.optional(),
   coLeaders: z.array(eventDataDiscordUserSchema).optional(),
   title: z.string(),
-  description: z.string(),
+  description: z.string().optional(),
   imageUrl: z.string().optional(),
   startTime: z.number(),
   endTime: z.number(),
@@ -38,12 +38,14 @@ export const eventSchema = z.object({
 });
 export type Event = z.infer<typeof eventSchema>;
 
-export const createEventSchema = eventSchema.omit({
-  id: true,
-  lastUpdated: true,
-  signUpCount: true,
-  raidHelperId: true,
-});
+export const createEventSchema = eventSchema
+  .omit({
+    id: true,
+    lastUpdated: true,
+    signUpCount: true,
+    raidHelperId: true,
+  })
+  .refine((event) => !event.discordTextChannelId || !!event.discordServerId);
 
 export const updateEventSchema = eventSchema
   .omit({
