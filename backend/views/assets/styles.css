@@ -20,6 +20,25 @@ h1 {
   font-size: 1.8rem;
 }
 
+.login-link {
+  display: inline-block;
+  margin: 0 0 1.5rem;
+  padding: 0.65rem 1rem;
+  color: white;
+  background: #176b4b;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.login-link:hover {
+  background: #12563c;
+}
+
+.login-link:focus-visible {
+  outline: 3px solid #202a35;
+  outline-offset: 3px;
+}
+
 p {
   margin: 0 0 1.5rem;
   color: #5c6873;

@@ -11,6 +11,17 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["index.ts", "routes/**/*.ts", "views/**/*.ts"],
+  "include": [
+    "index.ts",
+    "routes/**/*.ts",
+    "views/**/*.ts",
+    "types/**/*.ts",
+    "middleware/**/*.ts",
+    "services/**/*.ts",
+    "mapping/**/*.ts",
+    "store/**/*.ts",
+    "config/**/*.ts",
+    "database/**/*.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

@@ -69,10 +69,10 @@ function isEventsResponse(value: unknown): value is RaidHelperEventsResponse {
   );
 }
 
-export async function fetchRaidHelperEvents(date: Date): Promise<RaidHelperEventsResponse> {
+export async function getEvents(date: Date): Promise<RaidHelperEventsResponse> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
   const startTime = Math.floor(date.getTime() / 1000);
-  const response = await fetch(`${apiBaseUrl}/raid-helper/events?startTime=${startTime}`);
+  const response = await fetch(`${apiBaseUrl}/events/raid-helper?startTime=${startTime}`);
 
   if (!response.ok) {
     const text = await response.text();

@@ -1,0 +1,64 @@
+# This file contains HTTP requests for testing the backend endpoints. 
+# You can use a tool like VS Code's REST Client extension to run these requests directly from this file.
+
+@baseUrl = http://localhost:3000
+# Replace the value of the cookie with the actual session cookie you received after logging in on the frontend.
+# You can find this cookie in your browser's developer tools under the "Application" or "Storage" tab, in the "Cookies" section.
+@userCookie = s%3Aum8jR970PGg0wshBvrGI0hkvGbKre3ry.xIISTuFhQpy9lxUnbiIabScCIUMZ3jgXwWOnP5RTwZ0
+# Replace id by actual id from any previous creation response
+@eventUuid = 460de5e7-24fa-4ebc-9a27-b94f23b678b5
+@serverId = 1408172814879559721
+
+### Create event
+POST {{baseUrl}}/events/new
+Content-Type: application/json
+Cookie: connect.sid={{userCookie}}
+
+{
+  "creator": {
+    "id": "123",
+    "name": "User"
+  },
+  "leader": {
+    "id": "123",
+    "name": "User"
+  },
+  "coLeaders": [],
+  "title": "Test Event",
+  "description": "Test",
+  "startTime": 1760005000,
+  "endTime": 1760010000,
+  "eventType": 1,
+  "discordServerId": "111",
+  "discordTextChannelId": "aaa"
+}
+
+### Get all events
+GET {{baseUrl}}/events/
+
+### Get single event with wrong id
+GET {{baseUrl}}/events/abc
+
+### Get single event
+GET {{baseUrl}}/events/{{eventUuid}}
+
+### Edit single event by id
+PATCH {{baseUrl}}/events/{{eventUuid}}
+Content-Type: application/json
+Cookie: connect.sid={{userCookie}}
+
+{
+  "title": "NEW NEW NEW"
+}
+
+### Delete single event by id
+DELETE {{baseUrl}}/events/{{eventUuid}}
+Cookie: connect.sid={{userCookie}}
+
+#### Request Raid-Helper Events
+GET {{baseUrl}}/events/raid-helper/{{serverId}}
+Cookie: connect.sid={{userCookie}}
+
+#### Request Raid-Helper Events with bad server id
+GET {{baseUrl}}/events/raid-helper/abc
+Cookie: connect.sid={{userCookie}}

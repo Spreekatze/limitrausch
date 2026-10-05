@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { RaidHelperEvent } from '../api/raid-helper';
+import type { RaidHelperEvent } from '../api/events';
 import { channelClassNames, formatEventTime, formatEventTitle } from '../utils/calendar';
 
 const now = new Date();

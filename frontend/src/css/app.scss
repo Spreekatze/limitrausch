@@ -3,7 +3,14 @@
 
 @font-face {
   font-family: 'Cinzel';
-  src: url(/src/assets/fonts/Cinzel-VariableFont_wght.ttf);
-  font-weight: normal;
+  src: url('../assets/fonts/Cinzel-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'LibreBaskerville';
+  src: url('../assets/fonts/LibreBaskerville-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
   font-style: normal;
 }

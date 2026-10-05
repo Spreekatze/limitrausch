@@ -16,7 +16,17 @@ const routes: BackendRoute[] = [
     path: "/status/health",
     description: "Backend health status",
   },
-  { method: "POST", path: "/playground/login", description: "Mock login" },
+  // { method: "POST", path: "/playground/login", description: "Mock login" },
+  {
+    method: "GET",
+    path: "/auth/discord",
+    description: "Start Discord OAuth",
+  },
+  {
+    method: "GET",
+    path: "/auth/discord/callback",
+    description: "Discord OAuth callback",
+  },
   {
     method: "GET",
     path: "/raid-helper/events",
