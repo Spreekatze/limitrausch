@@ -7,10 +7,10 @@ export async function upsertDiscordServer(
   client: Pool | PoolClient = pool,
 ): Promise<void> {
   await client.query(
-    `insert into "DiscordServer" ("id", "name") 
-    values ($1, $2) 
-    on conflict ("id") 
-    do update set "name" = excluded."name"
+    `INSERT INTO "DiscordServer" ("id", "name") 
+    VALUES ($1, $2) 
+    ON CONFLICT ("id") 
+    DO UPDATE SET "name" = excluded."name"
     `,
     [id, name],
   );

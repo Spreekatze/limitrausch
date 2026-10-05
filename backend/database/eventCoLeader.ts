@@ -7,12 +7,11 @@ export async function insertEventCoLeader(
   client: Pool | PoolClient = pool,
 ): Promise<void> {
   await client.query(
-    `
-      INSERT INTO "EventCoLeader" (
+    `INSERT INTO "EventCoLeader" (
         "discordUserId",
         "eventId"
-      )
-      VALUES ($1, $2)
+    )
+    VALUES ($1, $2)
     `,
     [discordUserId, eventId],
   );

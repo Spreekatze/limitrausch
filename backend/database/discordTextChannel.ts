@@ -8,10 +8,10 @@ export async function upsertDiscordTextChannel(
   client: Pool | PoolClient = pool,
 ): Promise<void> {
   await client.query(
-    `insert into "DiscordTextChannel" ("id", "name", "discordServerId")
-    values ($1, $2, $3)
-    on conflict ("id")
-    do update set "name" = excluded."name"
+    `INSERT INTO "DiscordTextChannel" ("id", "name", "discordServerId")
+    VALUES ($1, $2, $3)
+    ON CONFLICT ("id")
+    DO UPDATE SET "name" = excluded."name"
     `,
     [id, name, discordServerId],
   );

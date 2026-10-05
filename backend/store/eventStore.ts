@@ -1,4 +1,9 @@
-import type { EventDataDiscordUser, Event } from "../types/eventSchema.js";
+import type { Event } from "../types/eventSchema.js";
+import {
+  mapDatabaseEventRowToEvent,
+  type DatabaseEventCoLeaderRow,
+  type DatabaseEventRow,
+} from "../mapping/eventDatabaseMapping.js";
 import { pool } from "../database/databaseConnection.js";
 import { upsertDiscordServer } from "../database/discordServer.js";
 import { upsertDiscordTextChannel } from "../database/discordTextChannel.js";
@@ -8,33 +13,8 @@ import { insertEventCoLeader } from "../database/eventCoLeader.js";
 
 const events: Event[] = [];
 
-type EventRow = {
-  id: string;
-  lastUpdated: string;
-  creatorId: string;
-  creatorName: string;
-  leaderId: string | null;
-  leaderName: string | null;
-  title: string;
-  description: string | null;
-  imageUrl: string | null;
-  startTime: string;
-  endTime: string;
-  eventType: Event["eventType"];
-  discordServerId: string | null;
-  discordTextChannelId: string | null;
-  signUpCount: number | null;
-  raidHelperId: string | null;
-};
-
-type EventCoLeaderRow = {
-  eventId: string;
-  id: string;
-  name: string;
-};
-
 export async function getEvents(): Promise<Event[]> {
-  const result = await pool.query<EventRow>(`
+  const result = await pool.query<DatabaseEventRow>(`
     SELECT
       event.*,
       creator.name AS "creatorName",
@@ -46,7 +26,7 @@ export async function getEvents(): Promise<Event[]> {
       ON leader.id = event."leaderId"
   `);
 
-  const coleaderResult = await pool.query<EventCoLeaderRow>(`
+  const coleaderResult = await pool.query<DatabaseEventCoLeaderRow>(`
     SELECT
       eventCoLeader."eventId",
       discordUser.id,
@@ -56,47 +36,66 @@ export async function getEvents(): Promise<Event[]> {
       ON discordUser.id = eventCoLeader."discordUserId"
   `);
 
-  const coLeadersByEvent = new Map<string, EventDataDiscordUser[]>();
+  const coLeadersByEvent = new Map<string, { id: string; name: string }[]>();
   for (const row of coleaderResult.rows) {
     const coLeaders = coLeadersByEvent.get(row.eventId) ?? [];
     coLeaders.push({ id: row.id, name: row.name });
     coLeadersByEvent.set(row.eventId, coLeaders);
   }
 
-  return result.rows.map((row) => ({
-    id: row.id,
-    lastUpdated: Number(row.lastUpdated),
-    creator: {
-      id: row.creatorId,
-      name: row.creatorName,
-    },
-    leader: row.leaderId
-      ? {
-          id: row.leaderId,
-          name: row.leaderName ?? "",
-        }
-      : undefined,
-    title: row.title,
-    description: row.description ?? "",
-    imageUrl: row.imageUrl ?? undefined,
-    startTime: Number(row.startTime),
-    endTime: Number(row.endTime),
-    eventType: row.eventType,
-    discordServerId: row.discordServerId ?? undefined,
-    discordTextChannelId: row.discordTextChannelId ?? undefined,
-    signUpCount: row.signUpCount ?? undefined,
-    raidHelperId: row.raidHelperId ?? undefined,
-    coLeaders: coLeadersByEvent.get(row.id) ?? [],
-  }));
+  return result.rows.map((row) =>
+    mapDatabaseEventRowToEvent(row, coLeadersByEvent.get(row.id) ?? []),
+  );
 }
 
-export function getEventById(id: string): Event | undefined {
-  return events.find((event) => event.id === id);
+type EventLookupColumn = "id" | "raidHelperId";
+
+async function getEventBy(
+  column: EventLookupColumn,
+  value: string,
+): Promise<Event | undefined> {
+  const columnName = column === "id" ? '"id"' : '"raidHelperId"';
+  const result = await pool.query<DatabaseEventRow>(
+    `
+    SELECT
+      event.*,
+      creator.name AS "creatorName",
+      leader.name AS "leaderName"
+    FROM "Event" event
+    JOIN "DiscordUser" creator
+      ON creator.id = event."creatorId"
+    LEFT JOIN "DiscordUser" leader
+      ON leader.id = event."leaderId"
+    WHERE event.${columnName} = $1
+    `,
+    [value],
+  );
+  const row = result.rows[0];
+  if (!row) {
+    return undefined;
+  }
+
+  const coleaderResult = await pool.query<DatabaseEventCoLeaderRow>(
+    `
+    SELECT
+      eventCoLeader."eventId",
+      discordUser.id,
+      discordUser.name
+    FROM "EventCoLeader" eventCoLeader
+    JOIN "DiscordUser" discordUser
+      ON discordUser.id = eventCoLeader."discordUserId"
+    WHERE eventCoLeader."eventId" = $1
+    `,
+    [row.id],
+  );
+
+  const coLeaders = coleaderResult.rows.map(({ id, name }) => ({ id, name }));
+  return mapDatabaseEventRowToEvent(row, coLeaders);
 }
 
-export function getEventByRaidHelperId(id: string): Event | undefined {
-  return events.find((event) => event.raidHelperId === id);
-}
+export const getEventById = (id: string) => getEventBy("id", id);
+export const getEventByRaidHelperId = (id: string) =>
+  getEventBy("raidHelperId", id);
 
 export async function addEvent(event: Event): Promise<void> {
   const client = await pool.connect();
