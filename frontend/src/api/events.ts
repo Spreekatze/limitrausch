@@ -1,32 +1,35 @@
-export interface RaidHelperEvent {
-  channelId: string;
-  closeTime: number;
-  coLeaders: DiscordUser[];
-  color: string;
-  creator: DiscordUser;
-  description: string;
-  endTime: number;
+export interface Event {
   id: string;
-  imageUrl: string;
   lastUpdated: number;
-  leaderId: string;
-  leaderName: string;
-  signUpCount: string;
-  startTime: number;
-  templateId: string;
+  creator: DiscordUser;
+  leader?: DiscordUser;
+  coLeaders?: DiscordUser[];
   title: string;
+  description?: string;
+  imageUrl?: string;
+  startTime: number;
+  endTime: number;
+  eventType: EventType;
+  discordServerId?: string;
+  discordTextChannelId?: string;
+  signUpCount?: number;
+  raidHelperId?: string;
 }
+
+export const EVENT_TYPE = {
+  CASUAL: 0,
+  RAID: 1,
+  ULTIMATE: 2,
+  ARCHIV: 3,
+  SQENIX_EVENT: 4,
+  FIELD: 5,
+} as const;
+export type EventType = typeof EVENT_TYPE;
+const eventTypeValues = new Set<number>(Object.values(EVENT_TYPE));
 
 export interface DiscordUser {
   id: string;
   name: string;
-}
-export interface RaidHelperEventsResponse {
-  pages: number;
-  eventsOverall: number;
-  eventsTransmitted: number;
-  currentPage: number;
-  postedEvents: RaidHelperEvent[];
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -37,42 +40,48 @@ function isDiscordUser(value: unknown): value is DiscordUser {
   return isObject(value) && typeof value.id === 'string' && typeof value.name === 'string';
 }
 
-function isRaidHelperEvent(value: unknown): value is RaidHelperEvent {
+function isEventType(value: unknown): value is EventType {
+  return typeof value === 'number' && eventTypeValues.has(value);
+}
+
+function isEvent(value: unknown): value is Event {
   return (
     isObject(value) &&
-    typeof value.channelId === 'string' &&
-    typeof value.closeTime === 'number' &&
-    Array.isArray(value.coLeaders) &&
-    value.coLeaders.every(isDiscordUser) &&
-    typeof value.color === 'string' &&
-    isDiscordUser(value.creator) &&
-    typeof value.endTime === 'number' &&
     typeof value.id === 'string' &&
     typeof value.lastUpdated === 'number' &&
-    typeof value.leaderId === 'string' &&
-    typeof value.leaderName === 'string' &&
-    typeof value.signUpCount === 'string' &&
+    isDiscordUser(value.creator) &&
+    (value.leader === undefined || isDiscordUser(value.leader)) &&
+    (value.coLeaders === undefined ||
+      (Array.isArray(value.coLeaders) && value.coLeaders.every(isDiscordUser))) &&
+    typeof value.title === 'string' &&
     typeof value.startTime === 'number' &&
-    typeof value.templateId === 'string'
+    typeof value.endTime === 'number' &&
+    isEventType(value.eventType) &&
+    (value.description === undefined || typeof value.description === 'string') &&
+    (value.imageUrl === undefined || typeof value.imageUrl === 'string') &&
+    (value.discordServerId === undefined || typeof value.discordServerId === 'string') &&
+    (value.discordTextChannelId === undefined || typeof value.discordTextChannelId === 'string') &&
+    (value.signUpCount === undefined || typeof value.signUpCount === 'number') &&
+    (value.raidHelperId === undefined || typeof value.raidHelperId === 'string')
   );
 }
 
-function isEventsResponse(value: unknown): value is RaidHelperEventsResponse {
-  return (
-    isObject(value) &&
-    typeof value.pages === 'number' &&
-    typeof value.eventsOverall === 'number' &&
-    typeof value.eventsTransmitted === 'number' &&
-    typeof value.currentPage === 'number' &&
-    Array.isArray(value.postedEvents) &&
-    value.postedEvents.every(isRaidHelperEvent)
-  );
+export interface ApiEventsResponse {
+  // pages: number;
+  // eventsOverall: number;
+  // eventsTransmitted: number;
+  // currentPage: number;
+  postedEvents: Event[];
 }
 
-export async function getEvents(date: Date): Promise<RaidHelperEventsResponse> {
+function isEventsResponse(value: unknown): value is ApiEventsResponse {
+  return isObject(value) && Array.isArray(value.postedEvents) && value.postedEvents.every(isEvent);
+}
+
+export async function getEvents(date: Date): Promise<ApiEventsResponse> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
   const startTime = Math.floor(date.getTime() / 1000);
-  const response = await fetch(`${apiBaseUrl}/events/raid-helper?startTime=${startTime}`);
+  const response = await fetch(`${apiBaseUrl}/events?startTime=${startTime}`);
 
   if (!response.ok) {
     const text = await response.text();

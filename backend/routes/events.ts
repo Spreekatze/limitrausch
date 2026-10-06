@@ -12,6 +12,7 @@ import {
   getEvents,
   updateEvent,
 } from "../store/eventStore.js";
+import { success } from "zod";
 
 const router = express.Router();
 
@@ -40,7 +41,8 @@ router.get("/raid-helper/:id", requireAdmin, async (request, response) => {
 
 // Get all events
 router.get("/", async (request, response) => {
-  response.json(await getEvents());
+  const events = await getEvents();
+  response.json({ postedEvents: events });
 });
 
 // Create an event

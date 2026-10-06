@@ -29,7 +29,7 @@
             v-for="event in props.eventsByDay.get(day.toDateString()) ?? []"
             :key="event.id"
             class="calendar-event"
-            :class="`calendar-event--${channelClassNames[event.channelId] ?? 'other'}`"
+            :class="`calendar-event--${channelClassNames[event.discordTextChannelId ?? ''] ?? 'other'}`"
           >
             <small>
               {{ formatEventTime(event.startTime) }} {{ formatEventTitle(event.title)[0] }}
@@ -49,11 +49,11 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import type { RaidHelperEvent } from '../api/events';
+import type { Event } from '../api/events';
 import { channelClassNames, formatEventTime, formatEventTitle } from '../utils/calendar';
 import { downloadWeeklyCalendarAsImage } from '../utils/calendar-export';
 
-const props = defineProps<{ eventsByDay: ReadonlyMap<string, RaidHelperEvent[]> }>();
+const props = defineProps<{ eventsByDay: ReadonlyMap<string, Event[]> }>();
 const now = new Date();
 const isExporting = ref(false);
 const exportError = ref<string | null>(null);

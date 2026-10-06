@@ -1,4 +1,4 @@
-import type { RaidHelperEvent } from '../api/events';
+import type { Event } from '../api/events';
 import { channelClassNames, formatEventTime } from './calendar';
 
 const logoUrl = new URL('../assets/AE.png', import.meta.url).href;
@@ -169,7 +169,7 @@ async function loadImage(url: string): Promise<HTMLImageElement> {
 }
 
 function getStyle(name: string): string {
-  const color = getComputedStyle(document.body).getPropertyValue(name).trim();
+  const color = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   if (!color) {
     throw new Error(`Theme-Farbe ${name} ist nicht definiert.`);
   }
@@ -178,7 +178,7 @@ function getStyle(name: string): string {
 
 export async function downloadWeeklyCalendarAsImage(
   weekDays: readonly Date[],
-  eventsByDay: ReadonlyMap<string, RaidHelperEvent[]>,
+  eventsByDay: ReadonlyMap<string, Event[]>,
 ): Promise<void> {
   const imageWidth = 1680;
   const scale = 2;
@@ -355,7 +355,7 @@ export async function downloadWeeklyCalendarAsImage(
     // Event-List
     let eventY = eventListY + 10;
     day.events.forEach((item) => {
-      const channelName = channelClassNames[item.event.channelId] ?? 'other';
+      const channelName = channelClassNames[item.event.discordTextChannelId ?? ''] ?? 'other';
       drawRoundedPanel(
         context,
         columnX,

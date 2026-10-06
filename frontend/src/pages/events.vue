@@ -24,7 +24,7 @@ import '../css/calendar.scss';
 import { computed, onMounted, ref } from 'vue';
 import CalendarMonthly from '../components/CalendarMonthly.vue';
 import CalendarWeekly from '../components/CalendarWeekly.vue';
-import { getEvents, type RaidHelperEvent } from '../api/events';
+import { getEvents, type Event } from '../api/events';
 import { getMonthlyCalendarStartDate } from '../utils/calendar';
 
 type CalendarView = 'monthly' | 'weekly';
@@ -34,10 +34,10 @@ const calendarOptions: { label: string; value: CalendarView }[] = [
   { label: 'Monatlich', value: 'monthly' },
   { label: 'Wöchentlich', value: 'weekly' },
 ];
-const events = ref<RaidHelperEvent[]>([]);
+const events = ref<Event[]>([]);
 const error = ref<string | null>(null);
 const eventsByDay = computed(() => {
-  const groupedEvents = new Map<string, RaidHelperEvent[]>();
+  const groupedEvents = new Map<string, Event[]>();
 
   for (const event of events.value) {
     const key = new Date(event.startTime * 1000).toDateString();
