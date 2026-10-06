@@ -4,9 +4,9 @@
 @baseUrl = http://localhost:3000
 # Replace the value of the cookie with the actual session cookie you received after logging in on the frontend.
 # You can find this cookie in your browser's developer tools under the "Application" or "Storage" tab, in the "Cookies" section.
-@userCookie = s%3Aum8jR970PGg0wshBvrGI0hkvGbKre3ry.xIISTuFhQpy9lxUnbiIabScCIUMZ3jgXwWOnP5RTwZ0
+@userCookie = s%3AoMceaRs4vb95XnrSlOoK7ImhjcUZGhjX.9E5DkvIBIGqRIwQpeUvkTSQEThH1IBLjwDI9Tfe6vzQ
 # Replace id by actual id from any previous creation response
-@eventUuid = 460de5e7-24fa-4ebc-9a27-b94f23b678b5
+@eventUuid = 62685bb8-cde7-43cc-8f02-087272d0a202
 @serverId = 1408172814879559721
 
 ### Create event
@@ -62,3 +62,19 @@ Cookie: connect.sid={{userCookie}}
 #### Request Raid-Helper Events with bad server id
 GET {{baseUrl}}/events/raid-helper/abc
 Cookie: connect.sid={{userCookie}}
+
+### RaidHelper Webhook Test
+// Replace with actual authorization from .env for testing but ALWAYS revert before pushing
+POST {{baseUrl}}/webhooks/raid-helper/event-create
+Content-Type: application/json
+Authorization: 
+
+{
+  "id": "test-event",
+  "serverId": "1408172814879559721",
+  "title": "Webhook Test",
+  "startTime": 1231,
+  "endTime": 1654,
+  "lastUpdated": 1000,
+  "templateId": "25"
+}

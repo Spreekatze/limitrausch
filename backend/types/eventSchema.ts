@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const EVENT_TYPE = {
+  TEST: 999,
   CASUAL: 0,
   RAID: 1,
   ULTIMATE: 2,

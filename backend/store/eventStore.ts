@@ -127,23 +127,7 @@ export async function addEvent(event: Event): Promise<void> {
     }
     //TODO: add connection for coLeads und SignUps, then upsert all users from there
 
-    const eventResult = {
-      id: event.id,
-      lastUpdated: event.lastUpdated,
-      creatorId: event.creator.id,
-      leaderId: event.leader?.id,
-      title: event.title,
-      description: event.description,
-      imageUrl: event.imageUrl,
-      startTime: event.startTime,
-      endTime: event.endTime,
-      eventType: event.eventType,
-      discordServerId: event.discordServerId,
-      discordTextChannelId: event.discordTextChannelId,
-      signUpCount: event.signUpCount,
-      raidHelperId: event.raidHelperId,
-    };
-    await insertEvent(eventResult, client);
+    await insertEvent(event, client);
 
     for (const coLeader of event.coLeaders ?? []) {
       await insertEventCoLeader(coLeader.id, event.id, client);

@@ -1,23 +1,9 @@
 import { Pool, PoolClient } from "pg";
 import { pool } from "./databaseConnection.js";
+import { Event } from "../types/eventSchema.js";
 
 export async function insertEvent(
-  event: {
-    id: string;
-    lastUpdated: number;
-    creatorId: string;
-    leaderId?: string;
-    title: string;
-    description?: string;
-    imageUrl?: string;
-    startTime: number;
-    endTime: number;
-    eventType: number;
-    discordServerId?: string;
-    discordTextChannelId?: string;
-    signUpCount?: number;
-    raidHelperId?: string;
-  },
+  event: Event,
   client: Pool | PoolClient = pool,
 ): Promise<void> {
   await client.query(
@@ -46,8 +32,8 @@ export async function insertEvent(
     [
       event.id,
       event.lastUpdated,
-      event.creatorId,
-      event.leaderId,
+      event.creator.id,
+      event.leader?.id,
       event.title,
       event.description,
       event.imageUrl,
