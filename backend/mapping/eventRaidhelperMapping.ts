@@ -1,8 +1,18 @@
-import { EVENT_TYPE, EventType, Event } from "../types/eventSchema.js";
+import {
+  EVENT_TYPE,
+  EventType,
+  Event,
+  EventSignUpUser,
+  StatusType,
+  statusTypeSchema,
+} from "../types/eventSchema.js";
 import {
   RaidHelperEvent,
+  RaidHelperSignUp,
   RaidHelperWebHookEvent,
 } from "../types/raidhelperSchema.js";
+import { jobsByRaidHelperName } from "../data/jobs.js";
+import { Job } from "../types/jobSchema.js";
 
 const aetherisServerId = "1408172814879559721";
 const aetherisCasualChannelId = "1408186147896819822";
@@ -31,7 +41,7 @@ function getEventType(
   return eventTypeByServerAndChannelId[serverId]?.[channelId];
 }
 
-export function mapRaidHelperEventToEvent(
+export function mapRaidHelperGeneralEventDataToEvent(
   raidhelperEvent: RaidHelperEvent,
   serverId: string,
 ): Event {
@@ -62,6 +72,45 @@ export function mapRaidHelperEventToEvent(
   };
 
   return event;
+}
+
+function getJobFromRaidHelperName(name: string): Job {
+  const job = jobsByRaidHelperName.get(name);
+  if (!job) {
+    throw new Error(`Unknown Raidhelper job: ${name}`);
+  }
+  return job;
+}
+
+function mapRaidHelperClassToEventStatus(
+  className: string,
+): StatusType | undefined {
+  const result = statusTypeSchema.safeParse(className);
+  return result.success ? result.data : undefined;
+}
+
+function mapRaidHelperSignUpsToEventSignUps(
+  raidHelperSignUps: RaidHelperSignUp[],
+): EventSignUpUser[] {
+  const signUps = raidHelperSignUps.map((signUp) => {
+    const flexJobs = [signUp.spec2Name, signUp.spec3Name]
+      .filter((name): name is string => name !== undefined)
+      .map(getJobFromRaidHelperName);
+
+    return {
+      name: signUp.name,
+      userId: signUp.userId,
+      status: mapRaidHelperClassToEventStatus(signUp.className),
+      entryTime: signUp.entryTime,
+      position: signUp.position,
+      jobFirstPrio: signUp.specName
+        ? getJobFromRaidHelperName(signUp.specName)
+        : undefined,
+      jobFlexSecondPrio: flexJobs.length > 0 ? flexJobs : undefined,
+    };
+  });
+
+  return signUps;
 }
 
 export function mapRaidHelperWebhookEventToEvent(
@@ -96,8 +145,9 @@ export function mapRaidHelperWebhookEventToEvent(
     eventType: eventType,
     discordServerId: serverId,
     discordTextChannelId: raidhelperEvent.channelId,
-    signUpCount: 0,
+    signUpCount: raidhelperEvent.signUps.length,
     raidHelperId: raidhelperEvent.id,
+    signUps: mapRaidHelperSignUpsToEventSignUps(raidhelperEvent.signUps),
   };
 
   return event;

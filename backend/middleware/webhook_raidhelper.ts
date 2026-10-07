@@ -7,9 +7,9 @@ const validateRaidHelperWebhook: RequestHandler = (request, response, next) => {
     response.sendStatus(401);
     return;
   }
-  console.log(request.body);
-
+  console.log("Full body:", request.body);
   const result = raidHelperWebhookEventSchema.safeParse(request.body);
+
   if (!result.success) {
     response.status(400).json({
       error: "Invalid Raid-Helper webhook data",

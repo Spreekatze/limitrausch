@@ -21,7 +21,8 @@
     "mapping/**/*.ts",
     "store/**/*.ts",
     "config/**/*.ts",
-    "database/**/*.ts"
+    "database/**/*.ts",
+    "data/jobs.ts"
   ],
   "exclude": ["node_modules", "dist"]
 }

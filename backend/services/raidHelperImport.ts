@@ -1,4 +1,4 @@
-import { mapRaidHelperEventToEvent } from "../mapping/eventTypeMapping.js";
+import { mapRaidHelperGeneralEventDataToEvent } from "../mapping/eventRaidhelperMapping.js";
 import { addEvent, getEvents } from "../store/eventStore.js";
 import {
   raidHelperEventsResponseSchema,
@@ -22,11 +22,16 @@ export async function importRaidHelperEvents(
     throw new HttpError(502, "Invalid answer from raid-helper.xyz");
   }
 
-  const existingEventIds = new Set((await getEvents()).map((event) => event.id));
+  const existingEventIds = new Set(
+    (await getEvents()).map((event) => event.id),
+  );
 
   for (const raidHelperEvent of result.data.postedEvents) {
     try {
-      const mappedEvent = mapRaidHelperEventToEvent(raidHelperEvent, serverId);
+      const mappedEvent = mapRaidHelperGeneralEventDataToEvent(
+        raidHelperEvent,
+        serverId,
+      );
 
       if (existingEventIds.has(mappedEvent.id)) {
         skipped++;

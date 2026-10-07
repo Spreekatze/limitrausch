@@ -4,10 +4,15 @@
 @baseUrl = http://localhost:3000
 # Replace the value of the cookie with the actual session cookie you received after logging in on the frontend.
 # You can find this cookie in your browser's developer tools under the "Application" or "Storage" tab, in the "Cookies" section.
-@userCookie = s%3AoMceaRs4vb95XnrSlOoK7ImhjcUZGhjX.9E5DkvIBIGqRIwQpeUvkTSQEThH1IBLjwDI9Tfe6vzQ
+@userCookie = s%3AGjItdH4GosgZG0kpdy0uers7GPMSNPQX.JjTbkD5cBRvUKN5tBLeblLfQgMmFMCN0VWhSyhJOd7U
 # Replace id by actual id from any previous creation response
-@eventUuid = 62685bb8-cde7-43cc-8f02-087272d0a202
+@eventUuid = 1557384096039174237
 @serverId = 1408172814879559721
+
+// For setting webhooks:
+// https://arrogance-blissful-throat.ngrok-free.dev/webhooks/raid-helper/event-create
+// https://arrogance-blissful-throat.ngrok-free.dev/webhooks/raid-helper/event-update
+// https://arrogance-blissful-throat.ngrok-free.dev/webhooks/raid-helper/event-delete
 
 ### Create event
 POST {{baseUrl}}/events/new
@@ -55,7 +60,7 @@ Cookie: connect.sid={{userCookie}}
 DELETE {{baseUrl}}/events/{{eventUuid}}
 Cookie: connect.sid={{userCookie}}
 
-#### Request Raid-Helper Events
+#### Import Raid-Helper Events
 GET {{baseUrl}}/events/raid-helper/{{serverId}}
 Cookie: connect.sid={{userCookie}}
 
@@ -78,3 +83,6 @@ Authorization:
   "lastUpdated": 1000,
   "templateId": "25"
 }
+
+### Test static data request
+GET {{baseUrl}}/jobs

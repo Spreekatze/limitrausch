@@ -1,7 +1,12 @@
 import express from "express";
 import validateRaidHelperWebhook from "../middleware/webhook_raidhelper.js";
-import { addEvent, getEventByRaidHelperId } from "../store/eventStore.js";
-import { mapRaidHelperWebhookEventToEvent } from "../mapping/eventTypeMapping.js";
+import {
+  addEvent,
+  deleteEvent,
+  getEventByRaidHelperId,
+  updateEvent,
+} from "../store/eventStore.js";
+import { mapRaidHelperWebhookEventToEvent } from "../mapping/eventRaidhelperMapping.js";
 
 const router = express.Router();
 
@@ -21,16 +26,27 @@ router.post(
     );
     await addEvent(event);
 
-    console.log(event);
     response.sendStatus(200);
   },
 );
 
 router.post(
-  "/raid-helper/event-edit",
+  "/raid-helper/event-update",
   validateRaidHelperWebhook,
-  (request, response) => {
-    // später: Event aktualisieren
+  async (request, response) => {
+    const existingEvent = await getEventByRaidHelperId(request.body.id);
+    if (!existingEvent) {
+      response.sendStatus(200);
+      return;
+    }
+
+    const event = mapRaidHelperWebhookEventToEvent(
+      request.body,
+      existingEvent.discordServerId ?? request.body.serverId,
+    );
+    await updateEvent(existingEvent.id, event);
+
+    console.log("Updated");
     response.sendStatus(200);
   },
 );
@@ -38,8 +54,14 @@ router.post(
 router.post(
   "/raid-helper/event-delete",
   validateRaidHelperWebhook,
-  (request, response) => {
-    // später: Event löschen
+  async (request, response) => {
+    const existingEvent = await getEventByRaidHelperId(request.body.id);
+    if (!existingEvent) {
+      response.sendStatus(200);
+      return;
+    }
+
+    deleteEvent(existingEvent.id);
     response.sendStatus(200);
   },
 );
