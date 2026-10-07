@@ -1,34 +1,46 @@
-import type { Event, EventDataDiscordUser } from "../types/eventSchema.js";
+import {
+  DatabaseEventCoLeaderRow,
+  DatabaseEventRow,
+  DatabaseEventSignUpRow,
+} from "../types/databaseRowSchema.js";
+import { Event } from "../types/eventSchema.js";
+import { Job } from "../types/jobSchema.js";
+import { jobsById } from "../data/jobs.js";
 
-export type DatabaseEventRow = {
-  id: string;
-  lastUpdated: string;
-  creatorId: string;
-  creatorName: string;
-  leaderId: string | null;
-  leaderName: string | null;
-  title: string;
-  description: string | null;
-  imageUrl: string | null;
-  startTime: string;
-  endTime: string;
-  eventType: Event["eventType"];
-  discordServerId: string | null;
-  discordTextChannelId: string | null;
-  signUpCount: number | null;
-  raidHelperId: string | null;
-};
-
-export type DatabaseEventCoLeaderRow = {
-  eventId: string;
-  id: string;
-  name: string;
-};
+function getJobFromId(id: number): Job {
+  const job = jobsById.get(id);
+  if (!job) {
+    throw new Error(`Unknown job: ${id}`);
+  }
+  return job;
+}
 
 export function mapDatabaseEventRowToEvent(
   row: DatabaseEventRow,
-  coLeaders: EventDataDiscordUser[] = [],
+  coLeadersRow?: DatabaseEventCoLeaderRow[],
+  signUpsRow?: DatabaseEventSignUpRow[],
 ): Event {
+  const coLeaders = coLeadersRow?.map(({ id, name }) => ({
+    id: id,
+    name: name,
+  }));
+
+  const signUps = signUpsRow?.map((signUp) => {
+    return {
+      name: signUp.userNameOnServer,
+      userId: signUp.discordUserId,
+      status: signUp.status,
+      entryTime: signUp.entryTime,
+      position: signUp.position,
+      jobFirstPrio: signUp.jobFirstPrio
+        ? getJobFromId(signUp.jobFirstPrio)
+        : undefined,
+      jobFlexSecondPrio: signUp.jobFlexSecondPrio
+        ? signUp.jobFlexSecondPrio.map((id) => getJobFromId(id))
+        : undefined,
+    };
+  });
+
   return {
     id: row.id,
     lastUpdated: Number(row.lastUpdated),
@@ -53,5 +65,6 @@ export function mapDatabaseEventRowToEvent(
     signUpCount: row.signUpCount ?? undefined,
     raidHelperId: row.raidHelperId ?? undefined,
     coLeaders,
+    signUps,
   };
 }

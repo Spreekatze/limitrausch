@@ -42,3 +42,58 @@ export const raidHelperImportResultSchema = z.object({
 export type RaidHelperImportResult = z.infer<
   typeof raidHelperImportResultSchema
 >;
+
+const raidHelperAdvancedSettingsSchema = z.object({
+  image: z.string(),
+  limit: z.number(),
+  duration: z.number(),
+  // mentions: z.string(),
+  // reminder: z.string(),
+  // forum_tags: z.string(),
+  // allowed_roles: z.string(),
+});
+
+export const raidHelperSignUpSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  status: z.string(),
+  userId: z.string(),
+  position: z.number(),
+  className: z.string(),
+  entryTime: z.number(),
+  specName: z.string().optional(),
+  spec2Name: z.string().optional(),
+  spec3Name: z.string().optional(),
+});
+export type RaidHelperSignUp = z.infer<typeof raidHelperSignUpSchema>;
+
+export const raidHelperWebhookEventSchema = z.object({
+  id: z.string(),
+  date: z.string(),
+  time: z.string(),
+  color: z.string(),
+  // roles:  [ {name: string, cName: string, limit: number, emoteId: string}]
+  title: z.string(),
+  // classes: [ {name: string, type: string, cName: string, limit: number, specs: Array, emoteId: string}]
+  creator: eventDataDiscordUserSchema,
+  endTime: z.number(),
+  signUps: z.array(raidHelperSignUpSchema),
+  leaderId: z.string(),
+  serverId: z.string(),
+  channelId: z.string(),
+  coLeaders: z.array(eventDataDiscordUserSchema),
+  startTime: z.number(),
+  leaderName: z.string(),
+  templateId: z.string(),
+  channelName: z.string(),
+  channelType: z.string(),
+  closingTime: z.number(),
+  description: z.string(),
+  lastUpdated: z.number(),
+  displayTitle: z.string(),
+  // announcements: Array
+  advancedSettings: raidHelperAdvancedSettingsSchema,
+});
+export type RaidHelperWebHookEvent = z.infer<
+  typeof raidHelperWebhookEventSchema
+>;

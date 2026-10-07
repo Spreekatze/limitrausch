@@ -16,7 +16,6 @@ export const up = (pgm) => {
     },
     name: {
       type: "text",
-      notNull: true,
     },
   });
 
@@ -29,6 +28,7 @@ export const up = (pgm) => {
       type: "text",
       notNull: true,
     },
+    //rolesAllowedToManageEvents: {}
   });
 
   pgm.createTable(
@@ -178,22 +178,47 @@ export const up = (pgm) => {
   pgm.createTable(
     "EventSignUp",
     {
-      discordUserId: {
-        type: "text",
-        notNull: true,
-        references: '"DiscordUser"',
-        onDelete: "CASCADE",
-      },
       eventId: {
         type: "text",
         notNull: true,
         references: '"Event"',
         onDelete: "CASCADE",
       },
+      discordUserId: {
+        type: "text",
+        notNull: true,
+      },
+      discordServerId: {
+        type: "text",
+        notNull: true,
+      },
+      status: {
+        type: "text",
+      },
+      entryTime: {
+        type: "bigint",
+        notNull: true,
+      },
+      position: {
+        type: "integer",
+        notNull: true,
+      },
+      jobFirstPrio: {
+        type: "integer",
+      },
+      jobFlexSecondPrio: {
+        type: "integer[]",
+      },
     },
     {
       constraints: {
         primaryKey: ["discordUserId", "eventId"],
+        foreignKeys: {
+          columns: ["discordUserId", "discordServerId"],
+          references: '"DiscordServerUser"("discordUserId", "discordServerId")',
+          onDelete: "CASCADE",
+        },
+        unique: ["eventId", "discordUserId", "discordServerId"],
       },
     },
   );
