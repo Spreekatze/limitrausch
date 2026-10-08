@@ -71,7 +71,7 @@ export const up = (pgm) => {
         references: '"DiscordServer"',
         onDelete: "CASCADE",
       },
-      userNameOnServer: {
+      usernameOnServer: {
         type: "text",
         notNull: true,
       },
@@ -138,6 +138,9 @@ export const up = (pgm) => {
       raidHelperId: {
         type: "text",
         unique: true,
+      },
+      messageId: {
+        type: "text",
       },
     },
     {

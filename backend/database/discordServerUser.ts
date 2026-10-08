@@ -5,7 +5,7 @@ import { ensureDiscordUser } from "./discordUser.js";
 export async function ensureDiscordServerUser(
   userId: string,
   discordServerId: string | undefined,
-  userNameOnServer: string,
+  usernameOnServer: string,
   client: Pool | PoolClient = pool,
 ): Promise<void> {
   await ensureDiscordUser(userId, client);
@@ -14,7 +14,7 @@ export async function ensureDiscordServerUser(
     await upsertDiscordServerUser(
       userId,
       discordServerId,
-      userNameOnServer,
+      usernameOnServer,
       client,
     );
   }
@@ -23,19 +23,19 @@ export async function ensureDiscordServerUser(
 async function upsertDiscordServerUser(
   discordUserId: string,
   discordServerId: string,
-  userNameOnServer: string,
+  usernameOnServer: string,
   client: Pool | PoolClient = pool,
 ): Promise<void> {
   await client.query(
     `INSERT INTO "DiscordServerUser" (
         "discordUserId",
         "discordServerId",
-        "userNameOnServer"
+        "usernameOnServer"
     )
     VALUES ($1, $2, $3)
     ON CONFLICT ("discordUserId", "discordServerId")
-    DO UPDATE SET "userNameOnServer" = excluded."userNameOnServer"
+    DO UPDATE SET "usernameOnServer" = excluded."usernameOnServer"
     `,
-    [discordUserId, discordServerId, userNameOnServer],
+    [discordUserId, discordServerId, usernameOnServer],
   );
 }

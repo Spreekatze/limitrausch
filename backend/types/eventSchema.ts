@@ -57,6 +57,7 @@ export const eventSchema = z.object({
   signUpCount: z.number().optional(),
   raidHelperId: z.string().optional(),
   signUps: z.array(eventSignUpUserSchema).optional(),
+  messageId: z.string().optional(),
 });
 export type Event = z.infer<typeof eventSchema>;
 

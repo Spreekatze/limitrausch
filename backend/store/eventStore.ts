@@ -58,8 +58,8 @@ async function getEventBy(
     `
     SELECT
       event.*,
-      creator."userNameOnServer" AS "creatorName",
-      leader."userNameOnServer" AS "leaderName"
+      creator."usernameOnServer" AS "creatorName",
+      leader."usernameOnServer" AS "leaderName"
     FROM "Event" event
     JOIN "DiscordServerUser" creator
       ON creator."discordUserId" = event."creatorId"
@@ -79,7 +79,7 @@ async function getEventBy(
     SELECT
       eventCoLeader."eventId",
       discordServerUser."discordUserId",
-      discordServerUser."userNameOnServer"
+      discordServerUser."usernameOnServer"
     FROM "EventCoLeader" eventCoLeader
     JOIN "DiscordServerUser" discordServerUser
       ON discordServerUser."discordUserId" = eventCoLeader."discordUserId"
@@ -92,7 +92,7 @@ async function getEventBy(
     `
     SELECT 
       eventSignUp.*,
-      discordServerUser."userNameOnServer"
+      discordServerUser."usernameOnServer"
     FROM "EventSignUp" eventSignUp
     JOIN "DiscordServerUser" discordServerUser
       ON eventSignUp."discordUserId" = discordServerUser."discordUserId"

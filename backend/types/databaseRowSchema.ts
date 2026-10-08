@@ -18,6 +18,7 @@ export const databaseEventRowSchema = z.object({
   discordTextChannelId: z.string().optional(),
   signUpCount: z.number().optional(),
   raidHelperId: z.string().optional(),
+  messageId: z.string().optional(),
 });
 export type DatabaseEventRow = z.infer<typeof databaseEventRowSchema>;
 
@@ -32,7 +33,7 @@ export type DatabaseEventCoLeaderRow = z.infer<
 
 export const databaseEventSignUpRowSchema = z.object({
   id: z.string(),
-  userNameOnServer: z.string(),
+  usernameOnServer: z.string(),
   eventId: z.string(),
   discordUserId: z.string(),
   discordServerId: z.string(),

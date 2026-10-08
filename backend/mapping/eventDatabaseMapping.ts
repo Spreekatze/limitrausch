@@ -27,7 +27,7 @@ export function mapDatabaseEventRowToEvent(
 
   const signUps = signUpsRow?.map((signUp) => {
     return {
-      name: signUp.userNameOnServer,
+      name: signUp.usernameOnServer,
       userId: signUp.discordUserId,
       status: signUp.status,
       entryTime: signUp.entryTime,
@@ -64,6 +64,7 @@ export function mapDatabaseEventRowToEvent(
     discordTextChannelId: row.discordTextChannelId ?? undefined,
     signUpCount: row.signUpCount ?? undefined,
     raidHelperId: row.raidHelperId ?? undefined,
+    messageId: row.messageId ?? undefined,
     coLeaders,
     signUps,
   };

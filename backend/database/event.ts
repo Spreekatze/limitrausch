@@ -22,11 +22,12 @@ export async function insertEvent(
         "discordServerId",
         "discordTextChannelId",
         "signUpCount",
-        "raidHelperId"
+        "raidHelperId",
+        "messageId"
       )
       VALUES (
         $1, $2, $3, $4, $5, $6, $7,
-        $8, $9, $10, $11, $12, $13, $14
+        $8, $9, $10, $11, $12, $13, $14, $15
       )
     `,
     [
@@ -44,6 +45,7 @@ export async function insertEvent(
       event.discordTextChannelId,
       event.signUpCount,
       event.raidHelperId,
+      event.messageId,
     ],
   );
 }
