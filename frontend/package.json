@@ -7,14 +7,19 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "build:contracts": "npm --prefix ../shared run build",
+    "predev": "npm run build:contracts",
+    "dev": "quasar dev",
     "lint": "prettier --write \"**/*.{js,ts,vue,css,scss,html,md,json}\" --ignore-path .gitignore && eslint --fix -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
     "lint:check": "prettier \"**/*.{js,ts,vue,css,scss,html,md,json}\" --ignore-path .gitignore && eslint -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
-    "dev": "quasar dev",
+    "prebuild": "npm run build:contracts",
     "build": "quasar build",
+    "pretypecheck": "npm run build:contracts",
     "typecheck": "vue-tsc --noEmit",
     "postinstall": "quasar prepare --silent"
   },
   "dependencies": {
+    "@limitrausch/contracts": "file:../shared",
     "vue-i18n": "^11.3.0",
     "pinia": "^4.0.2",
     "@quasar/extras": "^2.1.0",
