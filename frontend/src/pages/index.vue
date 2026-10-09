@@ -11,10 +11,11 @@
       </p>
     </div>
     <div>
-      <p>Alle Events finden auf den Discords unseres Partnernetzwerks statt.</p>
-      <p><a :href="discordAetheris">Aetheris DE</a></p>
-      <p><a :href="discordLemmings">Savage Lemminge</a></p>
-      <p><a :href="discordURC">URC</a></p>
+      <p>Alle Events finden auf unserem Discord statt.</p>
+      <!-- <p>Alle Events finden auf den Discords unseres Partnernetzwerks statt.</p> -->
+      <p><a :href="discordAetheris"> Aetheris DE </a></p>
+      <!-- <p><a :href="discordLemmings">Savage Lemminge</a></p>
+      <p><a :href="discordURC">URC</a></p> -->
       <p>Wir beißen auch nicht, versprochen!</p>
     </div>
   </div>
@@ -22,6 +23,7 @@
 
 <script setup lang="ts">
 const discordAetheris: string = 'https://discord.gg/aetherisde';
-const discordLemmings: string = 'https://discord.gg/savagelemmings';
-const discordURC: string = 'https://discord.gg/V2aGQU9Mad';
+
+// const discordLemmings: string = 'https://discord.gg/savagelemmings';
+// const discordURC: string = 'https://discord.gg/V2aGQU9Mad';
 </script>

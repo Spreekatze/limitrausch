@@ -28,7 +28,7 @@ router.get("/admin/test", requireAdmin, (request, response) => {
   response.json({
     success: true,
     message: "Admin access granted.",
-    user: request.session.discordUser,
+    user: request.session.authUser,
   });
 });
 

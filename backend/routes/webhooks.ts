@@ -42,7 +42,7 @@ router.post(
 
     const event = mapRaidHelperWebhookEventToEvent(
       request.body,
-      existingEvent.discordServerId ?? request.body.serverId,
+      existingEvent.discordServer?.discordServerId ?? request.body.serverId,
     );
     await updateEvent(existingEvent.id, event);
 

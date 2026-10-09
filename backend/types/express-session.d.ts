@@ -1,8 +1,9 @@
 import "express-session";
+import type { AuthUser } from "@limitrausch/contracts";
 
 declare module "express-session" {
   interface SessionData {
-    discordUser?: any; // You can replace 'any' with a more specific type if you have one for the Discord user data
+    authUser?: AuthUser;
     discordOAuthState?: string; // Store the state parameter for CSRF protection
   }
 }

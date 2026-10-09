@@ -11,5 +11,15 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue';
+import { useAuthStore } from './stores/auth-store.js';
 import Toolbar from './components/Toolbar.vue';
+
+const authStore = useAuthStore();
+
+onMounted(() => {
+  authStore.initAuth().catch((error) => {
+    console.error('Failed to load authentication status:', error);
+  });
+});
 </script>

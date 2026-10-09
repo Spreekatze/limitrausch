@@ -28,7 +28,12 @@ export const up = (pgm) => {
       type: "text",
       notNull: true,
     },
-    //rolesAllowedToManageEvents: {}
+    rolesAllowedToManageEvents: {
+      type: "text[]",
+    },
+    bannedRolesFromParticipating: {
+      type: "text[]",
+    },
   });
 
   pgm.createTable(
@@ -40,7 +45,6 @@ export const up = (pgm) => {
       },
       name: {
         type: "text",
-        notNull: true,
       },
       discordServerId: {
         type: "text",
@@ -125,11 +129,20 @@ export const up = (pgm) => {
         type: "integer",
         notNull: true,
       },
+      eventDifficulty: {
+        type: "integer",
+      },
+      eventGoal: {
+        type: "text",
+      },
       discordServerId: {
         type: "text",
         references: '"DiscordServer"',
       },
       discordTextChannelId: {
+        type: "text",
+      },
+      discordMessageId: {
         type: "text",
       },
       signUpCount: {
@@ -139,8 +152,9 @@ export const up = (pgm) => {
         type: "text",
         unique: true,
       },
-      messageId: {
-        type: "text",
+      isPublic: {
+        type: "boolean",
+        notNull: true,
       },
     },
     {

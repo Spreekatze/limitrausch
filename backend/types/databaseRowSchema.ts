@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { eventTypeSchema, statusTypeSchema } from "./eventSchema.js";
+import {
+  eventTypeSchema,
+  statusTypeSchema,
+  eventDifficultySchema,
+} from "./eventSchema.js";
 
 export const databaseEventRowSchema = z.object({
   id: z.string(),
@@ -14,11 +18,16 @@ export const databaseEventRowSchema = z.object({
   startTime: z.string(),
   endTime: z.string(),
   eventType: eventTypeSchema,
+  eventDifficulty: eventDifficultySchema,
+  eventGoal: z.string().optional(),
   discordServerId: z.string().optional(),
+  discordServerName: z.string().optional(),
   discordTextChannelId: z.string().optional(),
+  discordTextChannelName: z.string().optional(),
+  discordMessageId: z.string().optional(),
   signUpCount: z.number().optional(),
   raidHelperId: z.string().optional(),
-  messageId: z.string().optional(),
+  isPublic: z.boolean(),
 });
 export type DatabaseEventRow = z.infer<typeof databaseEventRowSchema>;
 

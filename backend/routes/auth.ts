@@ -1,11 +1,16 @@
 import express from "express";
 import crypto from "crypto";
+import {
+  authStatusResponseSchema,
+  authUserSchema,
+  discordOAuthUserSchema,
+} from "@limitrausch/contracts";
 
 const router = express.Router();
 
 router.get("/discord", (request, response) => {
   // User is already logged in, redirect to home page
-  if (request.session.discordUser) {
+  if (request.session.authUser) {
     response.redirect("/");
     return;
   }
@@ -24,7 +29,7 @@ router.get("/discord", (request, response) => {
     client_id: clientId,
     redirect_uri: process.env.DISCORD_REDIRECT_URI!,
     response_type: "code",
-    scope: "identify email",
+    scope: "identify guilds",
     state: state,
   });
   const discordAuthUrl = `https://discord.com/api/oauth2/authorize?${params.toString()}`;
@@ -83,35 +88,77 @@ router.get("/discord/callback", async (request, response) => {
       .send("Discord OAuth user request failed.");
     return;
   }
+  const discordOAuthUserResult = discordOAuthUserSchema.safeParse(discordUser);
+  if (!discordOAuthUserResult.success) {
+    response.status(502).send("Discord returned invalid user data.");
+    return;
+  }
+  const discordOAuthUser = discordOAuthUserResult.data;
+
+  // Look at guilds
+  const userGuildsResponse = await fetch(
+    "https://discord.com/api/users/@me/guilds",
+    {
+      headers: {
+        Authorization: `Bearer ${tokenData.access_token}`,
+      },
+    },
+  );
+  const discordUserGuilds = await userGuildsResponse.json();
+  if (!userGuildsResponse.ok) {
+    console.error(
+      "Discord OAuth user guild request failed:",
+      discordUserGuilds,
+    );
+    response
+      .status(userGuildsResponse.status)
+      .send("Discord OAuth user guild request failed.");
+    return;
+  }
+  console.log("Guilds:", discordUserGuilds);
+  //TODO: do something with the list of guilds
 
   // Check if the user is in the whitelist of admins
   const whitelist = process.env.DISCORD_USER_ID_WHITELIST?.split(",")
     .map((id) => id.trim())
     .filter(Boolean);
 
-  const isAdmin = whitelist && whitelist.includes(discordUser.id); // Check if the user is an admin
+  const isAdmin = Boolean(whitelist?.includes(discordOAuthUser.id));
 
-  request.session.discordUser = { discordInfo: discordUser, isAdmin: isAdmin }; // Store the user info in the session
+  request.session.authUser = authUserSchema.parse({
+    discordInfo: discordOAuthUser,
+    isAdmin,
+  });
 
-  // User is authorized, proceed with your application logic
-  // response.json({
-  //   message: "Discord OAuth successful",
-  //   loggedIn: true,
-  //   discordInfo: discordUser,
-  //   isAdmin: isAdmin,
-  // });
+  const frontendUrl = process.env.FRONTEND_URL;
+  if (!frontendUrl) {
+    response.status(500).send("Frontend URL is not configured.");
+    return;
+  }
 
-  response.redirect("/"); // Redirect to the home page or any other page after successful login
+  request.session.save((error) => {
+    if (error) {
+      console.error("Failed to save OAuth session:", error);
+      response.status(500).send("Failed to create login session.");
+      return;
+    }
+    response.redirect(`${frontendUrl}/#/dashboard`);
+  });
 });
 
 router.get("/me", (request, response) => {
-  if (!request.session.discordUser) {
-    response
-      .status(401)
-      .json({ loggedIn: false, message: "User is not logged in." });
+  if (!request.session.authUser) {
+    response.json(
+      authStatusResponseSchema.parse({ loggedIn: false, user: null }),
+    );
     return;
   }
-  response.json({ loggedIn: true, user: request.session.discordUser });
+  response.json(
+    authStatusResponseSchema.parse({
+      loggedIn: true,
+      user: request.session.authUser,
+    }),
+  );
 });
 
 router.get("/logout", (request, response) => {
@@ -122,7 +169,12 @@ router.get("/logout", (request, response) => {
       return;
     }
     response.clearCookie("connect.sid"); // Clear the session cookie
-    response.json({ loggedOut: true, message: "Successfully logged out." });
+    response.json(
+      authStatusResponseSchema.parse({
+        loggedIn: false,
+        user: null,
+      }),
+    );
   });
 });
 

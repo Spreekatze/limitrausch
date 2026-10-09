@@ -106,6 +106,7 @@ export default defineConfig((ctx) => {
           rewrite: (path) => path.replace(/^\/api/, ''),
         },
       },
+      allowedHosts: ['arrogance-blissful-throat.ngrok-free.dev'],
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#framework

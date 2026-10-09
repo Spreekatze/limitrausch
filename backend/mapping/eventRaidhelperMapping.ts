@@ -14,44 +14,44 @@ import {
 import { jobsByRaidHelperName } from "../data/jobs.js";
 import { Job } from "../types/jobSchema.js";
 
-const aetherisServerId = "1408172814879559721";
-const aetherisCasualChannelId = "1408186147896819822";
-const aetherisRaidChannelId = "1408186073208852700";
-const aetherisUltimateChannelId = "1408186117039067227";
-const aetherisArchivChannelId = "1410015029415251978";
-const aetherisTestingAreal = "1412345023256727603";
+// const aetherisServerId = "1408172814879559721";
+// const aetherisCasualChannelId = "1408186147896819822";
+// const aetherisRaidChannelId = "1408186073208852700";
+// const aetherisUltimateChannelId = "1408186117039067227";
+// const aetherisArchivChannelId = "1410015029415251978";
+// const aetherisTestingAreal = "1412345023256727603";
 
-const eventTypeByServerAndChannelId: Record<
-  string,
-  Record<string, EventType>
-> = {
-  [aetherisServerId]: {
-    [aetherisCasualChannelId]: EVENT_TYPE.CASUAL,
-    [aetherisRaidChannelId]: EVENT_TYPE.RAID,
-    [aetherisUltimateChannelId]: EVENT_TYPE.ULTIMATE,
-    [aetherisArchivChannelId]: EVENT_TYPE.ARCHIV,
-    [aetherisTestingAreal]: EVENT_TYPE.TEST,
-  },
-};
+// const eventTypeByServerAndChannelId: Record<
+//   string,
+//   Record<string, EventType>
+// > = {
+//   [aetherisServerId]: {
+//     [aetherisCasualChannelId]: EVENT_TYPE.CASUAL,
+//     [aetherisRaidChannelId]: EVENT_TYPE.RAID,
+//     [aetherisUltimateChannelId]: EVENT_TYPE.ULTIMATE,
+//     [aetherisArchivChannelId]: EVENT_TYPE.ARCHIV,
+//     [aetherisTestingAreal]: EVENT_TYPE.TEST,
+//   },
+// };
 
-function getEventType(
-  serverId: string,
-  channelId: string,
-): EventType | undefined {
-  return eventTypeByServerAndChannelId[serverId]?.[channelId];
-}
+// function getEventType(
+//   serverId: string,
+//   channelId: string,
+// ): EventType | undefined {
+//   return eventTypeByServerAndChannelId[serverId]?.[channelId];
+// }
 
 export function mapRaidHelperGeneralEventDataToEvent(
   raidhelperEvent: RaidHelperEvent,
   serverId: string,
 ): Event {
-  const eventType = getEventType(serverId, raidhelperEvent.channelId);
+  // const eventType = getEventType(serverId, raidhelperEvent.channelId);
 
-  if (eventType === undefined) {
-    throw new Error(
-      `No event type mapping found for server ${serverId} and channel ${raidhelperEvent.channelId}`,
-    );
-  }
+  // if (eventType === undefined) {
+  //   throw new Error(
+  //     `No event type mapping found for server ${serverId} and channel ${raidhelperEvent.channelId}`,
+  //   );
+  // }
 
   const event: Event = {
     id: raidhelperEvent.id,
@@ -64,11 +64,14 @@ export function mapRaidHelperGeneralEventDataToEvent(
     imageUrl: raidhelperEvent.imageUrl,
     startTime: raidhelperEvent.startTime,
     endTime: raidhelperEvent.endTime,
-    eventType: eventType,
-    discordServerId: serverId,
-    discordTextChannelId: raidhelperEvent.channelId,
+    eventType: EVENT_TYPE.UNDEFINED,
+    discordServer: {
+      discordServerId: serverId,
+      discordTextChannelId: raidhelperEvent.channelId,
+    },
     signUpCount: parseInt(raidhelperEvent.signUpCount),
     raidHelperId: raidhelperEvent.id,
+    isPublic: false,
   };
 
   return event;
@@ -117,13 +120,13 @@ export function mapRaidHelperWebhookEventToEvent(
   raidhelperEvent: RaidHelperWebHookEvent,
   serverId: string,
 ): Event {
-  const eventType = getEventType(serverId, raidhelperEvent.channelId ?? "");
+  // const eventType = getEventType(serverId, raidhelperEvent.channelId ?? "");
 
-  if (eventType === undefined) {
-    throw new Error(
-      `No event type mapping found for server ${serverId} and channel ${raidhelperEvent.channelId}`,
-    );
-  }
+  // if (eventType === undefined) {
+  //   throw new Error(
+  //     `No event type mapping found for server ${serverId} and channel ${raidhelperEvent.channelId}`,
+  //   );
+  // }
 
   const event: Event = {
     id: raidhelperEvent.id,
@@ -142,12 +145,15 @@ export function mapRaidHelperWebhookEventToEvent(
     imageUrl: raidhelperEvent.advancedSettings.image,
     startTime: raidhelperEvent.startTime,
     endTime: raidhelperEvent.endTime,
-    eventType: eventType,
-    discordServerId: serverId,
-    discordTextChannelId: raidhelperEvent.channelId,
+    eventType: EVENT_TYPE.UNDEFINED,
+    discordServer: {
+      discordServerId: serverId,
+      discordTextChannelId: raidhelperEvent.channelId,
+    },
     signUpCount: raidhelperEvent.signUps.length,
     raidHelperId: raidhelperEvent.id,
     signUps: mapRaidHelperSignUpsToEventSignUps(raidhelperEvent.signUps),
+    isPublic: false,
   };
 
   return event;

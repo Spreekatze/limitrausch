@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { eventSchema } from "@limitrausch/contracts";
 
 export * from "@limitrausch/contracts";
@@ -9,8 +8,7 @@ export const createEventSchema = eventSchema
     lastUpdated: true,
     signUpCount: true,
     raidHelperId: true,
-  })
-  .refine((event) => !event.discordTextChannelId || !!event.discordServerId);
+  });
 
 export const updateEventSchema = eventSchema
   .omit({

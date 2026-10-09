@@ -17,19 +17,31 @@
         }
       "
     />
-    <!-- <q-btn
+    <q-btn
+      v-if="!authStore.loggedIn"
       flat
       class="app-header__button"
-      label="Admin-Login"
+      label="Mit Discord anmelden"
+      icon="discord"
+      @click="authStore.loginUser"
+    />
+    <q-btn
+      v-if="authStore.loggedIn && !authStore.loading"
+      flat
+      class="app-header__button"
+      :label="authStore.discordUser?.username"
       icon="admin_panel_settings"
-      to="/admin"
-    /> -->
+      @click="authStore.logoutCurrentUser"
+    />
   </q-toolbar>
 </template>
 
 <script setup lang="ts">
 import { Dark } from 'quasar';
 import { ref, watch } from 'vue';
+import { useAuthStore } from '@/stores/auth-store';
+
+const authStore = useAuthStore();
 
 const darkModeStorageKey = 'limitrausch-dark-mode';
 const darkMode = ref(localStorage.getItem(darkModeStorageKey) === 'false' ? false : true);

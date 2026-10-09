@@ -19,15 +19,18 @@ export async function insertEvent(
         "startTime",
         "endTime",
         "eventType",
+        "eventDifficulty",
         "discordServerId",
         "discordTextChannelId",
+        "discordMessageId",
         "signUpCount",
         "raidHelperId",
-        "messageId"
+        "isPublic"
       )
       VALUES (
         $1, $2, $3, $4, $5, $6, $7,
-        $8, $9, $10, $11, $12, $13, $14, $15
+        $8, $9, $10, $11, $12, $13, 
+        $14, $15, $16, $17
       )
     `,
     [
@@ -41,11 +44,13 @@ export async function insertEvent(
       event.startTime,
       event.endTime,
       event.eventType,
-      event.discordServerId,
-      event.discordTextChannelId,
+      event.eventDifficulty,
+      event.discordServer?.discordServerId,
+      event.discordServer?.discordTextChannelId,
+      event.discordServer?.discordMessageId,
       event.signUpCount,
       event.raidHelperId,
-      event.messageId,
+      event.isPublic,
     ],
   );
 }

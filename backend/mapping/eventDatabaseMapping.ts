@@ -48,23 +48,33 @@ export function mapDatabaseEventRowToEvent(
       id: row.creatorId,
       name: row.creatorName,
     },
-    leader: row.leaderId
-      ? {
-          id: row.leaderId,
-          name: row.leaderName ?? "",
-        }
-      : undefined,
+    leader:
+      row.leaderId && row.leaderName
+        ? {
+            id: row.leaderId,
+            name: row.leaderName,
+          }
+        : undefined,
     title: row.title,
     description: row.description ?? undefined,
     imageUrl: row.imageUrl ?? undefined,
     startTime: Number(row.startTime),
     endTime: Number(row.endTime),
     eventType: row.eventType,
-    discordServerId: row.discordServerId ?? undefined,
-    discordTextChannelId: row.discordTextChannelId ?? undefined,
+    eventDifficulty: row.eventDifficulty,
+    eventGoal: row.eventGoal,
+    discordServer: row.discordServerId
+      ? {
+          discordServerId: row.discordServerId,
+          discordServerName: row.discordServerName ?? undefined,
+          discordTextChannelId: row.discordTextChannelId ?? undefined,
+          discordTextChannelName: row.discordTextChannelName ?? undefined,
+          discordMessageId: row.discordMessageId ?? undefined,
+        }
+      : undefined,
     signUpCount: row.signUpCount ?? undefined,
     raidHelperId: row.raidHelperId ?? undefined,
-    messageId: row.messageId ?? undefined,
+    isPublic: row.isPublic,
     coLeaders,
     signUps,
   };
