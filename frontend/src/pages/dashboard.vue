@@ -6,6 +6,13 @@
     </div>
     <div v-else-if="authStore.loggedIn && authStore.isAdmin">
       <p>Spannende Dinge für die Admins</p>
+      <q-btn
+        flat
+        class="app-header__button"
+        label="Import von Aetheris"
+        icon="admin_panel_settings"
+        @click="importFromAetheris"
+      />
     </div>
     <div v-else>
       <p>Leider bist du aktuell nicht angemeldet.</p>
@@ -14,7 +21,12 @@
 </template>
 
 <script setup lang="ts">
+import { importRaidHelperEvents } from '@/api/events';
 import { useAuthStore } from '@/stores/auth-store';
 
 const authStore = useAuthStore();
+
+async function importFromAetheris() {
+  await importRaidHelperEvents('1408172814879559721');
+}
 </script>

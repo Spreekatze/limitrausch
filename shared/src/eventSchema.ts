@@ -95,3 +95,13 @@ export const eventsResponseSchema = z.object({
   postedEvents: z.array(eventSchema),
 });
 export type EventsResponse = z.infer<typeof eventsResponseSchema>;
+
+export const raidHelperImportResponseSchema = z.object({
+  success: z.boolean(),
+  imported: z.number(),
+  skipped: z.number(),
+  failed: z.number(),
+});
+export type RaidHelperImportResponse = z.infer<
+  typeof raidHelperImportResponseSchema
+>;

@@ -27,7 +27,7 @@ router.get("/raid-helper/:id", requireAdmin, async (request, response) => {
   try {
     const result = await importRaidHelperEvents(serverId);
 
-    response.status(200).json({ success: true, ...result });
+    response.status(200).json(result);
   } catch (error) {
     console.error("Raidhelper import failed:", error);
 

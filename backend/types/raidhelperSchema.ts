@@ -34,15 +34,6 @@ export type RaidHelperEventsResponse = z.infer<
   typeof raidHelperEventsResponseSchema
 >;
 
-export const raidHelperImportResultSchema = z.object({
-  imported: z.number(),
-  skipped: z.number(),
-  failed: z.number(),
-});
-export type RaidHelperImportResult = z.infer<
-  typeof raidHelperImportResultSchema
->;
-
 const raidHelperAdvancedSettingsSchema = z.object({
   image: z.string(),
   limit: z.number(),

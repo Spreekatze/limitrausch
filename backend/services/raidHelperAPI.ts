@@ -22,12 +22,15 @@ export async function getEventsFromRaidHelper(
     throw new HttpError(503, "Raid Helper API key is not configured");
   }
 
+  const startTime = Math.floor(Date.now() / 1000);
+
   try {
     const response = await fetch(
       `https://raid-helper.xyz/api/v4/servers/${serverId}/events`,
       {
         headers: {
           Authorization: apiKey,
+          StartTimeFilter: String(startTime),
           IncludeSignUps: "true", //TODO: why isnt this working?
         },
         signal: AbortSignal.timeout(10_000),

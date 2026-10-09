@@ -1,16 +1,14 @@
 import { mapRaidHelperGeneralEventDataToEvent } from "../mapping/eventRaidhelperMapping.js";
 import { addEvent, getEvents } from "../store/eventStore.js";
-import {
-  raidHelperEventsResponseSchema,
-  RaidHelperImportResult,
-} from "../types/raidhelperSchema.js";
+import { raidHelperEventsResponseSchema } from "../types/raidhelperSchema.js";
 import { getEventsFromRaidHelper } from "./raidHelperAPI.js";
 import { HttpError } from "../errors/httpError.js";
+import { RaidHelperImportResponse } from "@limitrausch/contracts";
 
 export async function importRaidHelperEvents(
   serverId: string,
   fetchEvents = getEventsFromRaidHelper,
-): Promise<RaidHelperImportResult> {
+): Promise<RaidHelperImportResponse> {
   let imported = 0;
   let skipped = 0;
   let failed = 0;
@@ -50,6 +48,5 @@ export async function importRaidHelperEvents(
     }
   }
 
-  return { imported, skipped, failed };
-  // return result;
+  return { success: true, imported, skipped, failed };
 }
