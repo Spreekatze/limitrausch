@@ -1,7 +1,7 @@
 <template>
   <div class="events-page">
     <div class="events-toolbar">
-      <h1>Events</h1>
+      <h1>Event-Kalendar</h1>
       <q-select
         v-model="calendarView"
         :options="calendarOptions"
@@ -14,18 +14,16 @@
       />
     </div>
     <p v-if="error">{{ error }}</p>
-    <CalendarMonthly v-if="calendarView === 'monthly'" :events-by-day="eventsByDay" />
-    <CalendarWeekly v-else :events-by-day="eventsByDay" />
+    <Calendar :events-by-day="eventsByDay" :view="calendarView === 'monthly'" />
   </div>
 </template>
 
 <script setup lang="ts">
 import '../css/calendar.scss';
 import { computed, onMounted, ref } from 'vue';
-import CalendarMonthly from '../components/CalendarMonthly.vue';
-import CalendarWeekly from '../components/CalendarWeekly.vue';
 import { getEvents, type Event } from '../api/events';
 import { getMonthlyCalendarStartDate } from '../utils/calendar';
+import Calendar from '@/components/calendar.vue';
 
 type CalendarView = 'monthly' | 'weekly';
 

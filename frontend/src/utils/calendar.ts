@@ -1,10 +1,3 @@
-export const channelClassNames: Record<string, string> = {
-  '1408186147896819822': 'casual',
-  '1408186073208852700': 'raids',
-  '1408186117039067227': 'ultimates',
-  '1410015029415251978': 'archiv',
-};
-
 export function getMonthlyCalendarStartDate(): Date {
   const now = new Date();
   const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);

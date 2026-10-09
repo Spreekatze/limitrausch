@@ -1,5 +1,6 @@
+import { EVENT_DIFFICULTY } from '@limitrausch/contracts';
 import type { Event } from '../api/events';
-import { channelClassNames, formatEventTime } from './calendar';
+import { formatEventTime } from './calendar';
 
 const logoUrl = new URL('../assets/AE.png', import.meta.url).href;
 
@@ -176,8 +177,23 @@ function getStyle(name: string): string {
   return color;
 }
 
+//TODO: Currently temporary fix for colors
+function getEventColor(event: Event): string {
+  if (event.endTime < Date.now() / 1000) return 'archived';
+  if (event.eventDifficulty) {
+    return String(event.eventDifficulty);
+  }
+  if (event.discordServer?.discordTextChannelId === '1408186147896819822')
+    return 'difficulty-' + String(EVENT_DIFFICULTY.EASY);
+  if (event.discordServer?.discordTextChannelId === '1408186073208852700')
+    return 'difficulty-' + String(EVENT_DIFFICULTY.NORMAL);
+  if (event.discordServer?.discordTextChannelId === '1408186117039067227')
+    return 'difficulty-' + String(EVENT_DIFFICULTY.HARD);
+  return 'difficulty-unknown';
+}
+
 export async function downloadWeeklyCalendarAsImage(
-  weekDays: readonly Date[],
+  weekDays: Date[],
   eventsByDay: ReadonlyMap<string, Event[]>,
 ): Promise<void> {
   const imageWidth = 1680;
@@ -355,7 +371,6 @@ export async function downloadWeeklyCalendarAsImage(
     // Event-List
     let eventY = eventListY + 10;
     day.events.forEach((item) => {
-      const channelName = channelClassNames[item.event.discordTextChannelId ?? ''] ?? 'other';
       drawRoundedPanel(
         context,
         columnX,
@@ -363,7 +378,7 @@ export async function downloadWeeklyCalendarAsImage(
         columnWidth,
         item.cardHeight,
         2,
-        getStyle(`--calendar-event-color-${channelName}`),
+        getStyle(`--calendar-export-${getEventColor(item.event)}`),
         'transparent',
       );
 

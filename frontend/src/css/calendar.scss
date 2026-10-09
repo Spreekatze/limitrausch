@@ -24,24 +24,25 @@
       font-size: 0.8rem;
       color: var(--calendar-event-text-color);
 
-      &--casual {
-        background-color: var(--calendar-event-color-casual);
+      &--difficulty-1 {
+        background-color: var(--calendar-event-difficulty-1);
       }
 
-      &--raids {
-        background-color: var(--calendar-event-color-raids);
+      &--difficulty-2 {
+        background-color: var(--calendar-event-difficulty-2);
       }
 
-      &--ultimates {
-        background-color: var(--calendar-event-color-ultimates);
+      &--difficulty-3 {
+        background-color: var(--calendar-event-difficulty-3);
       }
 
-      &--archiv {
-        background-color: var(--calendar-event-color-archiv);
+      &--archived {
+        background-color: var(--calendar-event-archived);
+        color: var(--calendar-event-text-color-archived);
       }
 
-      &--other {
-        background-color: var(--calendar-event-color-other);
+      &--difficulty-unknown {
+        background-color: var(--calendar-event-difficulty-unknown);
       }
     }
   }
