@@ -28,7 +28,7 @@ export const EVENT_DIFFICULTY = {
   NORMAL: 2,
   HARD: 3,
   ULTIMATIV: 4,
-};
+} as const;
 
 export const eventDifficultySchema = z.enum(EVENT_DIFFICULTY);
 export type EventDifficulty = z.infer<typeof eventDifficultySchema>;
