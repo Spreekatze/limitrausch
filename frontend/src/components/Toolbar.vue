@@ -2,10 +2,18 @@
   <q-toolbar>
     <router-link to="/">
       <q-avatar size="42px">
-        <img src="/limit_break.png" alt="Limitrausch logo" />
+        <img src="/Limitrausch.ico" alt="Limitrausch logo" />
       </q-avatar>
     </router-link>
     <q-toolbar-title class="app-header__title">Limitrausch</q-toolbar-title>
+    <q-btn
+      v-if="authStore.loggedIn"
+      flat
+      class="app-header__button"
+      label="Dashboard"
+      icon="dashboard"
+      to="/dashboard"
+    />
     <q-btn flat class="app-header__button" label="Event-Übersicht" icon="event" to="/events" />
     <q-btn
       flat
@@ -22,7 +30,7 @@
       flat
       class="app-header__button"
       label="Mit Discord anmelden"
-      icon="discord"
+      icon="login"
       @click="authStore.loginUser"
     />
     <q-btn
@@ -30,7 +38,7 @@
       flat
       class="app-header__button"
       :label="authStore.discordUser?.username"
-      icon="admin_panel_settings"
+      icon="logout"
       @click="authStore.logoutCurrentUser"
     />
   </q-toolbar>
