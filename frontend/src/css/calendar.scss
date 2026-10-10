@@ -5,16 +5,25 @@
   table-layout: fixed;
 
   .calendar-day {
-    border: 1px solid var(--app-border-color);
+    border: 1px solid var(--calendar-border-color);
     padding: 8px;
     vertical-align: top;
     height: var(--calendar-day-height, 180px);
     overflow-y: auto;
-    background-color: var(--app-surface);
+    background-color: var(--calendar-background-color);
     color: var(--app-text-color);
 
-    .calendar-day--number--inactive {
-      color: var(--app-muted-text-color);
+    &--today {
+      border: 2px solid var(--calendar-border-color-today);
+    }
+    &--inactive {
+      border: 2px solid var(--calendar-border-color-inactive);
+      background-color: var(--calendar-background-color-inactive);
+    }
+    &--number {
+      &--inactive {
+        color: var(--app-muted-text-color);
+      }
     }
 
     .calendar-event {
@@ -36,13 +45,18 @@
         background-color: var(--calendar-event-difficulty-3);
       }
 
+      &--difficulty-unknown {
+        background-color: var(--calendar-event-difficulty-unknown);
+      }
+
       &--archived {
         background-color: var(--calendar-event-archived);
         color: var(--calendar-event-text-color-archived);
       }
 
-      &--difficulty-unknown {
-        background-color: var(--calendar-event-difficulty-unknown);
+      &--inactive {
+        background-color: var(--calendar-event-inactive);
+        color: var(--calendar-event-text-color-inactive);
       }
     }
   }

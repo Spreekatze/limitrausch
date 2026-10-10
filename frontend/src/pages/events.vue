@@ -1,36 +1,59 @@
 <template>
   <div class="events-page">
     <div class="events-toolbar">
-      <h1>Event-Kalendar</h1>
-      <q-select
-        v-model="calendarView"
-        :options="calendarOptions"
-        emit-value
-        map-options
-        outlined
-        dense
-        label="Ansicht"
-        class="calendar-view-select"
-      />
+      <div class="page-title">
+        <h3>Event-Kalendar</h3>
+      </div>
+      <div>
+        <div class="weekly-export-controls" v-if="isAdmin">
+          <q-btn
+            color="primary"
+            icon="download"
+            label="Aktuelle Woche als Bild herunterladen"
+            :loading="isExporting"
+            @click="downloadWeekAsImage"
+          />
+          <p v-if="exportError" class="export-error">{{ exportError }}</p>
+        </div>
+        <q-select
+          v-model="calendarViewMonthly"
+          :options="calendarOptions"
+          emit-value
+          map-options
+          outlined
+          dense
+          label="Ansicht"
+          class="calendar-view-select"
+        />
+      </div>
     </div>
     <p v-if="error">{{ error }}</p>
-    <Calendar :events-by-day="eventsByDay" :view="calendarView === 'monthly'" />
+    <Calendar
+      :events-by-day="eventsByDay"
+      :displayedWeeks="displayedWeeks"
+      :viewMonthly="calendarViewMonthly"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import '../css/calendar.scss';
 import { computed, onMounted, ref } from 'vue';
 import { getEvents, type Event } from '../api/events';
 import { getMonthlyCalendarStartDate } from '../utils/calendar';
 import Calendar from '@/components/calendar.vue';
+import { useAuthStore } from '@/stores/auth-store';
+import { downloadWeeklyCalendarAsImage } from '../utils/calendar-export';
 
-type CalendarView = 'monthly' | 'weekly';
+const authStore = useAuthStore();
+const isAdmin = computed(() => authStore.isAdmin);
+const isExporting = ref(false);
+const exportError = ref<string | null>(null);
 
-const calendarView = ref<CalendarView>('monthly');
-const calendarOptions: { label: string; value: CalendarView }[] = [
-  { label: 'Monatlich', value: 'monthly' },
-  { label: 'Wöchentlich', value: 'weekly' },
+const now = new Date();
+const calendarViewMonthly = ref<boolean>(true);
+const calendarOptions: { label: string; value: boolean }[] = [
+  { label: 'Monatlich', value: true },
+  { label: 'Wöchentlich', value: false },
 ];
 const events = ref<Event[]>([]);
 const error = ref<string | null>(null);
@@ -50,6 +73,8 @@ const eventsByDay = computed(() => {
 
   return groupedEvents;
 });
+const monthlyWeeksDateArray = computed(() => generateMonthlyWeekArray());
+const displayedWeeks = computed(() => generateDisplayedWeekDates());
 
 onMounted(() => {
   void getEvents(getMonthlyCalendarStartDate())
@@ -61,6 +86,55 @@ onMounted(() => {
       console.error(err);
     });
 });
+
+async function downloadWeekAsImage(): Promise<void> {
+  if (isExporting.value) {
+    return;
+  }
+
+  isExporting.value = true;
+  exportError.value = null;
+
+  try {
+    const today = new Date();
+    const week = monthlyWeeksDateArray.value.filter((week) =>
+      week.some((day) => day.toDateString() === today.toDateString()),
+    );
+    await downloadWeeklyCalendarAsImage(week[0]!, eventsByDay.value);
+  } catch (err) {
+    exportError.value = err instanceof Error ? err.message : String(err);
+    console.error(err);
+  } finally {
+    isExporting.value = false;
+  }
+}
+
+function generateMonthlyWeekArray(): Date[][] {
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const firstDayOfMonth = new Date(year, month, 1);
+  const leadingDays = (firstDayOfMonth.getDay() + 6) % 7;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const calendarLength = Math.ceil((leadingDays + daysInMonth) / 7) * 7;
+
+  const dates = Array.from(
+    { length: calendarLength },
+    (_, index) => new Date(year, month, index - leadingDays + 1),
+  );
+
+  return Array.from({ length: calendarLength / 7 }, (_, weekIndex) =>
+    dates.slice(weekIndex * 7, (weekIndex + 1) * 7),
+  );
+}
+
+function generateDisplayedWeekDates() {
+  if (calendarViewMonthly.value) {
+    return monthlyWeeksDateArray.value;
+  }
+  return monthlyWeeksDateArray.value.filter((week) =>
+    week.some((day) => day.toDateString() === now.toDateString()),
+  );
+}
 </script>
 
 <style lang="scss" scoped>
@@ -70,10 +144,15 @@ onMounted(() => {
   justify-content: space-between;
   gap: 16px;
   max-width: 1500px;
-  margin: 0 auto 16px;
+  margin: 16px auto 16px;
 
-  h1 {
-    margin: 0;
+  .page-title {
+    flex-grow: 1;
+    justify-content: center;
+    display: flex;
+    h3 {
+      margin: 0;
+    }
   }
 }
 

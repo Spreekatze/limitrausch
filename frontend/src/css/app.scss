@@ -1,5 +1,7 @@
 // app global css
 @use './theme';
+@use './calendar.scss';
+@use './footer.scss';
 
 @font-face {
   font-family: 'Cinzel';

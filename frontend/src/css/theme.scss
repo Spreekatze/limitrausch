@@ -4,7 +4,7 @@
   --find-me: #ff0101;
 
   --app-background: #111a16;
-  --app-surface: #1b2822;
+  --app-surface: #24352d;
   --app-text-color: #e6eee9;
   --app-muted-text-color: #aab8b0;
   --app-border-color: #3b4c43;
@@ -12,14 +12,21 @@
   --app-header-text: #f6e4cb;
   --app-header-hover: #ffffff20;
 
+  --calendar-border-color: var(--app-border-color);
+  --calendar-border-color-today: #70eaff94;
+  --calendar-border-color-inactive: #474e4a;
+  --calendar-background-color: var(--app-surface);
+  --calendar-background-color-inactive: #474e4a41;
   --calendar-event-difficulty-1: #166534;
   --calendar-event-difficulty-2: #6b21a8;
   --calendar-event-difficulty-3: #991b1b;
   --calendar-event-difficulty-4: #991b1b;
   --calendar-event-difficulty-unknown: #854d0e;
-  --calendar-event-archived: #4b55634d;
+  --calendar-event-archived: #545a6367;
+  --calendar-event-inactive: #2f323693;
   --calendar-event-text-color: #ffffff;
   --calendar-event-text-color-archived: #7d8591;
+  --calendar-event-text-color-inactive: #545a63;
 
   --calendar-export-gradient-start: #210020;
   --calendar-export-gradient-middle: #4e224e;
@@ -57,14 +64,21 @@ body.body--light {
   --app-header-text: #f6e4cb;
   --app-header-hover: #ffffff24;
 
+  --calendar-border-color: var(--app-border-color);
+  --calendar-border-color-today: #70eaff;
+  --calendar-border-color-inactive: #d3d3d3b2;
+  --calendar-background-color: var(--app-surface);
+  --calendar-background-color-inactive: #dadada41;
   --calendar-event-difficulty-1: #07880b40;
   --calendar-event-difficulty-2: #7611b040;
   --calendar-event-difficulty-3: #a51e0c40;
   --calendar-event-difficulty-4: #a51e0c40;
   --calendar-event-difficulty-unknown: #74721eab;
   --calendar-event-archived: #9e9e9e63;
-  --calendar-event-text-color: #020202;
-  --calendar-event-text-color-archived: #7d859193;
+  --calendar-event-inactive: #cacbcc93;
+  --calendar-event-text-color: #000000;
+  --calendar-event-text-color-archived: #7d8591;
+  --calendar-event-text-color-inactive: #7d8591;
 }
 
 body {

@@ -1,14 +1,4 @@
 <template>
-  <div class="weekly-export-controls" v-if="isAdmin">
-    <q-btn
-      color="primary"
-      icon="download"
-      label="Aktuelle Woche als Bild herunterladen"
-      :loading="isExporting"
-      @click="downloadWeekAsImage"
-    />
-    <p v-if="exportError" class="export-error">{{ exportError }}</p>
-  </div>
   <table class="calendar-table calendar-table--monthly">
     <thead>
       <tr>
@@ -23,10 +13,21 @@
     </thead>
     <tbody>
       <tr v-for="(week, weekIndex) in displayedWeeks" :key="weekIndex">
-        <td v-for="day in week" :key="day.toISOString()" class="calendar-day">
+        <td
+          v-for="day in week"
+          :key="day.toISOString()"
+          class="calendar-day"
+          :class="{
+            'calendar-day--today': isToday(day),
+            'calendar-day--inactive': !isCurrentMonth(day),
+          }"
+        >
           <span
             class="calendar-day--number"
-            :class="{ 'calendar-day--number--inactive': !isCurrentMonth(day) }"
+            :class="{
+              'calendar-day--number--inactive': !isCurrentMonth(day),
+              'calendar-day--number--today': isToday(day),
+            }"
           >
             {{ day.getDate() }}
           </span>
@@ -34,15 +35,26 @@
             v-for="event in props.eventsByDay.get(day.toDateString()) ?? []"
             :key="event.id"
             class="calendar-event"
-            :class="`calendar-event--${getEventColor(event)}`"
+            :class="[
+              `calendar-event--${getEventColor(event)}`,
+              {
+                'calendar-event--inactive': !isCurrentMonth(day),
+                'calendar-event--today': isToday(day),
+              },
+            ]"
           >
             <small>
-              {{ formatEventTime(event.startTime) }} {{ formatEventTitle(event.title)[0] }}
+              {{ formatEventTime(event.startTime) }}
+              {{
+                event.eventType !== EVENT_TYPE.UNDEFINED
+                  ? event.eventType
+                  : formatEventTitle(event.title)[0]
+              }}
             </small>
             <br />
             <strong>
               <span v-if="formatEventTitle(event.title).length > 1">
-                {{ formatEventTitle(event.title)[1] }} - {{ formatEventTitle(event.title)[2] }}
+                {{ getEventTitle(event) }}
               </span>
             </strong>
           </div>
@@ -53,51 +65,27 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
 import type { Event } from '../api/events';
 import { formatEventTime, formatEventTitle } from '../utils/calendar';
-import { EVENT_DIFFICULTY } from '@limitrausch/contracts';
-import { downloadWeeklyCalendarAsImage } from '../utils/calendar-export';
-import { useAuthStore } from '@/stores/auth-store';
+import { EVENT_DIFFICULTY, EVENT_TYPE } from '@limitrausch/contracts';
 
-const authStore = useAuthStore();
-const isAdmin = computed(() => authStore.isAdmin);
 const now = new Date();
-const props = defineProps<{ eventsByDay: ReadonlyMap<string, Event[]>; view: boolean }>();
-const monthlyWeeksArray = computed(() => generateMonthlyWeekArray());
-const isExporting = ref(false);
-const exportError = ref<string | null>(null);
-
-function generateMonthlyWeekArray(): Date[][] {
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const firstDayOfMonth = new Date(year, month, 1);
-  const leadingDays = (firstDayOfMonth.getDay() + 6) % 7;
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const calendarLength = Math.ceil((leadingDays + daysInMonth) / 7) * 7;
-
-  const dates = Array.from(
-    { length: calendarLength },
-    (_, index) => new Date(year, month, index - leadingDays + 1),
-  );
-
-  return Array.from({ length: calendarLength / 7 }, (_, weekIndex) =>
-    dates.slice(weekIndex * 7, (weekIndex + 1) * 7),
-  );
-}
-
-const displayedWeeks = computed(() => {
-  if (props.view) {
-    return monthlyWeeksArray.value;
-  }
-  const today = new Date();
-  return monthlyWeeksArray.value.filter((week) =>
-    week.some((day) => day.toDateString() === today.toDateString()),
-  );
-});
+const props = defineProps<{
+  eventsByDay: ReadonlyMap<string, Event[]>;
+  viewMonthly: boolean;
+  displayedWeeks: Date[][];
+}>();
 
 function isCurrentMonth(day: Date): boolean {
   return day.getFullYear() === now.getFullYear() && day.getMonth() === now.getMonth();
+}
+
+function isToday(day: Date): boolean {
+  return (
+    day.getFullYear() === now.getFullYear() &&
+    day.getMonth() === now.getMonth() &&
+    day.getDate() === now.getDate()
+  );
 }
 
 //TODO: Currently temporary fix for colors
@@ -115,25 +103,17 @@ function getEventColor(event: Event): string {
   return 'difficulty-unknown';
 }
 
-async function downloadWeekAsImage(): Promise<void> {
-  if (isExporting.value) {
-    return;
+function getEventTitle(event: Event): string {
+  // Temporary fix for aetheris server
+  // TODO: remove upon changing to own version
+  if (
+    event.eventType === EVENT_TYPE.UNDEFINED &&
+    event.discordServer?.discordServerId === '1408172814879559721'
+  ) {
+    const formattedTitle = formatEventTitle(event.title);
+    formattedTitle.shift();
+    return formattedTitle.join(' - ');
   }
-
-  isExporting.value = true;
-  exportError.value = null;
-
-  try {
-    const today = new Date();
-    const week = monthlyWeeksArray.value.filter((week) =>
-      week.some((day) => day.toDateString() === today.toDateString()),
-    );
-    await downloadWeeklyCalendarAsImage(week[0]!, props.eventsByDay);
-  } catch (err) {
-    exportError.value = err instanceof Error ? err.message : String(err);
-    console.error(err);
-  } finally {
-    isExporting.value = false;
-  }
+  return event.title;
 }
 </script>

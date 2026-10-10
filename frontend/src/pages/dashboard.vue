@@ -13,6 +13,7 @@
         icon="admin_panel_settings"
         @click="importFromAetheris"
       />
+      <p>{{ importMessage }}</p>
     </div>
     <div v-else>
       <p>Leider bist du aktuell nicht angemeldet.</p>
@@ -23,10 +24,13 @@
 <script setup lang="ts">
 import { importRaidHelperEvents } from '@/api/events';
 import { useAuthStore } from '@/stores/auth-store';
+import { type RaidHelperImportResponse } from '@limitrausch/contracts';
+import { ref } from 'vue';
 
 const authStore = useAuthStore();
+const importMessage = ref<RaidHelperImportResponse | null>(null);
 
 async function importFromAetheris() {
-  await importRaidHelperEvents('1408172814879559721');
+  importMessage.value = await importRaidHelperEvents('1408172814879559721');
 }
 </script>

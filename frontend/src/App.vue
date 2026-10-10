@@ -7,6 +7,7 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+    <Footer />
   </q-layout>
 </template>
 
@@ -14,6 +15,7 @@
 import { onMounted } from 'vue';
 import { useAuthStore } from './stores/auth-store.js';
 import Toolbar from './components/Toolbar.vue';
+import Footer from './components/Footer.vue';
 
 const authStore = useAuthStore();
 

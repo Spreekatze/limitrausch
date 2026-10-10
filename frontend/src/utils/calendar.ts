@@ -14,5 +14,5 @@ export function formatEventTime(unixTime: number): string {
 }
 
 export function formatEventTitle(title: string): string[] {
-  return title.split(' - ').map((part) => part.trim());
+  return title.split('-').map((part) => part.trim());
 }
