@@ -5,6 +5,7 @@ import {
   EventSignUpUser,
   StatusType,
   statusTypeSchema,
+  STATUS_TYPE,
 } from "../types/eventSchema.js";
 import {
   RaidHelperEvent,
@@ -72,6 +73,7 @@ export function mapRaidHelperGeneralEventDataToEvent(
     signUpCount: parseInt(raidhelperEvent.signUpCount),
     raidHelperId: raidhelperEvent.id,
     isPublic: false,
+    signUps: mapRaidHelperSignUpsToEventSignUps(raidhelperEvent.signUps),
   };
 
   return event;
@@ -83,6 +85,13 @@ function getJobFromRaidHelperName(name: string): Job {
     throw new Error(`Unknown Raidhelper job: ${name}`);
   }
   return job;
+}
+
+function getJobName(name: string | undefined): string | undefined {
+  if (Object.values(STATUS_TYPE).some((status) => status === name)) {
+    return;
+  }
+  return name;
 }
 
 function mapRaidHelperClassToEventStatus(
@@ -97,8 +106,9 @@ function mapRaidHelperSignUpsToEventSignUps(
 ): EventSignUpUser[] {
   const signUps = raidHelperSignUps.map((signUp) => {
     const flexJobs = [signUp.spec2Name, signUp.spec3Name]
-      .filter((name): name is string => name !== undefined)
+      .filter((name): name is string => getJobName(name) !== undefined)
       .map(getJobFromRaidHelperName);
+    const firstPrioJob = getJobName(signUp.specName);
 
     return {
       name: signUp.name,
@@ -106,8 +116,8 @@ function mapRaidHelperSignUpsToEventSignUps(
       status: mapRaidHelperClassToEventStatus(signUp.className),
       entryTime: signUp.entryTime,
       position: signUp.position,
-      jobFirstPrio: signUp.specName
-        ? getJobFromRaidHelperName(signUp.specName)
+      jobFirstPrio: firstPrioJob
+        ? getJobFromRaidHelperName(firstPrioJob)
         : undefined,
       jobFlexSecondPrio: flexJobs.length > 0 ? flexJobs : undefined,
     };

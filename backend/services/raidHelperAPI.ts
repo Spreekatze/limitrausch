@@ -31,7 +31,7 @@ export async function getEventsFromRaidHelper(
         headers: {
           Authorization: apiKey,
           StartTimeFilter: String(startTime),
-          IncludeSignUps: "true", //TODO: why isnt this working?
+          IncludeSignUps: String(true),
         },
         signal: AbortSignal.timeout(10_000),
       },

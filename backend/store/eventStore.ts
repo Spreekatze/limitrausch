@@ -177,7 +177,14 @@ export async function addEvent(event: Event): Promise<void> {
       await insertEventCoLeader(coLeader.id, event.id, client);
     }
 
-    // On creation no sign ups exists
+    for (const signUp of event.signUps ?? []) {
+      await insertEventSignUp(
+        signUp,
+        event.id,
+        event.discordServer!.discordServerId,
+        client,
+      );
+    }
 
     await client.query("COMMIT");
   } catch (error) {

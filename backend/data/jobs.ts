@@ -2,6 +2,15 @@ import { Job, ROLE_TYPE } from "../types/jobSchema.js";
 
 export const jobs: Job[] = [
   {
+    id: 999,
+    role: ROLE_TYPE.ALLROUNDER,
+    germanName: "Allrounder",
+    germanShort: "",
+    englishName: "Allrounder",
+    englishShort: "",
+    raidHelperName: "Allrounder",
+  },
+  {
     id: 1,
     role: ROLE_TYPE.TANK,
     germanName: "Paladin",
@@ -98,7 +107,7 @@ export const jobs: Job[] = [
     germanShort: "NIN",
     englishName: "Ninja",
     englishShort: "NIN",
-    raidHelperName: "Ninja1",
+    raidHelperName: "Ninja",
   },
   {
     id: 12,

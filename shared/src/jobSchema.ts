@@ -7,6 +7,7 @@ export const ROLE_TYPE = {
   PRANGED: "PRanged",
   CASTER: "Caster",
   LIMITED_JOB: "Limited",
+  ALLROUNDER: "Allrounder",
 } as const;
 
 export const roleTypeSchema = z.enum(ROLE_TYPE);

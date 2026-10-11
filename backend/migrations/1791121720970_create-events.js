@@ -31,7 +31,7 @@ export const up = (pgm) => {
     rolesAllowedToManageEvents: {
       type: "text[]",
     },
-    bannedRolesFromParticipating: {
+    rolesBannedFromParticipating: {
       type: "text[]",
     },
   });
@@ -218,7 +218,6 @@ export const up = (pgm) => {
       },
       position: {
         type: "integer",
-        notNull: true,
       },
       jobFirstPrio: {
         type: "integer",

@@ -1869,20 +1869,20 @@
       "XMv-NQ94WOjHHFLipha-3": {
         "id": "XMv-NQ94WOjHHFLipha-3",
         "tableId": "TpOh3ez6ANSB3_iRmBGNt",
-        "name": "bannedRoles",
+        "name": "rolesBannedFromEvents",
         "comment": "",
         "dataType": "text [ ]",
         "default": "",
         "options": 0,
         "ui": {
           "keys": 0,
-          "widthName": 70,
+          "widthName": 129,
           "widthComment": 60,
           "widthDataType": 60,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1791388293005,
+          "updateAt": 1791661969256,
           "createAt": 1791388254205
         }
       },
