@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { discordGuildSchema } from "./guildSchema.js";
 
 export const discordOAuthUserSchema = z.object({
   id: z.string(),
@@ -30,6 +31,7 @@ export const authUserSchema = z.object({
   avatar: z.string(),
   preferences: userPreferenceSchema.optional(),
   isAdmin: z.boolean(),
+  userGuilds: z.array(discordGuildSchema),
 });
 export type AuthUser = z.infer<typeof authUserSchema>;
 

@@ -3,6 +3,7 @@ import crypto from "crypto";
 import {
   authStatusResponseSchema,
   authUserSchema,
+  discordGuildSchema,
   discordOAuthUserSchema,
 } from "@limitrausch/contracts";
 
@@ -116,8 +117,13 @@ router.get("/discord/callback", async (request, response) => {
       .send("Discord OAuth user guild request failed.");
     return;
   }
-  // console.log("Guilds:", discordUserGuilds);
-  //TODO: do something with the list of guilds
+  const discordUserGuildsResult = discordGuildSchema
+    .array()
+    .safeParse(discordUserGuilds);
+  if (!discordUserGuildsResult.success) {
+    response.status(502).send("Discord returned invalid guild data.");
+    return;
+  }
 
   // Check if the user is in the whitelist of admins
   const whitelist = process.env.DISCORD_USER_ID_WHITELIST?.split(",")
@@ -133,6 +139,7 @@ router.get("/discord/callback", async (request, response) => {
     username: discordOAuthUser.global_name,
     avatar: discordOAuthUser.avatar,
     isAdmin,
+    userGuilds: discordUserGuildsResult.data,
   });
 
   const frontendUrl = process.env.FRONTEND_URL;

@@ -12,6 +12,7 @@ import {
   getEvents,
   updateEvent,
 } from "../store/eventStore.js";
+import { addDiscordServer } from "../store/guildStore.js";
 
 const router = express.Router();
 
@@ -23,13 +24,23 @@ router.get("/raid-helper/:id", requireAdmin, async (request, response) => {
     return;
   }
 
+  const server = request.session.authUser?.userGuilds.find(
+    (guild) => guild.id === serverId,
+  );
+  if (!server) {
+    return response.status(404).json({
+      error: "Import failed due to user not being member of requested guild",
+    });
+  }
+
   try {
-    const result = await importRaidHelperEvents(serverId);
+    //TODO: move server adding to its own route
+    await addDiscordServer(server);
+
+    const result = await importRaidHelperEvents(server);
 
     response.status(200).json(result);
   } catch (error) {
-    console.error("Raidhelper import failed:", error);
-
     if (error instanceof HttpError) {
       return response.status(error.status).json({ error: error.message });
     }

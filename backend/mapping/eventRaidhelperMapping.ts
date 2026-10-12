@@ -1,20 +1,19 @@
 import {
-  EVENT_TYPE,
-  EventType,
-  Event,
-  EventSignUpUser,
-  StatusType,
-  statusTypeSchema,
-  STATUS_TYPE,
-} from "../types/eventSchema.js";
-import {
   RaidHelperEvent,
   RaidHelperSignUp,
   RaidHelperWebHookEvent,
 } from "../types/raidhelperSchema.js";
 import { jobsByRaidHelperName } from "../data/jobs.js";
 import { Job } from "../types/jobSchema.js";
-import { DiscordGuild } from "../types/guildsSchema.js";
+import {
+  DiscordGuild,
+  EVENT_TYPE,
+  EventSignUpUser,
+  STATUS_TYPE,
+  StatusType,
+  statusTypeSchema,
+  Event,
+} from "@limitrausch/contracts";
 
 // const aetherisServerId = "1408172814879559721";
 // const aetherisCasualChannelId = "1408186147896819822";
