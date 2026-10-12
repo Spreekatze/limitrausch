@@ -31,6 +31,9 @@ export const up = (pgm) => {
       type: "text",
       notNull: true,
     },
+    icon: {
+      type: "text",
+    },
     rolesAllowedToManageEvents: {
       type: "text[]",
     },

@@ -60,14 +60,15 @@ export const eventSignUpUserSchema = z.object({
 });
 export type EventSignUpUser = z.infer<typeof eventSignUpUserSchema>;
 
-export const eventDiscordSchema = z.object({
-  discordServerId: z.string(),
-  discordServerName: z.string().optional(),
-  discordTextChannelId: z.string().optional(),
-  discordTextChannelName: z.string().optional(),
-  discordMessageId: z.string().optional(),
+export const eventDiscordDataSchema = z.object({
+  id: z.string(),
+  name: z.string().optional(),
+  icon: z.string().optional(),
+  textChannelId: z.string().optional(),
+  textChannelName: z.string().optional(),
+  messageId: z.string().optional(),
 });
-export type EventDiscord = z.infer<typeof eventDiscordSchema>;
+export type EventDiscordData = z.infer<typeof eventDiscordDataSchema>;
 
 export const eventSchema = z.object({
   id: z.string(),
@@ -87,7 +88,7 @@ export const eventSchema = z.object({
   raidHelperId: z.string().optional(),
   signUps: z.array(eventSignUpUserSchema).optional(),
   isPublic: z.boolean(),
-  discordServer: eventDiscordSchema.optional(),
+  discordServer: eventDiscordDataSchema.optional(),
 });
 export type Event = z.infer<typeof eventSchema>;
 

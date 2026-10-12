@@ -9,7 +9,7 @@
           <q-btn
             color="primary"
             icon="download"
-            label="Aktuelle Woche als Bild herunterladen"
+            label="Aktuelle Woche herunterladen"
             :loading="isExporting"
             @click="downloadWeekAsImage"
           />
@@ -40,7 +40,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { getEvents, type Event } from '../api/events';
 import { getMonthlyCalendarStartDate } from '../utils/calendar';
-import Calendar from '@/components/calendar.vue';
+import Calendar from '@/components/Calendar.vue';
 import { useAuthStore } from '@/stores/auth-store';
 import { downloadWeeklyCalendarAsImage } from '../utils/calendar-export';
 

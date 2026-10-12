@@ -183,11 +183,11 @@ function getEventColor(event: Event): string {
   if (event.eventDifficulty) {
     return String(event.eventDifficulty);
   }
-  if (event.discordServer?.discordTextChannelId === '1408186147896819822')
+  if (event.discordServer?.textChannelId === '1408186147896819822')
     return 'difficulty-' + String(EVENT_DIFFICULTY.EASY);
-  if (event.discordServer?.discordTextChannelId === '1408186073208852700')
+  if (event.discordServer?.textChannelId === '1408186073208852700')
     return 'difficulty-' + String(EVENT_DIFFICULTY.NORMAL);
-  if (event.discordServer?.discordTextChannelId === '1408186117039067227')
+  if (event.discordServer?.textChannelId === '1408186117039067227')
     return 'difficulty-' + String(EVENT_DIFFICULTY.HARD);
   return 'difficulty-unknown';
 }

@@ -12,7 +12,6 @@ import {
   getEvents,
   updateEvent,
 } from "../store/eventStore.js";
-import { success } from "zod";
 
 const router = express.Router();
 

@@ -14,6 +14,7 @@ import {
 } from "../types/raidhelperSchema.js";
 import { jobsByRaidHelperName } from "../data/jobs.js";
 import { Job } from "../types/jobSchema.js";
+import { DiscordGuild } from "../types/guildsSchema.js";
 
 // const aetherisServerId = "1408172814879559721";
 // const aetherisCasualChannelId = "1408186147896819822";
@@ -44,7 +45,7 @@ import { Job } from "../types/jobSchema.js";
 
 export function mapRaidHelperGeneralEventDataToEvent(
   raidhelperEvent: RaidHelperEvent,
-  serverId: string,
+  server: DiscordGuild,
 ): Event {
   // const eventType = getEventType(serverId, raidhelperEvent.channelId);
 
@@ -67,8 +68,10 @@ export function mapRaidHelperGeneralEventDataToEvent(
     endTime: raidhelperEvent.endTime,
     eventType: EVENT_TYPE.UNDEFINED,
     discordServer: {
-      discordServerId: serverId,
-      discordTextChannelId: raidhelperEvent.channelId,
+      id: server.id,
+      name: server.name,
+      icon: server.icon ?? undefined,
+      textChannelId: raidhelperEvent.channelId,
     },
     signUpCount: parseInt(raidhelperEvent.signUpCount),
     raidHelperId: raidhelperEvent.id,
@@ -157,8 +160,8 @@ export function mapRaidHelperWebhookEventToEvent(
     endTime: raidhelperEvent.endTime,
     eventType: EVENT_TYPE.UNDEFINED,
     discordServer: {
-      discordServerId: serverId,
-      discordTextChannelId: raidhelperEvent.channelId,
+      id: serverId,
+      textChannelId: raidhelperEvent.channelId,
     },
     signUpCount: raidhelperEvent.signUps.length,
     raidHelperId: raidhelperEvent.id,

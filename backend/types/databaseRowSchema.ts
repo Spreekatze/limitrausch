@@ -22,6 +22,7 @@ export const databaseEventRowSchema = z.object({
   eventGoal: z.string().optional(),
   discordServerId: z.string().optional(),
   discordServerName: z.string().optional(),
+  discordServerIcon: z.string().optional(),
   discordTextChannelId: z.string().optional(),
   discordTextChannelName: z.string().optional(),
   discordMessageId: z.string().optional(),

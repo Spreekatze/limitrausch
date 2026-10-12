@@ -97,7 +97,7 @@ export default defineConfig((ctx) => {
     devServer: {
       // vueDevtools: true,
       // https: true,
-      open: true, // opens browser window automatically
+      open: false, // opens browser window automatically
       proxy: {
         '/api': {
           target: 'http://localhost:3000/',

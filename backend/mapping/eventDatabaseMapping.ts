@@ -65,11 +65,12 @@ export function mapDatabaseEventRowToEvent(
     eventGoal: row.eventGoal ?? undefined,
     discordServer: row.discordServerId
       ? {
-          discordServerId: row.discordServerId,
-          discordServerName: row.discordServerName ?? undefined,
-          discordTextChannelId: row.discordTextChannelId ?? undefined,
-          discordTextChannelName: row.discordTextChannelName ?? undefined,
-          discordMessageId: row.discordMessageId ?? undefined,
+          id: row.discordServerId,
+          name: row.discordServerName ?? undefined,
+          icon: row.discordServerIcon ?? undefined,
+          textChannelId: row.discordTextChannelId ?? undefined,
+          textChannelName: row.discordTextChannelName ?? undefined,
+          messageId: row.discordMessageId ?? undefined,
         }
       : undefined,
     signUpCount: row.signUpCount ?? undefined,

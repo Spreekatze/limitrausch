@@ -19,12 +19,16 @@ export async function getEvents(): Promise<Event[]> {
     SELECT
       event.*,
       creator."usernameOnServer" AS "creatorName",
-      leader."usernameOnServer" AS "leaderName"
+      leader."usernameOnServer" AS "leaderName",
+      server."icon" AS "discordServerIcon",
+      server."name" AS "discordServerName"
     FROM "Event" event
     JOIN "DiscordServerUser" creator
       ON creator."discordUserId" = event."creatorId"
     LEFT JOIN "DiscordServerUser" leader
       ON leader."discordUserId" = event."leaderId"
+    LEFT JOIN "DiscordServer" server
+      ON server.id = event."discordServerId"
   `);
 
   // const coleaderResult = await pool.query<DatabaseEventCoLeaderRow>(`
@@ -117,34 +121,34 @@ export async function addEvent(event: Event): Promise<void> {
 
   try {
     await client.query("BEGIN");
+    console.log(event);
 
     //TODO: add this upsert for server and channel to an action for the bot to register a server to the DB
     // then only check if exists here
-    if (event.discordServer?.discordServerId) {
-      //TODO: add fetching discord name
+    if (event.discordServer?.id) {
       await upsertDiscordServer(
-        event.discordServer?.discordServerId,
-        "",
+        {
+          id: event.discordServer?.id,
+          name: event.discordServer?.name ?? "",
+          icon: event.discordServer.icon ?? null,
+        },
         client,
       );
     }
 
-    if (
-      event.discordServer?.discordTextChannelId &&
-      event.discordServer?.discordServerId
-    ) {
+    if (event.discordServer?.textChannelId && event.discordServer?.id) {
       //TODO: add fetching channel name
       await upsertDiscordTextChannel(
-        event.discordServer?.discordTextChannelId,
+        event.discordServer?.textChannelId,
         "",
-        event.discordServer?.discordServerId,
+        event.discordServer?.id,
         client,
       );
     }
 
     await ensureDiscordServerUser(
       event.creator,
-      event.discordServer?.discordServerId,
+      event.discordServer?.id,
       event.creator.name,
       client,
     );
@@ -156,7 +160,7 @@ export async function addEvent(event: Event): Promise<void> {
     for (const coLeader of event.coLeaders ?? []) {
       await ensureDiscordServerUser(
         coLeader,
-        event.discordServer?.discordServerId,
+        event.discordServer?.id,
         coLeader.name,
         client,
       );
@@ -165,7 +169,7 @@ export async function addEvent(event: Event): Promise<void> {
     for (const signUp of event.signUps ?? []) {
       await ensureDiscordServerUser(
         { id: signUp.userId, name: signUp.name },
-        event.discordServer?.discordServerId,
+        event.discordServer?.id,
         signUp.name,
         client,
       );
@@ -181,7 +185,7 @@ export async function addEvent(event: Event): Promise<void> {
       await insertEventSignUp(
         signUp,
         event.id,
-        event.discordServer!.discordServerId,
+        event.discordServer!.id,
         client,
       );
     }
@@ -259,7 +263,7 @@ export async function updateEvent(
     }
 
     const channelId = hasField("discordServer")
-      ? (update.discordServer?.discordTextChannelId ?? null)
+      ? (update.discordServer?.textChannelId ?? null)
       : existingEvent.discordTextChannelId;
 
     //TODO: move this upsert for server and channel to an action for the bot to
@@ -294,13 +298,10 @@ export async function updateEvent(
     if (hasField("endTime")) assign("endTime", update.endTime);
     if (hasField("eventType")) assign("eventType", update.eventType);
     if (hasField("discordServer")) {
-      assign("discordServerId", update.discordServer?.discordServerId);
+      assign("discordServerId", update.discordServer?.id);
     }
     if (hasField("discordServer")) {
-      assign(
-        "discordTextChannelId",
-        update.discordServer?.discordTextChannelId,
-      );
+      assign("discordTextChannelId", update.discordServer?.textChannelId);
     }
     if (hasField("signUps")) assign("signUpCount", update.signUps?.length);
     if (hasField("raidHelperId")) assign("raidHelperId", update.raidHelperId);
