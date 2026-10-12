@@ -42,16 +42,16 @@
                 'calendar-event--today': isToday(day),
               },
             ]"
+            @mouseenter="showEventInfo($event, event)"
+            @mousemove="updateEventInfoPosition"
+            @mouseleave="hideEventInfo"
           >
             <q-card-section class="event-type" horizontal>
-              <!-- <q-icon :name="`${getServerIconUrl(event)}`" /> -->
-              <div>
-                {{
-                  event.eventType !== EVENT_TYPE.UNDEFINED
-                    ? event.eventType
-                    : formatEventTitle(event.title)[0]
-                }}
-              </div>
+              {{
+                event.eventType !== EVENT_TYPE.UNDEFINED
+                  ? event.eventType
+                  : formatEventTitle(event.title)[0]
+              }}
             </q-card-section>
             <q-card-section class="event-title" v-if="formatEventTitle(event.title).length > 1">
               {{ getEventTitle(event) }}
@@ -64,13 +64,81 @@
         </td>
       </tr>
     </tbody>
+    <div
+      v-if="hoveredEvent"
+      class="event-hover-card"
+      ref="hoverCard"
+      :style="{
+        left: `${hoverPosition.x}px`,
+        top: `${hoverPosition.y}px`,
+      }"
+    >
+      <q-card>
+        <q-card-section class="event-title">
+          <div>
+            {{
+              hoveredEvent.eventType !== EVENT_TYPE.UNDEFINED
+                ? hoveredEvent.eventType
+                : formatEventTitle(hoveredEvent.title)[0]
+            }}
+          </div>
+          <div>{{ hoveredEvent.title }}</div>
+        </q-card-section>
+        <q-separator />
+        <div class="event-general-data">
+          <q-card-section horizontal class="event-server">
+            <div>
+              <q-icon name="discord" />
+            </div>
+            <div>
+              <q-icon class="server-icon" :name="`${getServerIconUrl(hoveredEvent)}`" />
+              <div>{{ hoveredEvent.discordServer?.name }}</div>
+            </div>
+          </q-card-section>
+          <q-card-section class="event-date" horizontal>
+            <div>
+              <q-icon name="event" />
+            </div>
+            <div>
+              {{ formatEventDay(hoveredEvent.startTime) }},
+              {{ formatEventTime(hoveredEvent.startTime) }} -
+              {{ formatEventTime(hoveredEvent.endTime) }}
+            </div>
+          </q-card-section>
+          <q-card-section class="event-leader" horizontal>
+            <div>
+              <q-icon>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path
+                    fill="currentColor"
+                    d="M12 8L15 13.2L18 10.5L17.3 14H6.7L6 10.5L9 13.2L12 8M12 4L8.5 10L3 5L5 16H19L21 5L15.5 10L12 4M19 18H5V19C5 19.6 5.4 20 6 20H18C18.6 20 19 19.6 19 19V18Z"
+                  />
+                </svg>
+              </q-icon>
+            </div>
+            <div>
+              {{ hoveredEvent.leader?.name }}
+            </div>
+          </q-card-section>
+        </div>
+        <q-separator />
+        <q-card-section class="event-description">
+          {{ hoveredEvent.description }}
+        </q-card-section>
+        <q-card-section class="event-image">
+          <q-img :src="hoveredEvent.imageUrl" alt="Event image" />
+        </q-card-section>
+      </q-card>
+    </div>
   </table>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import type { Event } from '../api/events';
-import { formatEventTime, formatEventTitle } from '../utils/calendar';
+import { formatEventDay, formatEventTime, formatEventTitle } from '../utils/calendar';
 import { EVENT_DIFFICULTY, EVENT_TYPE } from '@limitrausch/contracts';
+import { nextTick } from 'vue';
 
 const now = new Date();
 const props = defineProps<{
@@ -78,6 +146,9 @@ const props = defineProps<{
   viewMonthly: boolean;
   displayedWeeks: Date[][];
 }>();
+const hoverCard = ref<HTMLElement | null>(null);
+const hoveredEvent = ref<Event | null>(null);
+const hoverPosition = ref({ x: 0, y: 0 });
 
 function isCurrentMonth(day: Date): boolean {
   return day.getFullYear() === now.getFullYear() && day.getMonth() === now.getMonth();
@@ -129,5 +200,46 @@ function getServerIconUrl(event: Event): string {
   }
   const extension = event.discordServer.icon.startsWith('a_') ? 'gif' : 'png';
   return `img:https://cdn.discordapp.com/icons/${event.discordServer.id}/${event.discordServer.icon}.${extension}?size=128`;
+}
+
+async function showEventInfo(mouseEvent: MouseEvent, event: Event) {
+  hoveredEvent.value = event;
+  await nextTick();
+  updateEventInfoPosition(mouseEvent);
+}
+
+function updateEventInfoPosition(mouseEvent: MouseEvent) {
+  const card = hoverCard.value;
+  if (!card) return;
+
+  const padding = 12;
+  const offsetX = 70;
+  const offsetY = 16;
+
+  const rect = card.getBoundingClientRect();
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  let x = mouseEvent.clientX + offsetX;
+  let y = mouseEvent.clientY + offsetY;
+
+  // If spilling over at right side
+  if (x + rect.width > viewportWidth - padding) {
+    x = mouseEvent.clientX - rect.width - offsetX;
+  }
+  // If spilling over at bottom
+  if (y + rect.height > viewportHeight - padding) {
+    y = mouseEvent.clientY - rect.height - offsetY;
+  }
+
+  // Dont spill at left or top
+  x = Math.max(padding, Math.min(x, viewportWidth - rect.width - padding));
+  y = Math.max(padding, Math.min(y, viewportHeight - rect.height - padding));
+
+  hoverPosition.value = { x, y };
+}
+
+function hideEventInfo() {
+  hoveredEvent.value = null;
 }
 </script>

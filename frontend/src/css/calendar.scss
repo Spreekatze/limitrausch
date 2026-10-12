@@ -14,7 +14,7 @@
     color: var(--app-text-color);
 
     &--today {
-      border: 2px solid var(--calendar-border-color-today);
+      border: 5px solid var(--calendar-border-color-today);
     }
     &--inactive {
       border: 2px solid var(--calendar-border-color-inactive);
@@ -121,5 +121,79 @@
 
   &--weekly {
     --calendar-day-height: 180px;
+  }
+
+  .event-hover-card {
+    position: fixed;
+    z-index: 9999;
+    width: 320px;
+    max-width: calc(100vw - 24px);
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+    pointer-events: none;
+    box-shadow: 0 4px 16px #000000bb;
+
+    .q-card {
+      padding: 15px;
+      font-size: small;
+      background-color: var(--app-background);
+      border: 1px solid black;
+
+      .event-general-data .q-card__section {
+        > :first-child {
+          background-color: var(--app-surface);
+          padding: 2px 5px;
+        }
+
+        > :nth-child(even) {
+          display: flex;
+          margin-left: 10px;
+        }
+      }
+      .q-card__section {
+        margin: 5px 0;
+        padding: 0;
+        align-items: center;
+
+        &.event-title {
+          justify-items: center;
+
+          > :first-child {
+            font-family: 'Cinzel', sans-serif;
+            color: var(--calendar-event-type-text-color);
+            justify-content: center;
+          }
+          > :last-child {
+            font-size: medium;
+          }
+        }
+
+        &.event-server {
+          .server-icon {
+            font-size: large;
+            margin-right: 10px;
+
+            img {
+              border-style: solid;
+              border-width: 1px;
+              border-color: var(--calendar-event-type-text-color);
+            }
+          }
+        }
+
+        &.event-description {
+          font-size: small;
+          height: 80px;
+          overflow: hidden;
+          line-clamp: 4;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 4;
+        }
+      }
+      .q-separator {
+        margin: 10px 0;
+      }
+    }
   }
 }

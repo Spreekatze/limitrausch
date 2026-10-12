@@ -13,6 +13,13 @@ export function formatEventTime(unixTime: number): string {
   });
 }
 
+export function formatEventDay(unixTime: number): string {
+  return new Date(unixTime * 1000).toLocaleDateString([], {
+    day: '2-digit',
+    month: '2-digit',
+  });
+}
+
 export function formatEventTitle(title: string): string[] {
   return title.split('-').map((part) => part.trim());
 }
