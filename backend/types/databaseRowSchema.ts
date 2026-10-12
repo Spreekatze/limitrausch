@@ -56,3 +56,12 @@ export const databaseEventSignUpRowSchema = z.object({
 export type DatabaseEventSignUpRow = z.infer<
   typeof databaseEventSignUpRowSchema
 >;
+
+export const databaseGuildRowSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  icon: z.string().optional(),
+  rolesAllowedToManageEvents: z.array(z.string()).optional(),
+  rolesBannedFromParticipating: z.array(z.string()).optional(),
+});
+export type DatabaseGuildRow = z.infer<typeof databaseGuildRowSchema>;

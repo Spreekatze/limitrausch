@@ -31,7 +31,7 @@
           >
             {{ day.getDate() }}
           </span>
-          <div
+          <q-card
             v-for="event in props.eventsByDay.get(day.toDateString()) ?? []"
             :key="event.id"
             class="calendar-event"
@@ -43,21 +43,24 @@
               },
             ]"
           >
-            <small>
-              {{ formatEventTime(event.startTime) }}
-              {{
-                event.eventType !== EVENT_TYPE.UNDEFINED
-                  ? event.eventType
-                  : formatEventTitle(event.title)[0]
-              }}
-            </small>
-            <br />
-            <strong>
-              <span v-if="formatEventTitle(event.title).length > 1">
-                {{ getEventTitle(event) }}
-              </span>
-            </strong>
-          </div>
+            <q-card-section class="event-type" horizontal>
+              <!-- <q-icon :name="`${getServerIconUrl(event)}`" /> -->
+              <div>
+                {{
+                  event.eventType !== EVENT_TYPE.UNDEFINED
+                    ? event.eventType
+                    : formatEventTitle(event.title)[0]
+                }}
+              </div>
+            </q-card-section>
+            <q-card-section class="event-title" v-if="formatEventTitle(event.title).length > 1">
+              {{ getEventTitle(event) }}
+            </q-card-section>
+            <q-card-actions>
+              <q-icon class="server-icon" :name="`${getServerIconUrl(event)}`" />
+              <div><q-icon name="schedule" /> {{ formatEventTime(event.startTime) }}</div>
+            </q-card-actions>
+          </q-card>
         </td>
       </tr>
     </tbody>
@@ -94,26 +97,37 @@ function getEventColor(event: Event): string {
   if (event.eventDifficulty) {
     return String(event.eventDifficulty);
   }
-  if (event.discordServer?.discordTextChannelId === '1408186147896819822')
+  if (event.discordServer?.textChannelId === '1408186147896819822')
     return 'difficulty-' + String(EVENT_DIFFICULTY.EASY);
-  if (event.discordServer?.discordTextChannelId === '1408186073208852700')
+  if (event.discordServer?.textChannelId === '1408186073208852700')
     return 'difficulty-' + String(EVENT_DIFFICULTY.NORMAL);
-  if (event.discordServer?.discordTextChannelId === '1408186117039067227')
+  if (event.discordServer?.textChannelId === '1408186117039067227')
     return 'difficulty-' + String(EVENT_DIFFICULTY.HARD);
   return 'difficulty-unknown';
 }
 
 function getEventTitle(event: Event): string {
   // Temporary fix for aetheris server
-  // TODO: remove upon changing to own version
+  // TODO: remove upon changing to own event version
   if (
     event.eventType === EVENT_TYPE.UNDEFINED &&
-    event.discordServer?.discordServerId === '1408172814879559721'
+    event.discordServer?.id === '1408172814879559721'
   ) {
     const formattedTitle = formatEventTitle(event.title);
     formattedTitle.shift();
     return formattedTitle.join(' - ');
   }
   return event.title;
+}
+
+function getServerIconUrl(event: Event): string {
+  if (!event.discordServer) {
+    return 'img:~/assets/icons/xiv.png';
+  }
+  if (!event.discordServer.icon) {
+    return '';
+  }
+  const extension = event.discordServer.icon.startsWith('a_') ? 'gif' : 'png';
+  return `img:https://cdn.discordapp.com/icons/${event.discordServer.id}/${event.discordServer.icon}.${extension}?size=128`;
 }
 </script>

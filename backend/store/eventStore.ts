@@ -1,7 +1,6 @@
 import type { Event } from "../types/eventSchema.js";
 import { mapDatabaseEventRowToEvent } from "../mapping/eventDatabaseMapping.js";
 import { pool } from "../database/databaseConnection.js";
-import { upsertDiscordServer } from "../database/discordServer.js";
 import { upsertDiscordTextChannel } from "../database/discordTextChannel.js";
 import { ensureDiscordUser } from "../database/discordUser.js";
 import { insertEvent } from "../database/event.js";
@@ -13,6 +12,7 @@ import {
   DatabaseEventSignUpRow,
 } from "../types/databaseRowSchema.js";
 import { ensureDiscordServerUser } from "../database/discordServerUser.js";
+import { getDiscordServer } from "./guildStore.js";
 
 export async function getEvents(): Promise<Event[]> {
   const result = await pool.query<DatabaseEventRow>(`
@@ -121,20 +121,6 @@ export async function addEvent(event: Event): Promise<void> {
 
   try {
     await client.query("BEGIN");
-    console.log(event);
-
-    //TODO: add this upsert for server and channel to an action for the bot to register a server to the DB
-    // then only check if exists here
-    if (event.discordServer?.id) {
-      await upsertDiscordServer(
-        {
-          id: event.discordServer?.id,
-          name: event.discordServer?.name ?? "",
-          icon: event.discordServer.icon ?? null,
-        },
-        client,
-      );
-    }
 
     if (event.discordServer?.textChannelId && event.discordServer?.id) {
       //TODO: add fetching channel name

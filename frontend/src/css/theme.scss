@@ -17,14 +17,15 @@
   --calendar-border-color-inactive: #474e4a;
   --calendar-background-color: var(--app-surface);
   --calendar-background-color-inactive: #474e4a41;
-  --calendar-event-difficulty-1: #166534;
-  --calendar-event-difficulty-2: #6b21a8;
-  --calendar-event-difficulty-3: #991b1b;
-  --calendar-event-difficulty-4: #991b1b;
-  --calendar-event-difficulty-unknown: #854d0e;
+  --calendar-event-difficulty-1: #158841a8;
+  --calendar-event-difficulty-2: #6b21a8a8;
+  --calendar-event-difficulty-3: #960d0da8;
+  --calendar-event-difficulty-4: #319caa98;
+  --calendar-event-difficulty-unknown: #854d0ea8;
   --calendar-event-archived: #545a6367;
   --calendar-event-inactive: #2f323693;
-  --calendar-event-text-color: #ffffff;
+  --calendar-event-text-color: #e0e0e0;
+  --calendar-event-type-text-color: #c0c0c0;
   --calendar-event-text-color-archived: #7d8591;
   --calendar-event-text-color-inactive: #545a63;
 
@@ -77,6 +78,7 @@ body.body--light {
   --calendar-event-archived: #9e9e9e63;
   --calendar-event-inactive: #cacbcc93;
   --calendar-event-text-color: #000000;
+  --calendar-event-type-text-color: #333333;
   --calendar-event-text-color-archived: #7d8591;
   --calendar-event-text-color-inactive: #7d8591;
 }
