@@ -1,5 +1,22 @@
 <template>
   <div class="column align-center text-center">
+    <!-- Remove this button once you enable login via Toolbar again -->
+    <q-btn
+      v-if="!authStore.loggedIn"
+      flat
+      class="app-header__button"
+      label="Mit Discord anmelden"
+      icon="login"
+      @click="authStore.loginUser"
+    />
+    <q-btn
+      v-if="authStore.loggedIn && !authStore.loading"
+      flat
+      class="app-header__button"
+      label="Abmelden"
+      icon="logout"
+      @click="authStore.logoutCurrentUser"
+    />
     <div v-if="authStore.loggedIn && !authStore.isAdmin" class="column align-center text-center">
       <p>Hier stehen später spannende Dinge für dich!</p>
       <p>Aktuell ist es aber nur für die Admins nützlich. :c</p>
@@ -16,7 +33,7 @@
       <p>{{ importMessage }}</p>
     </div>
     <div v-else>
-      <p>Leider bist du aktuell nicht angemeldet.</p>
+      <p>Aktuell nur für Admins nützlich.</p>
     </div>
   </div>
 </template>

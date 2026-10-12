@@ -17,6 +17,9 @@ export const up = (pgm) => {
     name: {
       type: "text",
     },
+    userPreferences: {
+      type: "jsonb",
+    },
   });
 
   pgm.createTable("DiscordServer", {

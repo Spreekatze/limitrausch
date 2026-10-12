@@ -1,18 +1,19 @@
 import { Pool, PoolClient } from "pg";
 import { pool } from "./databaseConnection.js";
 import { ensureDiscordUser } from "./discordUser.js";
+import { EventDiscordUser } from "@limitrausch/contracts";
 
 export async function ensureDiscordServerUser(
-  userId: string,
+  user: EventDiscordUser,
   discordServerId: string | undefined,
   usernameOnServer: string,
   client: Pool | PoolClient = pool,
 ): Promise<void> {
-  await ensureDiscordUser(userId, client);
+  await ensureDiscordUser(user, client);
 
   if (discordServerId) {
     await upsertDiscordServerUser(
-      userId,
+      user.id,
       discordServerId,
       usernameOnServer,
       client,

@@ -25,7 +25,8 @@
         }
       "
     />
-    <q-btn
+    <!-- TODO: when you enable the below: remove login button from dashboard and enable beforeEach on Router -->
+    <!-- <q-btn
       v-if="!authStore.loggedIn"
       flat
       class="app-header__button"
@@ -37,10 +38,10 @@
       v-if="authStore.loggedIn && !authStore.loading"
       flat
       class="app-header__button"
-      :label="authStore.discordUser?.username"
+      :label="authStore.user?.username"
       icon="logout"
       @click="authStore.logoutCurrentUser"
-    />
+    /> -->
   </q-toolbar>
 </template>
 

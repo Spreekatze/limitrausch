@@ -143,19 +143,19 @@ export async function addEvent(event: Event): Promise<void> {
     }
 
     await ensureDiscordServerUser(
-      event.creator.id,
+      event.creator,
       event.discordServer?.discordServerId,
       event.creator.name,
       client,
     );
 
     if (event.leader) {
-      await ensureDiscordUser(event.leader.id, client);
+      await ensureDiscordUser(event.leader, client);
     }
 
     for (const coLeader of event.coLeaders ?? []) {
       await ensureDiscordServerUser(
-        coLeader.id,
+        coLeader,
         event.discordServer?.discordServerId,
         coLeader.name,
         client,
@@ -164,7 +164,7 @@ export async function addEvent(event: Event): Promise<void> {
 
     for (const signUp of event.signUps ?? []) {
       await ensureDiscordServerUser(
-        signUp.userId,
+        { id: signUp.userId, name: signUp.name },
         event.discordServer?.discordServerId,
         signUp.name,
         client,
@@ -230,7 +230,7 @@ export async function updateEvent(
 
     if (update.leader) {
       await ensureDiscordServerUser(
-        update.leader.id,
+        update.leader,
         existingEvent.discordServerId,
         update.leader.name,
         client,
@@ -239,7 +239,7 @@ export async function updateEvent(
     if (hasField("coLeaders")) {
       for (const coLeader of update.coLeaders ?? []) {
         await ensureDiscordServerUser(
-          coLeader.id,
+          coLeader,
           existingEvent.discordServerId,
           coLeader.name,
           client,
@@ -250,7 +250,7 @@ export async function updateEvent(
     if (hasField("signUps")) {
       for (const signUp of update.signUps ?? []) {
         await ensureDiscordServerUser(
-          signUp.userId,
+          { id: signUp.userId, name: signUp.name },
           existingEvent.discordServerId,
           signUp.name,
           client,

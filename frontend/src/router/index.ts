@@ -6,7 +6,6 @@ import {
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router';
-import { useAuthStore } from '@/stores/auth-store';
 
 /*
  * If not building with SSR mode, you can
@@ -34,26 +33,27 @@ export default defineRouter((/* { store, ssrContext } */) => {
     history: createHistory(import.meta.env.QUASAR_VUE_ROUTER_BASE),
   });
 
-  Router.beforeEach(async (to) => {
-    if (to.path !== '/dashboard') {
-      return true;
-    }
+  //  TODO: Enable the beforeEach again, once you enable login via Toolbar
+  // Router.beforeEach(async (to) => {
+  //   if (to.path !== '/dashboard') {
+  //     return true;
+  //   }
 
-    const authStore = useAuthStore();
+  //   const authStore = useAuthStore();
 
-    try {
-      await authStore.initAuth();
-    } catch (error) {
-      console.error('Failed to check authentication:', error);
-      return '/';
-    }
+  //   try {
+  //     await authStore.initAuth();
+  //   } catch (error) {
+  //     console.error('Failed to check authentication:', error);
+  //     return '/';
+  //   }
 
-    if (!authStore.loggedIn) {
-      return '/';
-    }
+  //   if (!authStore.loggedIn) {
+  //     return '/';
+  //   }
 
-    return true;
-  });
+  //   return true;
+  // });
 
   // enable HMR for it
   if (import.meta.hot) {

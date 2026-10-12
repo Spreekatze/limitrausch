@@ -1,10 +1,10 @@
 import { beginDiscordLogin, getLoginStatus, logout } from '@/api/auth';
+import type { AuthUser } from '@limitrausch/contracts';
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import type { DiscordOAuthUser } from '@limitrausch/contracts';
 
 interface AuthState {
   loggedIn: boolean;
-  discordUser: DiscordOAuthUser | null;
+  user: AuthUser | null;
   isAdmin: boolean;
   loading: boolean;
 }
@@ -14,7 +14,7 @@ let authPromise: Promise<void> | null = null;
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
     loggedIn: false,
-    discordUser: null,
+    user: null,
     isAdmin: false,
     loading: true,
   }),
@@ -25,12 +25,12 @@ export const useAuthStore = defineStore('auth', {
       try {
         const response = await getLoginStatus();
         this.loggedIn = response.loggedIn;
-        this.discordUser = response.loggedIn ? response.user.discordInfo : null;
+        this.user = response.loggedIn ? response.user : null;
         this.isAdmin = response.loggedIn && response.user.isAdmin;
       } catch (error: unknown) {
         console.error(error);
         this.loggedIn = false;
-        this.discordUser = null;
+        this.user = null;
         this.isAdmin = false;
       } finally {
         this.loading = false;
@@ -60,7 +60,7 @@ export const useAuthStore = defineStore('auth', {
       try {
         await logout();
         this.loggedIn = false;
-        this.discordUser = null;
+        this.user = null;
         this.isAdmin = false;
       } catch (error: unknown) {
         console.error(error);

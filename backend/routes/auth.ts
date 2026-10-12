@@ -88,6 +88,7 @@ router.get("/discord/callback", async (request, response) => {
       .send("Discord OAuth user request failed.");
     return;
   }
+
   const discordOAuthUserResult = discordOAuthUserSchema.safeParse(discordUser);
   if (!discordOAuthUserResult.success) {
     response.status(502).send("Discord returned invalid user data.");
@@ -115,7 +116,7 @@ router.get("/discord/callback", async (request, response) => {
       .send("Discord OAuth user guild request failed.");
     return;
   }
-  console.log("Guilds:", discordUserGuilds);
+  // console.log("Guilds:", discordUserGuilds);
   //TODO: do something with the list of guilds
 
   // Check if the user is in the whitelist of admins
@@ -125,8 +126,12 @@ router.get("/discord/callback", async (request, response) => {
 
   const isAdmin = Boolean(whitelist?.includes(discordOAuthUser.id));
 
+  //TODO: fetch preferences and get them in the session.authuser
+
   request.session.authUser = authUserSchema.parse({
-    discordInfo: discordOAuthUser,
+    id: discordOAuthUser.id,
+    username: discordOAuthUser.global_name,
+    avatar: discordOAuthUser.avatar,
     isAdmin,
   });
 
