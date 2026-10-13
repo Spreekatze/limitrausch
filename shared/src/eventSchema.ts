@@ -50,8 +50,10 @@ export const eventDataDiscordUserSchema = z.object({
 export type EventDiscordUser = z.infer<typeof eventDataDiscordUserSchema>;
 
 export const eventSignUpUserSchema = z.object({
-  name: z.string(),
-  userId: z.string(),
+  id: z.string(),
+  raidHelperId: z.string().optional(),
+  name: z.string().optional(),
+  userId: z.string().optional(),
   status: statusTypeSchema.optional(),
   entryTime: z.number(),
   position: z.number().optional(),
@@ -73,7 +75,7 @@ export type EventDiscordData = z.infer<typeof eventDiscordDataSchema>;
 export const eventSchema = z.object({
   id: z.string(),
   lastUpdated: z.number(),
-  creator: eventDataDiscordUserSchema,
+  creator: eventDataDiscordUserSchema.optional(),
   leader: eventDataDiscordUserSchema.optional(),
   coLeaders: z.array(eventDataDiscordUserSchema).optional(),
   title: z.string(),

@@ -20,6 +20,7 @@ export async function insertEvent(
         "endTime",
         "eventType",
         "eventDifficulty",
+        "eventGoal",
         "discordServerId",
         "discordTextChannelId",
         "discordMessageId",
@@ -28,15 +29,14 @@ export async function insertEvent(
         "isPublic"
       )
       VALUES (
-        $1, $2, $3, $4, $5, $6, $7,
-        $8, $9, $10, $11, $12, $13, 
-        $14, $15, $16, $17
+        $1, $2, $3, $4, $5, $6, $7, $8, $9,
+        $10, $11, $12, $13, $14, $15, $16, $17, $18
       )
     `,
     [
       event.id,
       event.lastUpdated,
-      event.creator.id,
+      event.creator?.id,
       event.leader?.id,
       event.title,
       event.description,
@@ -45,6 +45,7 @@ export async function insertEvent(
       event.endTime,
       event.eventType,
       event.eventDifficulty,
+      event.eventGoal,
       event.discordServer?.id,
       event.discordServer?.textChannelId,
       event.discordServer?.messageId,

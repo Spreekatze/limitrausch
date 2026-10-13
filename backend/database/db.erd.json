@@ -34,7 +34,8 @@
       "gCLPbBgq5sqBTJerj9TBO",
       "LI-eA9VE5dTsyfkm-O3FB",
       "oTAe9jG-XL8OXo02onkG3",
-      "jddYqTaZM_LeKZGiCmzEO"
+      "03h1hgjhk3mklg0zsmaza2yw2",
+      "03h1hptxwexigd39feimt8ad8"
     ],
     "relationshipIds": [
       "zE_1E7Z947a9x0MBLT09T",
@@ -42,16 +43,44 @@
       "8_hoON1moFXUxPgGPm8ML",
       "zq9LcwuRMtXkPZwNhsFqC",
       "9ND6O1yvSs34hgDKght1Y",
-      "1ghnhh_B9pqdzlzQbuUZG",
       "A4m5_iivpj-il_mE-ODdY",
-      "l15-VVCyWzD2B-HIG0SGn",
-      "pPLNs-2KvAO8eTa6k19PU"
+      "03h1hq1n2b80o3bma5ubx6udi",
+      "03h1hq3s2cjsiao687o8enjww",
+      "03h1hsq1a9pbtch4wxy80sx2u",
+      "03h1hsqkz1dsl1r3mr6rq3tim"
     ],
     "indexIds": [],
     "memoIds": []
   },
   "collections": {
     "tableEntities": {
+      "03h1hgjhk3mklg0zsmaza2yw2": {
+        "id": "03h1hgjhk3mklg0zsmaza2yw2",
+        "name": "WebsiteUser",
+        "comment": "",
+        "columnIds": [
+          "03h1hq1n2b80o3bma5sqd8r1j",
+          "03h1hgo9pncqpn6f9sntbgdza"
+        ],
+        "ui": {
+          "x": 1806.8565439427587,
+          "y": 927.2610231162892,
+          "color": ""
+        }
+      },
+      "03h1hptxwexigd39feimt8ad8": {
+        "id": "03h1hptxwexigd39feimt8ad8",
+        "name": "DiscordUser",
+        "comment": "",
+        "columnIds": [
+          "03h1hpus89uq2my5g9w1i0agf"
+        ],
+        "ui": {
+          "x": 2071.421842116351,
+          "y": 670.3234663527041,
+          "color": ""
+        }
+      },
       "7rxdY0ur6aVT5UrgzUTdP": {
         "id": "7rxdY0ur6aVT5UrgzUTdP",
         "name": "Event",
@@ -67,16 +96,18 @@
           "pbsDoRRSYhvEk0XZ5p4R4",
           "MoI8nNLeZqVQhWd07Xes2",
           "FptkO4SPE6KDhyTX7492_",
+          "03h1j37rpz2bj8knhpvssbj1g",
+          "03h1j3bq5j6lhi5khdqxupro4",
           "4UIzv5xxQLZi882ArFSfh",
           "RE8q232fsyLh14lLq_tRI",
+          "03h1j3g4xpdnp4x0sprmp91ct",
           "u8FJLtrcmL99Kx6Ozr_nb",
           "SHzhEPqPXfUehc4Ikq79-",
-          "FasPpTplpSFeL8JW2t4iA",
           "MyZIgf3YrE7Qgsmv7bvKQ"
         ],
         "ui": {
-          "x": 1186.2778,
-          "y": 195.512,
+          "x": 1289.9914839765115,
+          "y": 75.2990375078657,
           "color": ""
         }
       },
@@ -85,13 +116,13 @@
         "name": "DiscordServerUser",
         "comment": "",
         "columnIds": [
-          "nNgQsLpm03SnneP3Wt0Q9",
+          "03h1hq3s2cjsiao687kxeu0qg",
           "w8PwWJayAEedD9uuWplxL",
           "1n6IxtJ23cy_PpI42_N_O"
         ],
         "ui": {
-          "x": 641.1601913285972,
-          "y": 271.746954336391,
+          "x": 2156.9501936258325,
+          "y": 284.4324195901466,
           "color": ""
         }
       },
@@ -107,8 +138,8 @@
           "IjiU-H4ykkp1RtQpT1-Vw"
         ],
         "ui": {
-          "x": 1211.2435246619307,
-          "y": -316.253045663609,
+          "x": 1826.5488484331477,
+          "y": -42.108940692039724,
           "color": ""
         }
       },
@@ -122,23 +153,8 @@
           "zqutFyEemyjPYInxPfI2D"
         ],
         "ui": {
-          "x": 1106.4935246619307,
-          "y": -78.25304566360899,
-          "color": ""
-        }
-      },
-      "jddYqTaZM_LeKZGiCmzEO": {
-        "id": "jddYqTaZM_LeKZGiCmzEO",
-        "name": "DiscordUser",
-        "comment": "",
-        "columnIds": [
-          "1pxCoaPFvMQdLnpTNsVqH",
-          "_zFM0fcagMRqCANQCwk5k",
-          "D3hn0qTjMC37UeDXIq56Y"
-        ],
-        "ui": {
-          "x": 767.4935246619306,
-          "y": -54.25304566360899,
+          "x": 1536.3313179562604,
+          "y": -292.55849785424505,
           "color": ""
         }
       },
@@ -147,10 +163,10 @@
         "name": "EventSignUp",
         "comment": "",
         "columnIds": [
-          "patyYWj3E6PrS0GK9HK_i",
+          "03h1iy0fp6m5067ake4wela06",
+          "03h1hsq1a9pbtch4wxvvqe3wz",
           "5Ge_Okwzi7rBCZYIwfRbu",
-          "FxxZz5y-W4G2VkXwJouQd",
-          "7BLG10SNBVPgzGSDLC0pl",
+          "03h1j3mj035f48rjsc6h8nyx6",
           "YmSXyB4dlbHGj8fiq7k6a",
           "33uNY-9pymmcRSu3MWOOM",
           "192BsJW4tq0xxbABW-E7F",
@@ -158,8 +174,8 @@
           "HrSmfZOX_aOmcqUzbqAIq"
         ],
         "ui": {
-          "x": 686.3268579952639,
-          "y": 709.746954336391,
+          "x": 1431.8474361038498,
+          "y": 634.5606390773299,
           "color": ""
         }
       },
@@ -169,16 +185,70 @@
         "comment": "",
         "columnIds": [
           "mUvmGHdI7svsCfKIT4sW-",
-          "VP_X_n1n6rITyIIrs1j5u"
+          "03h1hsqkz1dsl1r3mr5g67aw6"
         ],
         "ui": {
-          "x": 1218.826857995264,
-          "y": 709.746954336391,
+          "x": 1793.6582307382866,
+          "y": 405.66437940677434,
           "color": ""
         }
       }
     },
     "tableColumnEntities": {
+      "03h1hgo9pncqpn6f9sntbgdza": {
+        "id": "03h1hgo9pncqpn6f9sntbgdza",
+        "tableId": "03h1hgjhk3mklg0zsmaza2yw2",
+        "name": "userPreferences",
+        "comment": "",
+        "dataType": "jsonb",
+        "default": "",
+        "options": 0
+      },
+      "03h1hq1n2b80o3bma5sqd8r1j": {
+        "id": "03h1hq1n2b80o3bma5sqd8r1j",
+        "tableId": "03h1hgjhk3mklg0zsmaza2yw2",
+        "name": "id",
+        "comment": "",
+        "dataType": "text",
+        "default": "",
+        "options": 10
+      },
+      "03h1hpus89uq2my5g9w1i0agf": {
+        "id": "03h1hpus89uq2my5g9w1i0agf",
+        "tableId": "03h1hptxwexigd39feimt8ad8",
+        "name": "id",
+        "comment": "",
+        "dataType": "text",
+        "default": "",
+        "options": 14
+      },
+      "03h1j37rpz2bj8knhpvssbj1g": {
+        "id": "03h1j37rpz2bj8knhpvssbj1g",
+        "tableId": "7rxdY0ur6aVT5UrgzUTdP",
+        "name": "eventDifficulty",
+        "comment": "",
+        "dataType": "integer",
+        "default": "",
+        "options": 0
+      },
+      "03h1j3bq5j6lhi5khdqxupro4": {
+        "id": "03h1j3bq5j6lhi5khdqxupro4",
+        "tableId": "7rxdY0ur6aVT5UrgzUTdP",
+        "name": "eventGoal",
+        "comment": "",
+        "dataType": "text",
+        "default": "",
+        "options": 0
+      },
+      "03h1j3g4xpdnp4x0sprmp91ct": {
+        "id": "03h1j3g4xpdnp4x0sprmp91ct",
+        "tableId": "7rxdY0ur6aVT5UrgzUTdP",
+        "name": "discordMessageId",
+        "comment": "",
+        "dataType": "text",
+        "default": "",
+        "options": 0
+      },
       "4UIzv5xxQLZi882ArFSfh": {
         "id": "4UIzv5xxQLZi882ArFSfh",
         "tableId": "7rxdY0ur6aVT5UrgzUTdP",
@@ -197,15 +267,6 @@
         "default": "",
         "options": 14
       },
-      "FasPpTplpSFeL8JW2t4iA": {
-        "id": "FasPpTplpSFeL8JW2t4iA",
-        "tableId": "7rxdY0ur6aVT5UrgzUTdP",
-        "name": "messageId",
-        "comment": "",
-        "dataType": "text",
-        "default": "",
-        "options": 0
-      },
       "FptkO4SPE6KDhyTX7492_": {
         "id": "FptkO4SPE6KDhyTX7492_",
         "tableId": "7rxdY0ur6aVT5UrgzUTdP",
@@ -222,7 +283,7 @@
         "comment": "",
         "dataType": "text",
         "default": "",
-        "options": 8
+        "options": 0
       },
       "LyK6Pfeioi1zlE0DG9q7o": {
         "id": "LyK6Pfeioi1zlE0DG9q7o",
@@ -254,7 +315,7 @@
       "RE8q232fsyLh14lLq_tRI": {
         "id": "RE8q232fsyLh14lLq_tRI",
         "tableId": "7rxdY0ur6aVT5UrgzUTdP",
-        "name": "DiscordTextChannel_id",
+        "name": "discordTextChannelId",
         "comment": "",
         "dataType": "text",
         "default": "",
@@ -323,6 +384,15 @@
         "default": "",
         "options": 8
       },
+      "03h1hq3s2cjsiao687kxeu0qg": {
+        "id": "03h1hq3s2cjsiao687kxeu0qg",
+        "tableId": "LI-eA9VE5dTsyfkm-O3FB",
+        "name": "discordUserId",
+        "comment": "",
+        "dataType": "text",
+        "default": "",
+        "options": 10
+      },
       "1n6IxtJ23cy_PpI42_N_O": {
         "id": "1n6IxtJ23cy_PpI42_N_O",
         "tableId": "LI-eA9VE5dTsyfkm-O3FB",
@@ -332,19 +402,10 @@
         "default": "",
         "options": 0
       },
-      "nNgQsLpm03SnneP3Wt0Q9": {
-        "id": "nNgQsLpm03SnneP3Wt0Q9",
-        "tableId": "LI-eA9VE5dTsyfkm-O3FB",
-        "name": "DiscordUser_id",
-        "comment": "",
-        "dataType": "text",
-        "default": "",
-        "options": 10
-      },
       "w8PwWJayAEedD9uuWplxL": {
         "id": "w8PwWJayAEedD9uuWplxL",
         "tableId": "LI-eA9VE5dTsyfkm-O3FB",
-        "name": "DiscordServer_id",
+        "name": "discordServerId",
         "comment": "",
         "dataType": "text",
         "default": "",
@@ -380,7 +441,7 @@
       "XMv-NQ94WOjHHFLipha-3": {
         "id": "XMv-NQ94WOjHHFLipha-3",
         "tableId": "TpOh3ez6ANSB3_iRmBGNt",
-        "name": "rolesBannedFromEvents",
+        "name": "rolesBannedFromParticipating",
         "comment": "",
         "dataType": "text [ ]",
         "default": "",
@@ -422,32 +483,32 @@
         "default": "",
         "options": 8
       },
-      "1pxCoaPFvMQdLnpTNsVqH": {
-        "id": "1pxCoaPFvMQdLnpTNsVqH",
-        "tableId": "jddYqTaZM_LeKZGiCmzEO",
-        "name": "id",
-        "comment": "",
-        "dataType": "text",
-        "default": "",
-        "options": 14
-      },
-      "D3hn0qTjMC37UeDXIq56Y": {
-        "id": "D3hn0qTjMC37UeDXIq56Y",
-        "tableId": "jddYqTaZM_LeKZGiCmzEO",
-        "name": "userPreferences",
-        "comment": "",
-        "dataType": "jsonb",
-        "default": "",
-        "options": 0
-      },
-      "_zFM0fcagMRqCANQCwk5k": {
-        "id": "_zFM0fcagMRqCANQCwk5k",
-        "tableId": "jddYqTaZM_LeKZGiCmzEO",
-        "name": "name",
+      "03h1hsq1a9pbtch4wxvvqe3wz": {
+        "id": "03h1hsq1a9pbtch4wxvvqe3wz",
+        "tableId": "oTAe9jG-XL8OXo02onkG3",
+        "name": "discordUserId",
         "comment": "",
         "dataType": "text",
         "default": "",
         "options": 8
+      },
+      "03h1iy0fp6m5067ake4wela06": {
+        "id": "03h1iy0fp6m5067ake4wela06",
+        "tableId": "oTAe9jG-XL8OXo02onkG3",
+        "name": "id",
+        "comment": "",
+        "dataType": "text",
+        "default": "",
+        "options": 10
+      },
+      "03h1j3mj035f48rjsc6h8nyx6": {
+        "id": "03h1j3mj035f48rjsc6h8nyx6",
+        "tableId": "oTAe9jG-XL8OXo02onkG3",
+        "name": "raidHelperId",
+        "comment": "",
+        "dataType": "text",
+        "default": "",
+        "options": 0
       },
       "192BsJW4tq0xxbABW-E7F": {
         "id": "192BsJW4tq0xxbABW-E7F",
@@ -470,25 +531,7 @@
       "5Ge_Okwzi7rBCZYIwfRbu": {
         "id": "5Ge_Okwzi7rBCZYIwfRbu",
         "tableId": "oTAe9jG-XL8OXo02onkG3",
-        "name": "Event_id",
-        "comment": "",
-        "dataType": "text",
-        "default": "",
-        "options": 8
-      },
-      "7BLG10SNBVPgzGSDLC0pl": {
-        "id": "7BLG10SNBVPgzGSDLC0pl",
-        "tableId": "oTAe9jG-XL8OXo02onkG3",
-        "name": "DiscordServer_id",
-        "comment": "",
-        "dataType": "text",
-        "default": "",
-        "options": 8
-      },
-      "FxxZz5y-W4G2VkXwJouQd": {
-        "id": "FxxZz5y-W4G2VkXwJouQd",
-        "tableId": "oTAe9jG-XL8OXo02onkG3",
-        "name": "DiscordUser_id",
+        "name": "eventId",
         "comment": "",
         "dataType": "text",
         "default": "",
@@ -512,15 +555,6 @@
         "default": "",
         "options": 0
       },
-      "patyYWj3E6PrS0GK9HK_i": {
-        "id": "patyYWj3E6PrS0GK9HK_i",
-        "tableId": "oTAe9jG-XL8OXo02onkG3",
-        "name": "id",
-        "comment": "",
-        "dataType": "text",
-        "default": "",
-        "options": 14
-      },
       "yLCNWokmIEY4qqo3p6OgQ": {
         "id": "yLCNWokmIEY4qqo3p6OgQ",
         "tableId": "oTAe9jG-XL8OXo02onkG3",
@@ -530,10 +564,10 @@
         "default": "",
         "options": 0
       },
-      "VP_X_n1n6rITyIIrs1j5u": {
-        "id": "VP_X_n1n6rITyIIrs1j5u",
+      "03h1hsqkz1dsl1r3mr5g67aw6": {
+        "id": "03h1hsqkz1dsl1r3mr5g67aw6",
         "tableId": "psPwLxsHUUdhWae-3dqhv",
-        "name": "DiscordUser_id",
+        "name": "discordUserId",
         "comment": "",
         "dataType": "text",
         "default": "",
@@ -542,7 +576,7 @@
       "mUvmGHdI7svsCfKIT4sW-": {
         "id": "mUvmGHdI7svsCfKIT4sW-",
         "tableId": "psPwLxsHUUdhWae-3dqhv",
-        "name": "Event_id",
+        "name": "eventId",
         "comment": "",
         "dataType": "text",
         "default": "",
@@ -550,21 +584,75 @@
       }
     },
     "relationshipEntities": {
-      "1ghnhh_B9pqdzlzQbuUZG": {
-        "id": "1ghnhh_B9pqdzlzQbuUZG",
-        "relationshipType": 16,
-        "onDelete": 4,
+      "03h1hq1n2b80o3bma5ubx6udi": {
+        "id": "03h1hq1n2b80o3bma5ubx6udi",
+        "relationshipType": 2,
+        "onDelete": 1,
         "onUpdate": 1,
         "start": {
-          "tableId": "jddYqTaZM_LeKZGiCmzEO",
+          "tableId": "03h1hptxwexigd39feimt8ad8",
           "columnIds": [
-            "1pxCoaPFvMQdLnpTNsVqH"
+            "03h1hpus89uq2my5g9w1i0agf"
+          ]
+        },
+        "end": {
+          "tableId": "03h1hgjhk3mklg0zsmaza2yw2",
+          "columnIds": [
+            "03h1hq1n2b80o3bma5sqd8r1j"
+          ]
+        }
+      },
+      "03h1hq3s2cjsiao687o8enjww": {
+        "id": "03h1hq3s2cjsiao687o8enjww",
+        "relationshipType": 16,
+        "onDelete": 1,
+        "onUpdate": 1,
+        "start": {
+          "tableId": "03h1hptxwexigd39feimt8ad8",
+          "columnIds": [
+            "03h1hpus89uq2my5g9w1i0agf"
           ]
         },
         "end": {
           "tableId": "LI-eA9VE5dTsyfkm-O3FB",
           "columnIds": [
-            "nNgQsLpm03SnneP3Wt0Q9"
+            "03h1hq3s2cjsiao687kxeu0qg"
+          ]
+        }
+      },
+      "03h1hsq1a9pbtch4wxy80sx2u": {
+        "id": "03h1hsq1a9pbtch4wxy80sx2u",
+        "relationshipType": 16,
+        "onDelete": 1,
+        "onUpdate": 1,
+        "start": {
+          "tableId": "03h1hptxwexigd39feimt8ad8",
+          "columnIds": [
+            "03h1hpus89uq2my5g9w1i0agf"
+          ]
+        },
+        "end": {
+          "tableId": "oTAe9jG-XL8OXo02onkG3",
+          "columnIds": [
+            "03h1hsq1a9pbtch4wxvvqe3wz"
+          ]
+        }
+      },
+      "03h1hsqkz1dsl1r3mr6rq3tim": {
+        "id": "03h1hsqkz1dsl1r3mr6rq3tim",
+        "relationshipType": 16,
+        "onDelete": 1,
+        "onUpdate": 1,
+        "start": {
+          "tableId": "03h1hptxwexigd39feimt8ad8",
+          "columnIds": [
+            "03h1hpus89uq2my5g9w1i0agf"
+          ]
+        },
+        "end": {
+          "tableId": "psPwLxsHUUdhWae-3dqhv",
+          "columnIds": [
+            "03h1hsqkz1dsl1r3mr5g67aw6"
           ]
         }
       },
@@ -619,44 +707,6 @@
           "tableId": "oTAe9jG-XL8OXo02onkG3",
           "columnIds": [
             "5Ge_Okwzi7rBCZYIwfRbu"
-          ]
-        }
-      },
-      "l15-VVCyWzD2B-HIG0SGn": {
-        "id": "l15-VVCyWzD2B-HIG0SGn",
-        "relationshipType": 16,
-        "onDelete": 4,
-        "onUpdate": 1,
-        "start": {
-          "tableId": "LI-eA9VE5dTsyfkm-O3FB",
-          "columnIds": [
-            "nNgQsLpm03SnneP3Wt0Q9",
-            "w8PwWJayAEedD9uuWplxL"
-          ]
-        },
-        "end": {
-          "tableId": "oTAe9jG-XL8OXo02onkG3",
-          "columnIds": [
-            "FxxZz5y-W4G2VkXwJouQd",
-            "7BLG10SNBVPgzGSDLC0pl"
-          ]
-        }
-      },
-      "pPLNs-2KvAO8eTa6k19PU": {
-        "id": "pPLNs-2KvAO8eTa6k19PU",
-        "relationshipType": 16,
-        "onDelete": 4,
-        "onUpdate": 1,
-        "start": {
-          "tableId": "jddYqTaZM_LeKZGiCmzEO",
-          "columnIds": [
-            "1pxCoaPFvMQdLnpTNsVqH"
-          ]
-        },
-        "end": {
-          "tableId": "psPwLxsHUUdhWae-3dqhv",
-          "columnIds": [
-            "VP_X_n1n6rITyIIrs1j5u"
           ]
         }
       },

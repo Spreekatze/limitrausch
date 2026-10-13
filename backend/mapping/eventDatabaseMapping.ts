@@ -27,11 +27,13 @@ export function mapDatabaseEventRowToEvent(
 
   const signUps = signUpsRow?.map((signUp) => {
     return {
-      name: signUp.usernameOnServer,
-      userId: signUp.discordUserId,
-      status: signUp.status,
-      entryTime: signUp.entryTime,
-      position: signUp.position,
+      id: signUp.id,
+      raidHelperId: signUp.raidHelperId ?? undefined,
+      userId: signUp.discordUserId ?? undefined,
+      name: signUp.usernameOnServer ?? undefined,
+      status: signUp.status ?? undefined,
+      entryTime: Number(signUp.entryTime),
+      position: signUp.position ?? undefined,
       jobFirstPrio: signUp.jobFirstPrio
         ? getJobFromId(signUp.jobFirstPrio)
         : undefined,
@@ -44,10 +46,13 @@ export function mapDatabaseEventRowToEvent(
   return {
     id: row.id,
     lastUpdated: Number(row.lastUpdated),
-    creator: {
-      id: row.creatorId,
-      name: row.creatorName,
-    },
+    creator:
+      row.creatorId && row.creatorName
+        ? {
+            id: row.creatorId,
+            name: row.creatorName,
+          }
+        : undefined,
     leader:
       row.leaderId && row.leaderName
         ? {
@@ -73,7 +78,7 @@ export function mapDatabaseEventRowToEvent(
           messageId: row.discordMessageId ?? undefined,
         }
       : undefined,
-    signUpCount: row.signUpCount ?? undefined,
+    signUpCount: signUps?.length,
     raidHelperId: row.raidHelperId ?? undefined,
     isPublic: row.isPublic,
     coLeaders,

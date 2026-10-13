@@ -6,18 +6,12 @@ import { EventDiscordUser } from "@limitrausch/contracts";
 export async function ensureDiscordServerUser(
   user: EventDiscordUser,
   discordServerId: string | undefined,
-  usernameOnServer: string,
   client: Pool | PoolClient = pool,
 ): Promise<void> {
   await ensureDiscordUser(user, client);
 
   if (discordServerId) {
-    await upsertDiscordServerUser(
-      user.id,
-      discordServerId,
-      usernameOnServer,
-      client,
-    );
+    await upsertDiscordServerUser(user.id, discordServerId, user.name, client);
   }
 }
 

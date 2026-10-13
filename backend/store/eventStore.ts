@@ -12,7 +12,6 @@ import {
   DatabaseEventSignUpRow,
 } from "../types/databaseRowSchema.js";
 import { ensureDiscordServerUser } from "../database/discordServerUser.js";
-import { getDiscordServer } from "./guildStore.js";
 
 export async function getEvents(): Promise<Event[]> {
   const result = await pool.query<DatabaseEventRow>(`
@@ -21,32 +20,21 @@ export async function getEvents(): Promise<Event[]> {
       creator."usernameOnServer" AS "creatorName",
       leader."usernameOnServer" AS "leaderName",
       server."icon" AS "discordServerIcon",
-      server."name" AS "discordServerName"
+      server."name" AS "discordServerName",
+      channel."name" AS "discordTextChannelName"
     FROM "Event" event
-    JOIN "DiscordServerUser" creator
+    LEFT JOIN "DiscordServerUser" creator
       ON creator."discordUserId" = event."creatorId"
+      AND creator."discordServerId" = event."discordServerId"
     LEFT JOIN "DiscordServerUser" leader
       ON leader."discordUserId" = event."leaderId"
+      AND leader."discordServerId" = event."discordServerId"
     LEFT JOIN "DiscordServer" server
       ON server.id = event."discordServerId"
+    LEFT JOIN "DiscordTextChannel" channel
+      ON channel.id = event."discordTextChannelId"
+      AND channel."discordServerId" = event."discordServerId"
   `);
-
-  // const coleaderResult = await pool.query<DatabaseEventCoLeaderRow>(`
-  //   SELECT
-  //     eventCoLeader."eventId",
-  //     discordUser.id,
-  //     discordUser.name
-  //   FROM "EventCoLeader" eventCoLeader
-  //   JOIN "DiscordUser" discordUser
-  //     ON discordUser.id = eventCoLeader."discordUserId"
-  // `);
-
-  // const coLeadersByEvent = new Map<string, { id: string; name: string }[]>();
-  // for (const row of coleaderResult.rows) {
-  //   const coLeaders = coLeadersByEvent.get(row.eventId) ?? [];
-  //   coLeaders.push({ id: row.id, name: row.name });
-  //   coLeadersByEvent.set(row.eventId, coLeaders);
-  // }
 
   return result.rows.map((row) => mapDatabaseEventRowToEvent(row));
 }
@@ -63,12 +51,22 @@ async function getEventBy(
     SELECT
       event.*,
       creator."usernameOnServer" AS "creatorName",
-      leader."usernameOnServer" AS "leaderName"
+      leader."usernameOnServer" AS "leaderName",
+      server."icon" AS "discordServerIcon",
+      server."name" AS "discordServerName",
+      channel."name" AS "discordTextChannelName"
     FROM "Event" event
-    JOIN "DiscordServerUser" creator
+    LEFT JOIN "DiscordServerUser" creator
       ON creator."discordUserId" = event."creatorId"
+      AND creator."discordServerId" = event."discordServerId"
     LEFT JOIN "DiscordServerUser" leader
       ON leader."discordUserId" = event."leaderId"
+      AND leader."discordServerId" = event."discordServerId"
+    LEFT JOIN "DiscordServer" server
+      ON server.id = event."discordServerId"
+    LEFT JOIN "DiscordTextChannel" channel
+      ON channel.id = event."discordTextChannelId"
+      AND channel."discordServerId" = event."discordServerId"
     WHERE event.${columnName} = $1
     `,
     [value],
@@ -82,11 +80,14 @@ async function getEventBy(
     `
     SELECT
       eventCoLeader."eventId",
-      discordServerUser."discordUserId",
-      discordServerUser."usernameOnServer"
+      eventCoLeader."discordUserId" AS "id",
+      discordServerUser."usernameOnServer" AS "name"
     FROM "EventCoLeader" eventCoLeader
+    JOIN "Event" event
+      ON event.id = eventCoLeader."eventId"
     JOIN "DiscordServerUser" discordServerUser
       ON discordServerUser."discordUserId" = eventCoLeader."discordUserId"
+      AND discordServerUser."discordServerId" = event."discordServerId"
     WHERE eventCoLeader."eventId" = $1
     `,
     [row.id],
@@ -98,8 +99,11 @@ async function getEventBy(
       eventSignUp.*,
       discordServerUser."usernameOnServer"
     FROM "EventSignUp" eventSignUp
-    JOIN "DiscordServerUser" discordServerUser
+    JOIN "Event" signupEvent
+      ON signupEvent.id = eventSignUp."eventId"
+    LEFT JOIN "DiscordServerUser" discordServerUser
       ON eventSignUp."discordUserId" = discordServerUser."discordUserId"
+      AND discordServerUser."discordServerId" = signupEvent."discordServerId"
     WHERE eventSignUp."eventId" = $1
     `,
     [row.id],
@@ -132,33 +136,34 @@ export async function addEvent(event: Event): Promise<void> {
       );
     }
 
-    await ensureDiscordServerUser(
-      event.creator,
-      event.discordServer?.id,
-      event.creator.name,
-      client,
-    );
+    if (event.creator) {
+      await ensureDiscordServerUser(
+        event.creator,
+        event.discordServer?.id,
+        client,
+      );
+    }
 
     if (event.leader) {
-      await ensureDiscordUser(event.leader, client);
+      await ensureDiscordServerUser(
+        event.leader,
+        event.discordServer?.id,
+        client,
+      );
     }
 
     for (const coLeader of event.coLeaders ?? []) {
-      await ensureDiscordServerUser(
-        coLeader,
-        event.discordServer?.id,
-        coLeader.name,
-        client,
-      );
+      await ensureDiscordServerUser(coLeader, event.discordServer?.id, client);
     }
 
     for (const signUp of event.signUps ?? []) {
-      await ensureDiscordServerUser(
-        { id: signUp.userId, name: signUp.name },
-        event.discordServer?.id,
-        signUp.name,
-        client,
-      );
+      if (signUp.userId && signUp.name) {
+        await ensureDiscordServerUser(
+          { id: signUp.userId, name: signUp.name },
+          event.discordServer?.id,
+          client,
+        );
+      }
     }
 
     await insertEvent(event, client);
@@ -168,12 +173,7 @@ export async function addEvent(event: Event): Promise<void> {
     }
 
     for (const signUp of event.signUps ?? []) {
-      await insertEventSignUp(
-        signUp,
-        event.id,
-        event.discordServer!.id,
-        client,
-      );
+      await insertEventSignUp(signUp, event.id, client);
     }
 
     await client.query("COMMIT");
@@ -196,8 +196,8 @@ export async function updateEvent(
 
     // Fetch current pair of discord server and textchannel for the event
     const existingResult = await client.query<{
-      discordServerId: string | undefined;
-      discordTextChannelId: string;
+      discordServerId: string | null;
+      discordTextChannelId: string | null;
     }>(
       `
       SELECT "discordServerId", "discordTextChannelId"
@@ -218,36 +218,38 @@ export async function updateEvent(
     const hasField = (field: keyof Event) =>
       Object.prototype.hasOwnProperty.call(update, field);
 
-    if (update.leader) {
-      await ensureDiscordServerUser(
-        update.leader,
-        existingEvent.discordServerId,
-        update.leader.name,
-        client,
-      );
-    }
-    if (hasField("coLeaders")) {
-      for (const coLeader of update.coLeaders ?? []) {
+    if (existingEvent.discordServerId) {
+      if (update.leader) {
         await ensureDiscordServerUser(
-          coLeader,
+          update.leader,
           existingEvent.discordServerId,
-          coLeader.name,
           client,
         );
       }
-    }
+      if (hasField("coLeaders")) {
+        for (const coLeader of update.coLeaders ?? []) {
+          await ensureDiscordServerUser(
+            coLeader,
+            existingEvent.discordServerId,
+            client,
+          );
+        }
+      }
 
-    if (hasField("signUps")) {
-      for (const signUp of update.signUps ?? []) {
-        await ensureDiscordServerUser(
-          { id: signUp.userId, name: signUp.name },
-          existingEvent.discordServerId,
-          signUp.name,
-          client,
-        );
+      if (hasField("signUps")) {
+        for (const signUp of update.signUps ?? []) {
+          if (signUp.userId && signUp.name) {
+            await ensureDiscordServerUser(
+              { id: signUp.userId, name: signUp.name },
+              existingEvent.discordServerId,
+              client,
+            );
+          }
+        }
       }
     }
 
+    // TODO: irgendwie macht das hier nicht so sinn
     const channelId = hasField("discordServer")
       ? (update.discordServer?.textChannelId ?? null)
       : existingEvent.discordTextChannelId;
@@ -267,9 +269,12 @@ export async function updateEvent(
       );
     }
 
-    const values: (string | number | null)[] = [];
+    const values: (string | number | boolean | null)[] = [];
     const assignments: string[] = [];
-    const assign = (column: string, value: string | number | undefined) => {
+    const assign = (
+      column: string,
+      value: string | number | boolean | undefined,
+    ) => {
       values.push(value ?? null);
       assignments.push(`"${column}" = $${values.length}`);
     };
@@ -283,11 +288,19 @@ export async function updateEvent(
     if (hasField("startTime")) assign("startTime", update.startTime);
     if (hasField("endTime")) assign("endTime", update.endTime);
     if (hasField("eventType")) assign("eventType", update.eventType);
+    if (hasField("eventDifficulty")) {
+      assign("eventDifficulty", update.eventDifficulty);
+    }
+    if (hasField("eventGoal")) assign("eventGoal", update.eventGoal);
+    if (hasField("isPublic")) assign("isPublic", update.isPublic);
     if (hasField("discordServer")) {
       assign("discordServerId", update.discordServer?.id);
     }
     if (hasField("discordServer")) {
       assign("discordTextChannelId", update.discordServer?.textChannelId);
+    }
+    if (hasField("discordServer")) {
+      assign("discordMessageId", update.discordServer?.messageId);
     }
     if (hasField("signUps")) assign("signUpCount", update.signUps?.length);
     if (hasField("raidHelperId")) assign("raidHelperId", update.raidHelperId);
@@ -312,12 +325,7 @@ export async function updateEvent(
         id,
       ]);
       for (const signUp of update.signUps ?? []) {
-        await insertEventSignUp(
-          signUp,
-          id,
-          existingEvent.discordServerId,
-          client,
-        );
+        await insertEventSignUp(signUp, id, client);
       }
     }
 

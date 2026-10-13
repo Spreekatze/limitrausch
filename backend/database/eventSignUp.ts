@@ -5,26 +5,29 @@ import { EventSignUpUser } from "../types/eventSchema.js";
 export async function insertEventSignUp(
   signUp: EventSignUpUser,
   eventId: string,
-  discordServerId: string,
   client: Pool | PoolClient = pool,
 ): Promise<void> {
   await client.query(
     `INSERT INTO "EventSignUp" (
+      "id",
       "eventId",
       "discordUserId",
-      "discordServerId",
+      "raidHelperId",
       "status",
       "entryTime",
       "position",
       "jobFirstPrio",
       "jobFlexSecondPrio"
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-    `,
+    VALUES (
+    $1, $2, $3, $4, $5, 
+    $6, $7, $8, $9
+    )`,
     [
+      signUp.id,
       eventId,
       signUp.userId,
-      discordServerId,
+      signUp.raidHelperId,
       signUp.status,
       signUp.entryTime,
       signUp.position,

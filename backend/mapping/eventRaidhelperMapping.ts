@@ -14,6 +14,7 @@ import {
   statusTypeSchema,
   Event,
 } from "@limitrausch/contracts";
+import { randomUUID } from "crypto";
 
 export function mapRaidHelperGeneralEventDataToEvent(
   raidhelperEvent: RaidHelperEvent,
@@ -78,6 +79,8 @@ function mapRaidHelperSignUpsToEventSignUps(
     const firstPrioJob = getJobName(signUp.specName);
 
     return {
+      id: randomUUID(),
+      raidHelperId: String(signUp.id),
       name: signUp.name,
       userId: signUp.userId,
       status: mapRaidHelperClassToEventStatus(signUp.className),

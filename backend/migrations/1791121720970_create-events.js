@@ -14,8 +14,13 @@ export const up = (pgm) => {
       type: "text",
       primaryKey: true,
     },
-    name: {
+  });
+
+  pgm.createTable("WebsiteUser", {
+    id: {
       type: "text",
+      primaryKey: true,
+      references: '"DiscordUser"',
     },
     userPreferences: {
       type: "jsonb",
@@ -106,7 +111,6 @@ export const up = (pgm) => {
       },
       creatorId: {
         type: "text",
-        notNull: true,
         references: '"DiscordUser"',
       },
       leaderId: {
@@ -151,9 +155,6 @@ export const up = (pgm) => {
       discordMessageId: {
         type: "text",
       },
-      signUpCount: {
-        type: "integer",
-      },
       raidHelperId: {
         type: "text",
         unique: true,
@@ -165,8 +166,11 @@ export const up = (pgm) => {
     },
     {
       constraints: {
-        check:
+        check: [
           '"discordTextChannelId" IS NULL OR "discordServerId" IS NOT NULL',
+          '"eventType" IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 999, 9998)',
+          '"eventDifficulty" IS NULL OR "eventDifficulty" IN (1, 2, 3, 4)',
+        ],
         foreignKeys: {
           columns: ["discordTextChannelId", "discordServerId"],
           references: '"DiscordTextChannel"("id", "discordServerId")',
@@ -201,19 +205,23 @@ export const up = (pgm) => {
   pgm.createTable(
     "EventSignUp",
     {
+      id: {
+        type: "text",
+        primaryKey: true,
+      },
       eventId: {
         type: "text",
-        notNull: true,
         references: '"Event"',
         onDelete: "CASCADE",
+        notNull: true,
       },
       discordUserId: {
         type: "text",
-        notNull: true,
+        references: '"DiscordUser"',
       },
-      discordServerId: {
+      raidHelperId: {
         type: "text",
-        notNull: true,
+        unique: true,
       },
       status: {
         type: "text",
@@ -234,13 +242,8 @@ export const up = (pgm) => {
     },
     {
       constraints: {
-        primaryKey: ["discordUserId", "eventId"],
-        foreignKeys: {
-          columns: ["discordUserId", "discordServerId"],
-          references: '"DiscordServerUser"("discordUserId", "discordServerId")',
-          onDelete: "CASCADE",
-        },
-        unique: ["eventId", "discordUserId", "discordServerId"],
+        check:
+          "\"status\" IS NULL OR \"status\" IN ('Bench', 'Late', 'Tentative', 'Absence')",
       },
     },
   );
@@ -258,5 +261,6 @@ export const down = (pgm) => {
   pgm.dropTable("DiscordServerUser");
   pgm.dropTable("DiscordTextChannel");
   pgm.dropTable("DiscordServer");
+  pgm.dropTable("WebsiteUser");
   pgm.dropTable("DiscordUser");
 };
