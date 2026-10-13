@@ -1,8 +1,5 @@
 import express from "express";
 import requireAdmin from "../middleware/auth.js";
-import type { Event } from "../types/eventSchema.js";
-import { randomUUID } from "crypto";
-import { createEventSchema, updateEventSchema } from "../types/eventSchema.js";
 import { importRaidHelperEvents } from "../services/raidHelperImport.js";
 import {
   addEvent,
@@ -12,6 +9,11 @@ import {
   updateEvent,
 } from "../store/eventStore.js";
 import { addDiscordServer } from "../store/guildStore.js";
+import {
+  CreateEvent,
+  createEventSchema,
+  updateEventSchema,
+} from "@limitrausch/contracts";
 
 const router = express.Router();
 
@@ -57,21 +59,25 @@ router.post("/new", requireAdmin, async (request, response) => {
     return;
   }
 
-  const event: Event = {
+  const event: CreateEvent = {
     ...result.data,
-    id: randomUUID(),
-    lastUpdated: Date.now(),
-    signUpCount: 0,
   };
 
-  await addEvent(event);
+  const createdEvent = await addEvent(event);
 
-  response.status(201).json({ event: event });
+  // TODO: probably this should be a redirect
+  response.status(201).json({ event: createdEvent });
 });
 
 // Get (request) a single event by id
 router.get("/:id", async (request, response) => {
-  const event = await getEventById(request.params.id);
+  const id = Number(request.params.id);
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    response.status(400).json({ error: "Invalid event id" });
+    return;
+  }
+
+  const event = await getEventById(id);
   if (!event) {
     response.status(404).json({ error: "Event not found" });
     return;
@@ -82,8 +88,8 @@ router.get("/:id", async (request, response) => {
 
 // Edit (Update) a single event by id
 router.patch("/:id", requireAdmin, async (request, response) => {
-  const id = request.params.id;
-  if (typeof id !== "string") {
+  const id = Number(request.params.id);
+  if (!Number.isSafeInteger(id) || id <= 0) {
     response.status(400).json({ error: "Invalid event id" });
     return;
   }
@@ -101,7 +107,6 @@ router.patch("/:id", requireAdmin, async (request, response) => {
 
   const updatedEvent = await updateEvent(id, {
     ...result.data,
-    lastUpdated: Date.now(),
   });
 
   if (!updatedEvent) {
@@ -114,8 +119,8 @@ router.patch("/:id", requireAdmin, async (request, response) => {
 
 // Delete a single event by id
 router.delete("/:id", requireAdmin, async (request, response) => {
-  const id = request.params.id;
-  if (typeof id !== "string") {
+  const id = Number(request.params.id);
+  if (!Number.isSafeInteger(id) || id <= 0) {
     response.status(400).json({ error: "Invalid event id" });
     return;
   }

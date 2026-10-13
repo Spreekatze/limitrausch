@@ -3,19 +3,19 @@ import { HttpError } from "../../errors/httpError.js";
 import { getEvents } from "../../store/eventStore.js";
 import type { RaidHelperEvent } from "../../types/raidhelperSchema.js";
 import { importRaidHelperEvents } from "../raidHelperImport.js";
-import {
-  createRaidHelperEvents,
-  validServerId,
-} from "./raidHelperTestUtils.js";
+import { createRaidHelperEvents, validServer } from "./raidHelperTestUtils.js";
 
 const mockStore = vi.hoisted(() => ({
-  events: [] as { id: string; raidHelperId?: string }[],
+  events: [] as { id: number; raidHelperId?: string }[],
+  nextId: 1,
 }));
 
 vi.mock("../../store/eventStore.js", () => ({
   getEvents: vi.fn(async () => mockStore.events),
-  addEvent: vi.fn(async (event: { id: string; raidHelperId?: string }) => {
-    mockStore.events.push(event);
+  addEvent: vi.fn(async (event: { raidHelperId?: string }) => {
+    const storedEvent = { ...event, id: mockStore.nextId++ };
+    mockStore.events.push(storedEvent);
+    return storedEvent;
   }),
 }));
 
@@ -44,15 +44,17 @@ describe("importRaidHelperEvents", () => {
 
   beforeEach(() => {
     mockStore.events.length = 0;
+    mockStore.nextId = 1;
   });
 
   it("works fine when there are no events in the import", async () => {
     const result = await importRaidHelperEvents(
-      validServerId,
+      validServer,
       buildFetchEvents([]),
     );
 
     expect(result).toEqual({
+      success: true,
       imported: 0,
       skipped: 0,
       failed: 0,
@@ -62,11 +64,12 @@ describe("importRaidHelperEvents", () => {
 
   it("imports valid events and counts failed rows without stopping the batch", async () => {
     const result = await importRaidHelperEvents(
-      validServerId,
+      validServer,
       buildFetchEvents(),
     );
 
     expect(result).toEqual({
+      success: true,
       imported: 2,
       skipped: 0,
       failed: 1,
@@ -74,22 +77,24 @@ describe("importRaidHelperEvents", () => {
 
     const storedEvents = await getEvents();
     expect(storedEvents).toHaveLength(2);
-    expect(storedEvents.map((event) => event.id)).toEqual([
-      raidHelperEvents[0].id,
+    expect(storedEvents.map((event) => event.id)).toEqual([1, 2]);
+    expect(storedEvents.map((event) => event.raidHelperId)).toEqual([
       raidHelperEvents[2].id,
+      raidHelperEvents[0].id,
     ]);
-    expect(storedEvents[0].raidHelperId).toBe(raidHelperEvents[0].id);
+    expect(storedEvents[0].raidHelperId).toBe(raidHelperEvents[2].id);
   });
 
   it("skips events that were already imported in the store", async () => {
-    await importRaidHelperEvents(validServerId, buildFetchEvents());
+    await importRaidHelperEvents(validServer, buildFetchEvents());
 
     const result = await importRaidHelperEvents(
-      validServerId,
+      validServer,
       buildFetchEvents(),
     );
 
     expect(result).toEqual({
+      success: true,
       imported: 0,
       skipped: 2,
       failed: 1,
@@ -98,7 +103,7 @@ describe("importRaidHelperEvents", () => {
 
   it("rejects invalid RaidHelper payloads with the expected HttpError", async () => {
     await expect(
-      importRaidHelperEvents(validServerId, async () => ({ hello: "hello" })),
+      importRaidHelperEvents(validServer, async () => ({ hello: "hello" })),
     ).rejects.toThrow("Invalid answer from raid-helper.xyz");
   });
 
@@ -111,7 +116,7 @@ describe("importRaidHelperEvents", () => {
     };
 
     await expect(
-      importRaidHelperEvents(validServerId, fetchEvents),
+      importRaidHelperEvents(validServer, fetchEvents),
     ).rejects.toMatchObject({
       name: "HttpError",
       status: 502,

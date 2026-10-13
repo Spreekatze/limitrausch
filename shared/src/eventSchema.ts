@@ -49,8 +49,8 @@ export const eventDataDiscordUserSchema = z.object({
 });
 export type EventDiscordUser = z.infer<typeof eventDataDiscordUserSchema>;
 
-export const eventSignUpUserSchema = z.object({
-  id: z.string(),
+export const eventSignUpSchema = z.object({
+  id: z.number(),
   raidHelperId: z.string().optional(),
   name: z.string().optional(),
   userId: z.string().optional(),
@@ -60,7 +60,12 @@ export const eventSignUpUserSchema = z.object({
   jobFirstPrio: jobSchema.optional(),
   jobFlexSecondPrio: z.array(jobSchema).optional(),
 });
-export type EventSignUpUser = z.infer<typeof eventSignUpUserSchema>;
+export type EventSignUp = z.infer<typeof eventSignUpSchema>;
+
+export const createEventSignUpSchema = eventSignUpSchema.omit({
+  id: true,
+});
+export type CreateSignUp = z.infer<typeof createEventSignUpSchema>;
 
 export const eventDiscordDataSchema = z.object({
   id: z.string(),
@@ -73,7 +78,7 @@ export const eventDiscordDataSchema = z.object({
 export type EventDiscordData = z.infer<typeof eventDiscordDataSchema>;
 
 export const eventSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   lastUpdated: z.number(),
   creator: eventDataDiscordUserSchema.optional(),
   leader: eventDataDiscordUserSchema.optional(),
@@ -88,11 +93,38 @@ export const eventSchema = z.object({
   eventGoal: z.string().optional(),
   signUpCount: z.number().optional(),
   raidHelperId: z.string().optional(),
-  signUps: z.array(eventSignUpUserSchema).optional(),
+  signUps: z.array(eventSignUpSchema).optional(),
   isPublic: z.boolean(),
   discordServer: eventDiscordDataSchema.optional(),
 });
 export type Event = z.infer<typeof eventSchema>;
+
+export const createEventSchema = eventSchema
+  .omit({
+    id: true,
+    lastUpdated: true,
+    signUpCount: true,
+  })
+  .extend({
+    signUps: z.array(createEventSignUpSchema).optional(),
+  });
+export type CreateEvent = z.infer<typeof createEventSchema>;
+
+export const updateEventSchema = eventSchema
+  .omit({
+    id: true,
+    lastUpdated: true,
+    signUpCount: true,
+    raidHelperId: true,
+  })
+  .extend({
+    signUps: z
+      .union([z.array(eventSignUpSchema), z.array(createEventSignUpSchema)])
+      .optional(),
+  })
+  .partial();
+
+export type UpdateEvent = z.infer<typeof updateEventSchema>;
 
 export const eventsResponseSchema = z.object({
   postedEvents: z.array(eventSchema),

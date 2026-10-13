@@ -1,12 +1,12 @@
-import { z } from "zod";
 import {
   eventTypeSchema,
-  statusTypeSchema,
   eventDifficultySchema,
-} from "./eventSchema.js";
+  statusTypeSchema,
+} from "@limitrausch/contracts";
+import { z } from "zod";
 
 export const databaseEventRowSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   lastUpdated: z.string(),
   creatorId: z.string().nullable(),
   creatorName: z.string().nullable(),
@@ -32,7 +32,7 @@ export const databaseEventRowSchema = z.object({
 export type DatabaseEventRow = z.infer<typeof databaseEventRowSchema>;
 
 export const databaseEventCoLeaderRowSchema = z.object({
-  eventId: z.string(),
+  eventId: z.number(),
   id: z.string(),
   name: z.string(),
 });
@@ -41,8 +41,8 @@ export type DatabaseEventCoLeaderRow = z.infer<
 >;
 
 export const databaseEventSignUpRowSchema = z.object({
-  id: z.string(),
-  eventId: z.string(),
+  id: z.number(),
+  eventId: z.number(),
   discordUserId: z.string().nullable(),
   raidHelperId: z.string().nullable(),
   status: statusTypeSchema.nullable(),

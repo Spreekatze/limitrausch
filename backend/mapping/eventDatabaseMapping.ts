@@ -3,7 +3,7 @@ import {
   DatabaseEventRow,
   DatabaseEventSignUpRow,
 } from "../types/databaseRowSchema.js";
-import { Event } from "../types/eventSchema.js";
+import { Event } from "@limitrausch/contracts";
 import { Job } from "../types/jobSchema.js";
 import { jobsById } from "../data/jobs.js";
 

@@ -1,6 +1,10 @@
+import { DiscordGuild } from "@limitrausch/contracts";
 import type { RaidHelperEvent } from "../../types/raidhelperSchema.js";
 
-export const validServerId = "1408172814879559721";
+export const validServer: DiscordGuild = {
+  id: "1408172814879559721",
+  name: "Ætheris DE",
+};
 
 export const validChannelIds = {
   casual: "1408186147896819822",
@@ -24,6 +28,17 @@ export const createRaidHelperEvents = (): RaidHelperEvent[] => [
     startTime: 1000,
     templateId: "template-1",
     title: "Event 1",
+    signUps: [
+      {
+        id: 1,
+        name: "PlayerOne",
+        userId: "1",
+        position: 1,
+        className: "Tank",
+        entryTime: 1,
+        specName: "WarriorFF",
+      },
+    ],
   },
   {
     channelId: "unknown-channel",
@@ -41,6 +56,17 @@ export const createRaidHelperEvents = (): RaidHelperEvent[] => [
     startTime: 2000,
     templateId: "template-2",
     title: "Event 2",
+    signUps: [
+      {
+        id: 1,
+        name: "PlayerOne",
+        userId: "1",
+        position: 1,
+        className: "Tank",
+        entryTime: 1,
+        specName: "WarriorFF",
+      },
+    ],
   },
   {
     channelId: validChannelIds.raid,
@@ -58,6 +84,7 @@ export const createRaidHelperEvents = (): RaidHelperEvent[] => [
     startTime: 3000,
     templateId: "template-3",
     title: "Event 3",
+    signUps: [],
   },
 ];
 

@@ -1,5 +1,5 @@
 import { HttpError } from "../errors/httpError.js";
-import { Event } from "../types/eventSchema.js";
+import { Event } from "@limitrausch/contracts";
 
 export async function getEventsFromRaidHelper(
   serverId: string,
@@ -30,7 +30,7 @@ export async function getEventsFromRaidHelper(
       {
         headers: {
           Authorization: apiKey,
-          StartTimeFilter: String(startTime),
+          // StartTimeFilter: String(startTime),
           IncludeSignUps: String(true),
         },
         signal: AbortSignal.timeout(10_000),

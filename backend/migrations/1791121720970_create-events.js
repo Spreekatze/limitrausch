@@ -102,8 +102,9 @@ export const up = (pgm) => {
     "Event",
     {
       id: {
-        type: "text",
+        type: "integer",
         primaryKey: true,
+        sequenceGenerated: { precedence: "ALWAYS" },
       },
       lastUpdated: {
         type: "bigint",
@@ -189,7 +190,7 @@ export const up = (pgm) => {
         onDelete: "CASCADE",
       },
       eventId: {
-        type: "text",
+        type: "integer",
         notNull: true,
         references: '"Event"',
         onDelete: "CASCADE",
@@ -206,11 +207,12 @@ export const up = (pgm) => {
     "EventSignUp",
     {
       id: {
-        type: "text",
+        type: "integer",
         primaryKey: true,
+        sequenceGenerated: { precedence: "ALWAYS" },
       },
       eventId: {
-        type: "text",
+        type: "integer",
         references: '"Event"',
         onDelete: "CASCADE",
         notNull: true,

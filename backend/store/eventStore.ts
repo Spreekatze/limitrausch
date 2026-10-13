@@ -1,8 +1,6 @@
-import type { Event } from "../types/eventSchema.js";
 import { mapDatabaseEventRowToEvent } from "../mapping/eventDatabaseMapping.js";
 import { pool } from "../database/databaseConnection.js";
 import { upsertDiscordTextChannel } from "../database/discordTextChannel.js";
-import { ensureDiscordUser } from "../database/discordUser.js";
 import { insertEvent } from "../database/event.js";
 import { insertEventCoLeader } from "../database/eventCoLeader.js";
 import { insertEventSignUp } from "../database/eventSignUp.js";
@@ -12,6 +10,7 @@ import {
   DatabaseEventSignUpRow,
 } from "../types/databaseRowSchema.js";
 import { ensureDiscordServerUser } from "../database/discordServerUser.js";
+import { CreateEvent, UpdateEvent, Event } from "@limitrausch/contracts";
 
 export async function getEvents(): Promise<Event[]> {
   const result = await pool.query<DatabaseEventRow>(`
@@ -43,7 +42,7 @@ type EventLookupColumn = "id" | "raidHelperId";
 
 async function getEventBy(
   column: EventLookupColumn,
-  value: string,
+  value: string | number,
 ): Promise<Event | undefined> {
   const columnName = column === "id" ? '"id"' : '"raidHelperId"';
   const result = await pool.query<DatabaseEventRow>(
@@ -116,11 +115,11 @@ async function getEventBy(
   );
 }
 
-export const getEventById = (id: string) => getEventBy("id", id);
+export const getEventById = (id: number) => getEventBy("id", id);
 export const getEventByRaidHelperId = (id: string) =>
   getEventBy("raidHelperId", id);
 
-export async function addEvent(event: Event): Promise<void> {
+export async function addEvent(event: CreateEvent): Promise<Event> {
   const client = await pool.connect();
 
   try {
@@ -166,17 +165,30 @@ export async function addEvent(event: Event): Promise<void> {
       }
     }
 
-    await insertEvent(event, client);
+    const insertedEvent = await insertEvent(event, client);
 
     for (const coLeader of event.coLeaders ?? []) {
-      await insertEventCoLeader(coLeader.id, event.id, client);
+      await insertEventCoLeader(coLeader.id, insertedEvent.id, client);
     }
 
+    const signUps: NonNullable<Event["signUps"]> = [];
     for (const signUp of event.signUps ?? []) {
-      await insertEventSignUp(signUp, event.id, client);
+      const signUpId = await insertEventSignUp(
+        signUp,
+        insertedEvent.id,
+        client,
+      );
+      signUps.push({ ...signUp, id: signUpId });
     }
 
     await client.query("COMMIT");
+    return {
+      ...event,
+      id: insertedEvent.id,
+      lastUpdated: insertedEvent.lastUpdated,
+      signUpCount: signUps.length,
+      signUps,
+    };
   } catch (error) {
     await client.query("ROLLBACK");
     throw error;
@@ -186,8 +198,8 @@ export async function addEvent(event: Event): Promise<void> {
 }
 
 export async function updateEvent(
-  id: string,
-  update: Partial<Event>,
+  id: number,
+  update: Partial<UpdateEvent>,
 ): Promise<Event | undefined> {
   const client = await pool.connect();
 
@@ -279,7 +291,7 @@ export async function updateEvent(
       assignments.push(`"${column}" = $${values.length}`);
     };
 
-    assign("lastUpdated", update.lastUpdated ?? Date.now());
+    assign("lastUpdated", Date.now());
     if (hasField("creator")) assign("creatorId", update.creator?.id);
     if (hasField("leader")) assign("leaderId", update.leader?.id);
     if (hasField("title")) assign("title", update.title);
@@ -303,7 +315,6 @@ export async function updateEvent(
       assign("discordMessageId", update.discordServer?.messageId);
     }
     if (hasField("signUps")) assign("signUpCount", update.signUps?.length);
-    if (hasField("raidHelperId")) assign("raidHelperId", update.raidHelperId);
 
     values.push(id);
     await client.query(
@@ -340,7 +351,7 @@ export async function updateEvent(
   return getEventById(id);
 }
 
-export async function deleteEvent(id: string): Promise<boolean> {
+export async function deleteEvent(id: number): Promise<boolean> {
   const result = await pool.query(
     'DELETE FROM "Event" WHERE "id" = $1 RETURNING "id"',
     [id],

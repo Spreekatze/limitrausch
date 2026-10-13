@@ -8,21 +8,18 @@ import { Job } from "../types/jobSchema.js";
 import {
   DiscordGuild,
   EVENT_TYPE,
-  EventSignUpUser,
   STATUS_TYPE,
   StatusType,
   statusTypeSchema,
-  Event,
+  CreateEvent,
+  CreateSignUp,
 } from "@limitrausch/contracts";
-import { randomUUID } from "crypto";
 
 export function mapRaidHelperGeneralEventDataToEvent(
   raidhelperEvent: RaidHelperEvent,
   server: DiscordGuild,
-): Event {
-  const event: Event = {
-    id: raidhelperEvent.id,
-    lastUpdated: raidhelperEvent.lastUpdated,
+): CreateEvent {
+  const event: CreateEvent = {
     creator: raidhelperEvent.creator,
     leader: { id: raidhelperEvent.leaderId, name: raidhelperEvent.leaderName },
     coLeaders: raidhelperEvent.coLeaders,
@@ -38,7 +35,6 @@ export function mapRaidHelperGeneralEventDataToEvent(
       icon: server.icon ?? undefined,
       textChannelId: raidhelperEvent.channelId,
     },
-    signUpCount: parseInt(raidhelperEvent.signUpCount),
     raidHelperId: raidhelperEvent.id,
     isPublic: false,
     signUps: mapRaidHelperSignUpsToEventSignUps(raidhelperEvent.signUps),
@@ -71,7 +67,7 @@ function mapRaidHelperClassToEventStatus(
 
 function mapRaidHelperSignUpsToEventSignUps(
   raidHelperSignUps: RaidHelperSignUp[],
-): EventSignUpUser[] {
+): CreateSignUp[] {
   const signUps = raidHelperSignUps.map((signUp) => {
     const flexJobs = [signUp.spec2Name, signUp.spec3Name]
       .filter((name): name is string => getJobName(name) !== undefined)
@@ -79,7 +75,6 @@ function mapRaidHelperSignUpsToEventSignUps(
     const firstPrioJob = getJobName(signUp.specName);
 
     return {
-      id: randomUUID(),
       raidHelperId: String(signUp.id),
       name: signUp.name,
       userId: signUp.userId,
@@ -99,18 +94,8 @@ function mapRaidHelperSignUpsToEventSignUps(
 export function mapRaidHelperWebhookEventToEvent(
   raidhelperEvent: RaidHelperWebHookEvent,
   serverId: string,
-): Event {
-  // const eventType = getEventType(serverId, raidhelperEvent.channelId ?? "");
-
-  // if (eventType === undefined) {
-  //   throw new Error(
-  //     `No event type mapping found for server ${serverId} and channel ${raidhelperEvent.channelId}`,
-  //   );
-  // }
-
-  const event: Event = {
-    id: raidhelperEvent.id,
-    lastUpdated: raidhelperEvent.lastUpdated,
+): CreateEvent {
+  const event: CreateEvent = {
     creator: raidhelperEvent.creator,
     leader:
       raidhelperEvent.leaderId && raidhelperEvent.leaderName
@@ -130,7 +115,6 @@ export function mapRaidHelperWebhookEventToEvent(
       id: serverId,
       textChannelId: raidhelperEvent.channelId,
     },
-    signUpCount: raidhelperEvent.signUps.length,
     raidHelperId: raidhelperEvent.id,
     signUps: mapRaidHelperSignUpsToEventSignUps(raidhelperEvent.signUps),
     isPublic: false,

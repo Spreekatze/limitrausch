@@ -3,7 +3,7 @@ import { pool } from "./databaseConnection.js";
 
 export async function insertEventCoLeader(
   discordUserId: string,
-  eventId: string,
+  eventId: number,
   client: Pool | PoolClient = pool,
 ): Promise<void> {
   await client.query(

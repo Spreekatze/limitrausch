@@ -1,15 +1,14 @@
 import { Pool, PoolClient } from "pg";
 import { pool } from "./databaseConnection.js";
-import { EventSignUpUser } from "../types/eventSchema.js";
+import { CreateSignUp } from "@limitrausch/contracts";
 
 export async function insertEventSignUp(
-  signUp: EventSignUpUser,
-  eventId: string,
+  signUp: CreateSignUp,
+  eventId: number,
   client: Pool | PoolClient = pool,
-): Promise<void> {
-  await client.query(
+): Promise<number> {
+  const result = await client.query<{ id: number }>(
     `INSERT INTO "EventSignUp" (
-      "id",
       "eventId",
       "discordUserId",
       "raidHelperId",
@@ -21,10 +20,11 @@ export async function insertEventSignUp(
     )
     VALUES (
     $1, $2, $3, $4, $5, 
-    $6, $7, $8, $9
-    )`,
+    $6, $7, $8
+    )
+    RETURNING "id"
+    `,
     [
-      signUp.id,
       eventId,
       signUp.userId,
       signUp.raidHelperId,
@@ -35,4 +35,5 @@ export async function insertEventSignUp(
       signUp.jobFlexSecondPrio?.map((job) => job.id),
     ],
   );
+  return result.rows[0].id;
 }

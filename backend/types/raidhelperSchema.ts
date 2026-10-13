@@ -1,5 +1,5 @@
+import { eventDataDiscordUserSchema } from "@limitrausch/contracts";
 import { z } from "zod";
-import { eventDataDiscordUserSchema } from "./eventSchema.js";
 
 const raidHelperAdvancedSettingsSchema = z.object({
   image: z.string(),

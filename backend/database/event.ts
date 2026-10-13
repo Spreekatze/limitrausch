@@ -1,15 +1,17 @@
 import { Pool, PoolClient } from "pg";
 import { pool } from "./databaseConnection.js";
-import { Event } from "../types/eventSchema.js";
+import { CreateEvent } from "@limitrausch/contracts";
 
 export async function insertEvent(
-  event: Event,
+  event: CreateEvent,
   client: Pool | PoolClient = pool,
-): Promise<void> {
-  await client.query(
+): Promise<{ id: number; lastUpdated: number }> {
+  const lastUpdated = Date.now();
+  const signUpCount = event.signUps?.length;
+
+  const result = await client.query<{ id: number; lastUpdated: string }>(
     `
       INSERT INTO "Event" (
-        "id",
         "lastUpdated",
         "creatorId",
         "leaderId",
@@ -30,12 +32,12 @@ export async function insertEvent(
       )
       VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8, $9,
-        $10, $11, $12, $13, $14, $15, $16, $17, $18
+        $10, $11, $12, $13, $14, $15, $16, $17
       )
+      RETURNING "id", "lastUpdated"
     `,
     [
-      event.id,
-      event.lastUpdated,
+      lastUpdated,
       event.creator?.id,
       event.leader?.id,
       event.title,
@@ -49,9 +51,14 @@ export async function insertEvent(
       event.discordServer?.id,
       event.discordServer?.textChannelId,
       event.discordServer?.messageId,
-      event.signUpCount,
+      signUpCount,
       event.raidHelperId,
       event.isPublic,
     ],
   );
+
+  return {
+    id: result.rows[0].id,
+    lastUpdated: Number(result.rows[0].lastUpdated),
+  };
 }

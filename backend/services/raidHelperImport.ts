@@ -28,7 +28,9 @@ export async function importRaidHelperEvents(
   }
 
   const existingEvents = await getEvents();
-  const existingEventIds = new Set(existingEvents.map((event) => event.id));
+  const existingRaidHelperEventIds = new Set(
+    existingEvents.map((event) => event.raidHelperId),
+  );
   result.data.postedEvents.sort((a, b) => b.lastUpdated - a.lastUpdated);
 
   for (const raidHelperEvent of result.data.postedEvents) {
@@ -38,13 +40,13 @@ export async function importRaidHelperEvents(
         server,
       );
 
-      if (existingEventIds.has(mappedEvent.id)) {
+      if (existingRaidHelperEventIds.has(mappedEvent.raidHelperId)) {
         skipped++;
         continue;
       }
 
       await addEvent(mappedEvent);
-      existingEventIds.add(mappedEvent.id);
+      existingRaidHelperEventIds.add(mappedEvent.raidHelperId);
       imported++;
     } catch (error) {
       failed++;
