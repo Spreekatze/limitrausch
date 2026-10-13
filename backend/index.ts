@@ -12,6 +12,7 @@ import webHookRoutes from "./routes/webhooks.js";
 import jobRoutes from "./routes/jobs.js";
 import { renderRouteRows } from "./views/route-list.js";
 import { testDatabaseConnection } from "./database/databaseConnection.js";
+import errorHandler from "./errors/errorHandler.js";
 
 // Initialize Express app and configure environment variables
 const app = express();
@@ -73,6 +74,9 @@ app.use("/auth", authRoutes);
 app.use("/events", eventRoutes);
 app.use("/webhooks", webHookRoutes);
 app.use("/jobs", jobRoutes);
+
+// Handle errors
+app.use(errorHandler);
 
 testDatabaseConnection()
   .then(() => {

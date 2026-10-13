@@ -137,7 +137,7 @@
       padding: 15px;
       font-size: small;
       background-color: var(--app-background);
-      border: 1px solid black;
+      border: 1px solid var(--calendar-border-color);
 
       .event-general-data .q-card__section {
         > :first-child {

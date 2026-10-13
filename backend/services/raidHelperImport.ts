@@ -4,6 +4,7 @@ import { raidHelperEventsResponseSchema } from "../types/raidhelperSchema.js";
 import { getEventsFromRaidHelper } from "./raidHelperAPI.js";
 import { HttpError } from "../errors/httpError.js";
 import { DiscordGuild, RaidHelperImportResponse } from "@limitrausch/contracts";
+import logger from "../logger.js";
 
 export async function importRaidHelperEvents(
   server: DiscordGuild,
@@ -17,12 +18,18 @@ export async function importRaidHelperEvents(
 
   const result = raidHelperEventsResponseSchema.safeParse(raidHelperData);
   if (!result.success) {
-    throw new HttpError(502, "Invalid answer from raid-helper.xyz");
+    throw new HttpError(502, "Invalid answer from raid-helper.xyz", {
+      serverId: server.id,
+      validationIssues: result.error.issues.map(({ code, path }) => ({
+        code,
+        path,
+      })),
+    });
   }
 
-  const existingEventIds = new Set(
-    (await getEvents()).map((event) => event.id),
-  );
+  const existingEvents = await getEvents();
+  const existingEventIds = new Set(existingEvents.map((event) => event.id));
+  result.data.postedEvents.sort((a, b) => b.lastUpdated - a.lastUpdated);
 
   for (const raidHelperEvent of result.data.postedEvents) {
     try {
@@ -41,12 +48,17 @@ export async function importRaidHelperEvents(
       imported++;
     } catch (error) {
       failed++;
-      console.error(
-        `Failed to import RaidHelper event ${raidHelperEvent.id}:`,
-        error,
+      logger.error(
+        { err: error, serverId: server.id, eventId: raidHelperEvent.id },
+        "Failed to import RaidHelper event",
       );
     }
   }
+
+  logger.info(
+    { serverId: server.id, imported, skipped, failed },
+    "RaidHelper event import completed",
+  );
 
   return { success: true, imported, skipped, failed };
 }

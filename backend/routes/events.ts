@@ -4,7 +4,6 @@ import type { Event } from "../types/eventSchema.js";
 import { randomUUID } from "crypto";
 import { createEventSchema, updateEventSchema } from "../types/eventSchema.js";
 import { importRaidHelperEvents } from "../services/raidHelperImport.js";
-import { HttpError } from "../errors/httpError.js";
 import {
   addEvent,
   deleteEvent,
@@ -33,20 +32,12 @@ router.get("/raid-helper/:id", requireAdmin, async (request, response) => {
     });
   }
 
-  try {
-    //TODO: move server adding to its own route
-    await addDiscordServer(server);
+  //TODO: move server adding to its own route
+  await addDiscordServer(server);
 
-    const result = await importRaidHelperEvents(server);
+  const result = await importRaidHelperEvents(server);
 
-    response.status(200).json(result);
-  } catch (error) {
-    if (error instanceof HttpError) {
-      return response.status(error.status).json({ error: error.message });
-    }
-
-    return response.status(502).json({ error: "Raidhelper import failed" });
-  }
+  response.status(200).json(result);
 });
 
 // Get all events
