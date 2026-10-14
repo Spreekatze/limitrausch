@@ -31,36 +31,52 @@
           >
             {{ day.getDate() }}
           </span>
-          <q-card
-            v-for="event in props.eventsByDay.get(day.toDateString()) ?? []"
-            :key="event.id"
-            class="calendar-event"
-            :class="[
-              `calendar-event--${getEventColor(event)}`,
-              {
-                'calendar-event--inactive': !isCurrentMonth(day),
-                'calendar-event--today': isToday(day),
-              },
-            ]"
-            @mouseenter="showEventInfo($event, event)"
-            @mousemove="updateEventInfoPosition"
-            @mouseleave="hideEventInfo"
-          >
-            <q-card-section class="event-type" horizontal>
-              {{
-                event.eventType !== EVENT_TYPE.UNDEFINED
-                  ? event.eventType
-                  : formatEventTitle(event.title)[0]
-              }}
-            </q-card-section>
-            <q-card-section class="event-title" v-if="formatEventTitle(event.title).length > 1">
-              {{ getEventTitle(event) }}
-            </q-card-section>
-            <q-card-actions>
-              <q-icon class="server-icon" :name="`${getServerIconUrl(event)}`" />
-              <div><q-icon name="schedule" /> {{ formatEventTime(event.startTime) }}</div>
-            </q-card-actions>
-          </q-card>
+          <div class="calender-event-list-wrapper">
+            <div
+              class="calender-event-list"
+              :ref="(el) => setScrollElement(day.toISOString(), el)"
+              @scroll="updateScrollState(day.toISOString())"
+              :style="{ maxHeight: eventListMaxHeight }"
+            >
+              <q-card
+                v-for="event in props.eventsByDay.get(day.toDateString()) ?? []"
+                :key="event.id"
+                class="calendar-event"
+                :class="[
+                  `calendar-event--${getEventColor(event)}`,
+                  {
+                    'calendar-event--inactive': !isCurrentMonth(day),
+                    'calendar-event--today': isToday(day),
+                  },
+                ]"
+                @mouseenter="showEventInfo($event, event)"
+                @mousemove="updateEventInfoPosition"
+                @mouseleave="hideEventInfo"
+              >
+                <q-card-section class="event-title" v-if="formatEventTitle(event.title).length > 1">
+                  {{ getEventTitle(event) }}
+                </q-card-section>
+                <q-card-actions>
+                  <q-icon class="server-icon" :name="`${getServerIconUrl(event)}`" />
+                  <div><q-icon name="schedule" /> {{ formatEventTime(event.startTime) }}</div>
+                </q-card-actions>
+              </q-card>
+              <div
+                v-if="scrollStates[day.toISOString()]?.up"
+                class="scroll-indicator scroll-indicator--top"
+                @click="scrollEvents(day.toISOString(), 'up')"
+              >
+                <q-icon name="keyboard_arrow_up" size="24px" />
+              </div>
+              <div
+                v-if="scrollStates[day.toISOString()]?.down"
+                class="scroll-indicator scroll-indicator--bottom"
+                @click="scrollEvents(day.toISOString(), 'down')"
+              >
+                <q-icon name="keyboard_arrow_down" size="24px" />
+              </div>
+            </div>
+          </div>
         </td>
       </tr>
     </tbody>
@@ -134,11 +150,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, nextTick, reactive, ref, type ComponentPublicInstance } from 'vue';
 import type { Event } from '../api/events';
 import { formatEventDay, formatEventTime, formatEventTitle } from '../utils/calendar';
 import { EVENT_DIFFICULTY, EVENT_TYPE } from '@limitrausch/contracts';
-import { nextTick } from 'vue';
 
 const now = new Date();
 const props = defineProps<{
@@ -149,6 +164,16 @@ const props = defineProps<{
 const hoverCard = ref<HTMLElement | null>(null);
 const hoveredEvent = ref<Event | null>(null);
 const hoverPosition = ref({ x: 0, y: 0 });
+
+interface ScrollState {
+  up: boolean;
+  down: boolean;
+}
+type ScrollElementTarget = Element | ComponentPublicInstance | null;
+const scrollStates = reactive<Record<string, ScrollState>>({});
+const scrollElements = new Map<string, HTMLElement>();
+
+const eventListMaxHeight = computed(() => (props.viewMonthly === true ? '200px' : '500px'));
 
 function isCurrentMonth(day: Date): boolean {
   return day.getFullYear() === now.getFullYear() && day.getMonth() === now.getMonth();
@@ -241,5 +266,45 @@ function updateEventInfoPosition(mouseEvent: MouseEvent) {
 
 function hideEventInfo() {
   hoveredEvent.value = null;
+}
+
+function updateScrollState(key: string) {
+  const el = scrollElements.get(key);
+  if (!el) {
+    return;
+  }
+
+  const up = el.scrollTop > 1;
+  const down = el.scrollTop + el.clientHeight < el.scrollHeight - 1;
+
+  const current = scrollStates[key];
+
+  if (current?.up === up && current?.down === down) return;
+
+  scrollStates[key] = { up, down };
+}
+
+async function setScrollElement(key: string, el: ScrollElementTarget) {
+  const element = el instanceof Element ? el : el?.$el;
+
+  if (!(element instanceof HTMLElement)) {
+    scrollElements.delete(key);
+    return;
+  }
+
+  scrollElements.set(key, element);
+  await nextTick(() => updateScrollState(key));
+}
+
+function scrollEvents(key: string, direction: 'up' | 'down') {
+  const el = scrollElements.get(key);
+  if (!el) {
+    return;
+  }
+
+  el.scrollBy({
+    top: el.clientHeight * 0.8 * (direction === 'down' ? 1 : -1),
+    behavior: 'smooth',
+  });
 }
 </script>

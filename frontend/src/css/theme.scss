@@ -11,12 +11,14 @@
   --app-header-background: #0c1410;
   --app-header-text: #f6e4cb;
   --app-header-hover: #ffffff20;
+  --app-logo-color: #00daff;
 
   --calendar-border-color: var(--app-border-color);
-  --calendar-border-color-today: #70eaff94;
   --calendar-border-color-inactive: #474e4a;
+  --calendar-border-color-today: #00daff78;
   --calendar-background-color: var(--app-surface);
   --calendar-background-color-inactive: #474e4a41;
+  --calendar-number-background-color-today: var(--calendar-border-color-today);
   --calendar-event-difficulty-1: #158841a8;
   --calendar-event-difficulty-2: #6b21a8a8;
   --calendar-event-difficulty-3: #960d0da8;

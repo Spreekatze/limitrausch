@@ -14,7 +14,7 @@
     color: var(--app-text-color);
 
     &--today {
-      border: 5px solid var(--calendar-border-color-today);
+      border: 2px solid var(--calendar-border-color-today);
     }
     &--inactive {
       border: 2px solid var(--calendar-border-color-inactive);
@@ -23,6 +23,15 @@
     &--number {
       &--inactive {
         color: var(--app-muted-text-color);
+      }
+      &--today {
+        background-color: var(--calendar-number-background-color-today);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
       }
     }
 
@@ -110,6 +119,50 @@
           border-color: var(--calendar-event-text-color-archived);
           filter: grayscale(80%);
           opacity: 0.5;
+        }
+      }
+    }
+
+    .calender-event-list-wrapper {
+      position: relative;
+
+      .calender-event-list {
+        overflow-y: auto;
+        scrollbar-width: none;
+
+        .scroll-indicator {
+          position: absolute;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          left: 0;
+          right: 0;
+          height: 28px;
+          z-index: 2;
+
+          cursor: pointer;
+          user-select: none;
+          pointer-events: auto;
+
+          &--top {
+            top: 0;
+            background: linear-gradient(to bottom, var(--calendar-border-color), transparent);
+            &:hover {
+              background: linear-gradient(
+                to bottom,
+                var(--calendar-border-color-today),
+                transparent
+              );
+            }
+          }
+
+          &--bottom {
+            bottom: 0;
+            background: linear-gradient(to top, var(--calendar-border-color), transparent);
+            &:hover {
+              background: linear-gradient(to top, var(--calendar-border-color-today), transparent);
+            }
+          }
         }
       }
     }
