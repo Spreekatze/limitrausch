@@ -314,7 +314,6 @@ export async function updateEvent(
     if (hasField("discordServer")) {
       assign("discordMessageId", update.discordServer?.messageId);
     }
-    if (hasField("signUps")) assign("signUpCount", update.signUps?.length);
 
     values.push(id);
     await client.query(

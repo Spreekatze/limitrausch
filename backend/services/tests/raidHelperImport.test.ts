@@ -79,10 +79,10 @@ describe("importRaidHelperEvents", () => {
     expect(storedEvents).toHaveLength(2);
     expect(storedEvents.map((event) => event.id)).toEqual([1, 2]);
     expect(storedEvents.map((event) => event.raidHelperId)).toEqual([
-      raidHelperEvents[2].id,
       raidHelperEvents[0].id,
+      raidHelperEvents[2].id,
     ]);
-    expect(storedEvents[0].raidHelperId).toBe(raidHelperEvents[2].id);
+    expect(storedEvents[0].raidHelperId).toBe(raidHelperEvents[0].id);
   });
 
   it("skips events that were already imported in the store", async () => {

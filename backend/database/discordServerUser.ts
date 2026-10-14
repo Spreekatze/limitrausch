@@ -29,7 +29,7 @@ async function upsertDiscordServerUser(
     )
     VALUES ($1, $2, $3)
     ON CONFLICT ("discordUserId", "discordServerId")
-    DO UPDATE SET "usernameOnServer" = excluded."usernameOnServer"
+    DO UPDATE SET "usernameOnServer" = EXCLUDED."usernameOnServer"
     `,
     [discordUserId, discordServerId, usernameOnServer],
   );

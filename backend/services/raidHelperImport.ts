@@ -31,7 +31,7 @@ export async function importRaidHelperEvents(
   const existingRaidHelperEventIds = new Set(
     existingEvents.map((event) => event.raidHelperId),
   );
-  result.data.postedEvents.sort((a, b) => b.lastUpdated - a.lastUpdated);
+  result.data.postedEvents.sort((a, b) => a.lastUpdated - b.lastUpdated);
 
   for (const raidHelperEvent of result.data.postedEvents) {
     try {

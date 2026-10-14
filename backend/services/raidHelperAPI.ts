@@ -30,7 +30,7 @@ export async function getEventsFromRaidHelper(
       {
         headers: {
           Authorization: apiKey,
-          // StartTimeFilter: String(startTime),
+          StartTimeFilter: String(startTime),
           IncludeSignUps: String(true),
         },
         signal: AbortSignal.timeout(10_000),

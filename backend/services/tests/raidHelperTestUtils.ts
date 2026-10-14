@@ -6,14 +6,9 @@ export const validServer: DiscordGuild = {
   name: "Ætheris DE",
 };
 
-export const validChannelIds = {
-  casual: "1408186147896819822",
-  raid: "1408186073208852700",
-} as const;
-
 export const createRaidHelperEvents = (): RaidHelperEvent[] => [
   {
-    channelId: validChannelIds.casual,
+    channelId: "channel1",
     closeTime: 2000,
     coLeaders: [],
     color: "ffffff",
@@ -41,7 +36,7 @@ export const createRaidHelperEvents = (): RaidHelperEvent[] => [
     ],
   },
   {
-    channelId: "unknown-channel",
+    channelId: "channel2",
     closeTime: 3000,
     coLeaders: [],
     color: "ffffff",
@@ -64,12 +59,12 @@ export const createRaidHelperEvents = (): RaidHelperEvent[] => [
         position: 1,
         className: "Tank",
         entryTime: 1,
-        specName: "WarriorFF",
+        specName: "Warrior",
       },
     ],
   },
   {
-    channelId: validChannelIds.raid,
+    channelId: "channel3",
     closeTime: 4000,
     coLeaders: [],
     color: "ffffff",

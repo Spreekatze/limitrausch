@@ -7,7 +7,6 @@ export async function insertEvent(
   client: Pool | PoolClient = pool,
 ): Promise<{ id: number; lastUpdated: number }> {
   const lastUpdated = Date.now();
-  const signUpCount = event.signUps?.length;
 
   const result = await client.query<{ id: number; lastUpdated: string }>(
     `
@@ -26,13 +25,12 @@ export async function insertEvent(
         "discordServerId",
         "discordTextChannelId",
         "discordMessageId",
-        "signUpCount",
         "raidHelperId",
         "isPublic"
       )
       VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8, $9,
-        $10, $11, $12, $13, $14, $15, $16, $17
+        $10, $11, $12, $13, $14, $15, $16
       )
       RETURNING "id", "lastUpdated"
     `,
@@ -51,7 +49,6 @@ export async function insertEvent(
       event.discordServer?.id,
       event.discordServer?.textChannelId,
       event.discordServer?.messageId,
-      signUpCount,
       event.raidHelperId,
       event.isPublic,
     ],
