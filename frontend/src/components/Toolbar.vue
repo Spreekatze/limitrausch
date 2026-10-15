@@ -6,15 +6,52 @@
       </q-avatar>
     </router-link>
     <q-toolbar-title class="app-header__title">Limitrausch</q-toolbar-title>
-    <q-btn
-      v-if="authStore.loggedIn"
-      flat
-      class="app-header__button"
-      label="Dashboard"
-      icon="dashboard"
-      to="/dashboard"
+    <template v-if="$q.screen.gt.xs">
+      <q-btn
+        v-if="authStore.loggedIn"
+        flat
+        class="app-header__button"
+        label="Dashboard"
+        icon="dashboard"
+        to="/dashboard"
+      />
+      <q-btn flat class="app-header__button" label="Event-Übersicht" icon="event" to="/events" />
+
+      <!-- TODO: when you enable the below: remove login button from dashboard and enable beforeEach on Router -->
+      <!-- <q-btn
+    v-if="!authStore.loggedIn"
+    flat
+    class="app-header__button"
+    label="Mit Discord anmelden"
+    icon="login"
+    @click="authStore.loginUser"
     />
-    <q-btn flat class="app-header__button" label="Event-Übersicht" icon="event" to="/events" />
+    <q-btn
+    v-if="authStore.loggedIn && !authStore.loading"
+    flat
+    class="app-header__button"
+    :label="authStore.user?.username"
+    icon="logout"
+    @click="authStore.logoutCurrentUser"
+    /> -->
+    </template>
+    <template v-else>
+      <q-btn flat round icon="menu">
+        <q-menu hover auto-close>
+          <q-list>
+            <q-item clickable v-if="authStore.loggedIn">
+              <q-item-section>Dashboard</q-item-section>
+            </q-item>
+            <!-- <q-item clickable>
+              <q-item-section>Guides</q-item-section>
+            </q-item> -->
+            <q-item clickable to="/events">
+              <q-item-section>Eventkalender</q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
+      </q-btn>
+    </template>
     <q-btn
       flat
       class="app-header__button"
@@ -25,23 +62,6 @@
         }
       "
     />
-    <!-- TODO: when you enable the below: remove login button from dashboard and enable beforeEach on Router -->
-    <!-- <q-btn
-      v-if="!authStore.loggedIn"
-      flat
-      class="app-header__button"
-      label="Mit Discord anmelden"
-      icon="login"
-      @click="authStore.loginUser"
-    />
-    <q-btn
-      v-if="authStore.loggedIn && !authStore.loading"
-      flat
-      class="app-header__button"
-      :label="authStore.user?.username"
-      icon="logout"
-      @click="authStore.logoutCurrentUser"
-    /> -->
   </q-toolbar>
 </template>
 

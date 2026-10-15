@@ -6,6 +6,7 @@
 
     <q-page-container>
       <router-view />
+      <KofiButton />
     </q-page-container>
     <Footer />
   </q-layout>
@@ -16,7 +17,7 @@ import { onMounted } from 'vue';
 import { useAuthStore } from './stores/auth-store.js';
 import Toolbar from './components/Toolbar.vue';
 import Footer from './components/Footer.vue';
-
+import KofiButton from './components/kofi-button.vue';
 const authStore = useAuthStore();
 
 onMounted(() => {

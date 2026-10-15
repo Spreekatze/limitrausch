@@ -64,7 +64,7 @@ import {
   formatEventTitle,
   getServerIconUrl,
 } from '@/utils/calendar';
-import { Event, EVENT_TYPE } from '@limitrausch/contracts';
+import { type Event, EVENT_TYPE } from '@limitrausch/contracts';
 
 defineProps<{
   hoveredEvent: Event;
