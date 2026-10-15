@@ -1,0 +1,47 @@
+.calendar-list {
+  margin: 20px;
+
+  &__day {
+    min-height: 40px;
+    padding: 12 px 16px 4px;
+    background-color: var(--calendar-background-color);
+    color: var(--app-text-color);
+    border-bottom: 1px solid var(--calendar-list-time-color);
+  }
+
+  &__item {
+    min-height: 64px;
+    padding: 8px 16px;
+
+    .event {
+      &__time {
+        min-width: 54px;
+        align-items: center;
+        transition: none;
+
+        &__start {
+          color: var(--calendar-list-time-color);
+          font-weight: bold;
+        }
+        &__end {
+          font-size: 0.75rem;
+        }
+      }
+
+      &__title {
+        white-space: normal;
+        font-weight: 500;
+      }
+
+      &__guild {
+        font-size: 0.75rem;
+        transition: none;
+
+        .server-icon {
+          padding-right: 5px;
+          vertical-align: baseline;
+        }
+      }
+    }
+  }
+}

@@ -28,7 +28,13 @@
       </div>
     </div>
     <p v-if="error">{{ error }}</p>
+    <ListCalendar
+      v-if="$q.screen.width < 1170"
+      :events-by-day="eventsByDay"
+      :displayedWeeks="displayedWeeks"
+    />
     <Calendar
+      v-else
       :events-by-day="eventsByDay"
       :displayedWeeks="displayedWeeks"
       :viewMonthly="calendarViewMonthly"
@@ -43,6 +49,7 @@ import { getMonthlyCalendarStartDate } from '../utils/calendar';
 import Calendar from '@/components/Calendar.vue';
 import { useAuthStore } from '@/stores/auth-store';
 import { downloadWeeklyCalendarAsImage } from '../utils/calendar-export';
+import ListCalendar from '@/components/ListCalendar.vue';
 
 const authStore = useAuthStore();
 const isAdmin = computed(() => authStore.isAdmin);
@@ -52,8 +59,8 @@ const exportError = ref<string | null>(null);
 const now = new Date();
 const calendarViewMonthly = ref<boolean>(true);
 const calendarOptions: { label: string; value: boolean }[] = [
-  { label: 'Monatlich', value: true },
-  { label: 'Wöchentlich', value: false },
+  { label: 'Aktueller Monat', value: true },
+  { label: 'Aktuelle Woche', value: false },
 ];
 const events = ref<Event[]>([]);
 const error = ref<string | null>(null);
@@ -77,7 +84,7 @@ const monthlyWeeksDateArray = computed(() => generateMonthlyWeekArray());
 const displayedWeeks = computed(() => generateDisplayedWeekDates());
 
 onMounted(() => {
-  void getEvents(getMonthlyCalendarStartDate())
+  getEvents(getMonthlyCalendarStartDate())
     .then((response) => {
       events.value = response.postedEvents;
     })

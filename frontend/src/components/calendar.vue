@@ -1,5 +1,5 @@
 <template>
-  <table class="calendar-table calendar-table--monthly">
+  <table class="calendar-table" :class="{ 'calendar-table--weekly': !viewMonthly }">
     <thead>
       <tr>
         <th>Montag</th>
@@ -15,7 +15,7 @@
       <tr v-for="(week, weekIndex) in displayedWeeks" :key="weekIndex">
         <td
           v-for="day in week"
-          :key="day.toISOString()"
+          :key="day.toDateString()"
           class="calendar-day"
           :class="{
             'calendar-day--today': isToday(day),
@@ -23,23 +23,23 @@
           }"
         >
           <span
-            class="calendar-day--number"
+            class="calendar-day__number"
             :class="{
-              'calendar-day--number--inactive': !isCurrentMonth(day),
-              'calendar-day--number--today': isToday(day),
+              'calendar-day__number--inactive': !isCurrentMonth(day),
+              'calendar-day__number--today': isToday(day),
             }"
           >
             {{ day.getDate() }}
           </span>
-          <div class="calender-event-list-wrapper">
+          <div class="calender-event-list__wrapper">
             <div
               class="calender-event-list"
-              :ref="(el) => setScrollElement(day.toISOString(), el)"
-              @scroll="updateScrollState(day.toISOString())"
+              :ref="(el) => setScrollElement(day.toDateString(), el)"
+              @scroll="updateScrollState(day.toDateString())"
               :style="{ maxHeight: eventListMaxHeight }"
             >
               <q-card
-                v-for="event in props.eventsByDay.get(day.toDateString()) ?? []"
+                v-for="event in eventsByDay.get(day.toDateString()) ?? []"
                 :key="event.id"
                 class="calendar-event"
                 :class="[
@@ -62,16 +62,16 @@
                 </q-card-actions>
               </q-card>
               <div
-                v-if="scrollStates[day.toISOString()]?.up"
+                v-if="scrollStates[day.toDateString()]?.up"
                 class="scroll-indicator scroll-indicator--top"
-                @click="scrollEvents(day.toISOString(), 'up')"
+                @click="scrollEvents(day.toDateString(), 'up')"
               >
                 <q-icon name="keyboard_arrow_up" size="24px" />
               </div>
               <div
-                v-if="scrollStates[day.toISOString()]?.down"
+                v-if="scrollStates[day.toDateString()]?.down"
                 class="scroll-indicator scroll-indicator--bottom"
-                @click="scrollEvents(day.toISOString(), 'down')"
+                @click="scrollEvents(day.toDateString(), 'down')"
               >
                 <q-icon name="keyboard_arrow_down" size="24px" />
               </div>
@@ -89,73 +89,25 @@
         top: `${hoverPosition.y}px`,
       }"
     >
-      <q-card>
-        <q-card-section class="event-title">
-          <div>
-            {{
-              hoveredEvent.eventType !== EVENT_TYPE.UNDEFINED
-                ? hoveredEvent.eventType
-                : formatEventTitle(hoveredEvent.title)[0]
-            }}
-          </div>
-          <div>{{ hoveredEvent.title }}</div>
-        </q-card-section>
-        <q-separator />
-        <div class="event-general-data">
-          <q-card-section horizontal class="event-server">
-            <div>
-              <q-icon name="discord" />
-            </div>
-            <div>
-              <q-icon class="server-icon" :name="`${getServerIconUrl(hoveredEvent)}`" />
-              <div>{{ hoveredEvent.discordServer?.name }}</div>
-            </div>
-          </q-card-section>
-          <q-card-section class="event-date" horizontal>
-            <div>
-              <q-icon name="event" />
-            </div>
-            <div>
-              {{ formatEventDay(hoveredEvent.startTime) }},
-              {{ formatEventTime(hoveredEvent.startTime) }} -
-              {{ formatEventTime(hoveredEvent.endTime) }}
-            </div>
-          </q-card-section>
-          <q-card-section class="event-leader" horizontal>
-            <div>
-              <q-icon>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <path
-                    fill="currentColor"
-                    d="M12 8L15 13.2L18 10.5L17.3 14H6.7L6 10.5L9 13.2L12 8M12 4L8.5 10L3 5L5 16H19L21 5L15.5 10L12 4M19 18H5V19C5 19.6 5.4 20 6 20H18C18.6 20 19 19.6 19 19V18Z"
-                  />
-                </svg>
-              </q-icon>
-            </div>
-            <div>
-              {{ hoveredEvent.leader?.name }}
-            </div>
-          </q-card-section>
-        </div>
-        <q-separator />
-        <q-card-section class="event-description">
-          {{ hoveredEvent.description }}
-        </q-card-section>
-        <q-card-section class="event-image">
-          <q-img :src="hoveredEvent.imageUrl" alt="Event image" />
-        </q-card-section>
-      </q-card>
+      <calendar-hover :hovered-event="hoveredEvent" />
     </div>
   </table>
 </template>
 
 <script setup lang="ts">
 import { computed, nextTick, reactive, ref, type ComponentPublicInstance } from 'vue';
-import type { Event } from '../api/events';
-import { formatEventDay, formatEventTime, formatEventTitle } from '../utils/calendar';
-import { EVENT_DIFFICULTY, EVENT_TYPE } from '@limitrausch/contracts';
+import { type Event } from '@limitrausch/contracts';
+import {
+  formatEventTime,
+  formatEventTitle,
+  getEventColor,
+  getEventTitle,
+  getServerIconUrl,
+  isCurrentMonth,
+  isToday,
+} from '../utils/calendar';
+import CalendarHover from './CalendarHover.vue';
 
-const now = new Date();
 const props = defineProps<{
   eventsByDay: ReadonlyMap<string, Event[]>;
   viewMonthly: boolean;
@@ -174,58 +126,6 @@ const scrollStates = reactive<Record<string, ScrollState>>({});
 const scrollElements = new Map<string, HTMLElement>();
 
 const eventListMaxHeight = computed(() => (props.viewMonthly === true ? '200px' : '500px'));
-
-function isCurrentMonth(day: Date): boolean {
-  return day.getFullYear() === now.getFullYear() && day.getMonth() === now.getMonth();
-}
-
-function isToday(day: Date): boolean {
-  return (
-    day.getFullYear() === now.getFullYear() &&
-    day.getMonth() === now.getMonth() &&
-    day.getDate() === now.getDate()
-  );
-}
-
-//TODO: Currently temporary fix for colors
-function getEventColor(event: Event): string {
-  if (event.endTime < Date.now() / 1000) return 'archived';
-  if (event.eventDifficulty) {
-    return String(event.eventDifficulty);
-  }
-  if (event.discordServer?.textChannelId === '1408186147896819822')
-    return 'difficulty-' + String(EVENT_DIFFICULTY.EASY);
-  if (event.discordServer?.textChannelId === '1408186073208852700')
-    return 'difficulty-' + String(EVENT_DIFFICULTY.NORMAL);
-  if (event.discordServer?.textChannelId === '1408186117039067227')
-    return 'difficulty-' + String(EVENT_DIFFICULTY.HARD);
-  return 'difficulty-unknown';
-}
-
-function getEventTitle(event: Event): string {
-  // Temporary fix for aetheris server
-  // TODO: remove upon changing to own event version
-  if (
-    event.eventType === EVENT_TYPE.UNDEFINED &&
-    event.discordServer?.id === '1408172814879559721'
-  ) {
-    const formattedTitle = formatEventTitle(event.title);
-    formattedTitle.shift();
-    return formattedTitle.join(' - ');
-  }
-  return event.title;
-}
-
-function getServerIconUrl(event: Event): string {
-  if (!event.discordServer) {
-    return 'img:~/assets/icons/xiv.png';
-  }
-  if (!event.discordServer.icon) {
-    return '';
-  }
-  const extension = event.discordServer.icon.startsWith('a_') ? 'gif' : 'png';
-  return `img:https://cdn.discordapp.com/icons/${event.discordServer.id}/${event.discordServer.icon}.${extension}?size=128`;
-}
 
 async function showEventInfo(mouseEvent: MouseEvent, event: Event) {
   hoveredEvent.value = event;

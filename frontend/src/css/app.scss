@@ -1,6 +1,8 @@
 // app global css
 @use './theme';
-@use './calendar.scss';
+@use './calendar-table.scss';
+@use './calendar-list.scss';
+@use './calendar-hover-card.scss';
 @use './footer.scss';
 
 @font-face {
