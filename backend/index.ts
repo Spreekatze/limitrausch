@@ -4,7 +4,6 @@ import { basename, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import express from "express";
 import session from "express-session";
-import playgroundRoutes from "./routes/playground.js";
 import eventRoutes from "./routes/events.js";
 import statusRoutes from "./routes/status.js";
 import authRoutes from "./routes/auth.js";
@@ -64,9 +63,6 @@ app.get("/", (request, response) => {
       backendPageTemplate.replace("<!-- ROUTE_ROWS -->", renderRouteRows()),
     );
 });
-
-//TODO: Remove playground routes in production
-app.use("/playground", playgroundRoutes);
 
 // Define routes for the application
 app.use("/status", statusRoutes);
