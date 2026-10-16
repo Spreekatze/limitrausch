@@ -1,7 +1,7 @@
 import { EVENT_DIFFICULTY } from '@limitrausch/contracts';
 import type { Event } from '../api/events';
 import { formatEventTime } from './calendar';
-import logoUrl from 'src/assets/AE.png';
+import logoUrl from '../assets/aetheris/AE.png';
 
 const importedScheduleBackgrounds = import.meta.glob<string>(
   '../assets/scheduleBackgrounds/*.{png,jpg,jpeg,webp,avif,svg}',
