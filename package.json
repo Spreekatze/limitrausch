@@ -4,7 +4,7 @@
   "private": true,
   "description": "Website for FFXIV Guides and Event-Management",
   "productName": "limitrausch",
-  "author": "Spreekatze <rissaazzuen@gmail.com>",
+  "author": "Spreekatze",
   "workspaces": [
     "frontend",
     "backend",
