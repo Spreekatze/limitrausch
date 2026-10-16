@@ -17,7 +17,7 @@ import { onMounted } from 'vue';
 import { useAuthStore } from './stores/auth-store.js';
 import Toolbar from './components/Toolbar.vue';
 import Footer from './components/Footer.vue';
-import KofiButton from './components/kofi-button.vue';
+import KofiButton from './components/KofiButton.vue';
 const authStore = useAuthStore();
 
 onMounted(() => {
