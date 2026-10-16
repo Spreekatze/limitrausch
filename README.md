@@ -1,47 +1,115 @@
-# limitrausch
+# Limitrausch
 
-The project is split into `frontend/` (Quasar/Vue) and `backend/` (Express).
+Limitrausch is a community project for **Final Fantasy XIV**, combining event management with plans for gaming guides and other community features.
 
-## Frontend
+The project is organized as an npm workspace monorepo:
+
+- `frontend/` — Vue 3 application built with Quasar
+- `backend/` — Express API written in TypeScript
+- `contracts/` — Shared TypeScript schemas and API contracts
+
+## Prerequisites
+
+- Node.js and npm
+- Docker and Docker Compose
+- Git
+
+## Getting Started
+
+### 1. Install dependencies
+
+Clone the repository and install the dependencies from the project root:
 
 ```bash
-cd frontend
 npm install
-npm run dev
 ```
 
-Useful commands: `npm run typecheck`, `npm run lint:check`, and `npm run build`.
-See [Quasar configuration](https://v2.quasar.dev/quasar-cli-vite/quasar-config-file).
+### 2. Configure environment variables
 
-## Backend
+Copy the relevant `.env.example` files to `.env` files and configure the required variables for your local environment.
 
-```bash
-cd backend
-npm install
-npm run dev
-```
+Environment files are intentionally excluded from version control. Never commit real credentials, API keys, or secrets.
 
-The server listens on port `3000` by default (override with `PORT`)
+### 3. Start PostgreSQL
 
-## PostgreSQL (local development)
-
-Docker Compose starts a local PostgreSQL database with a persistent Docker
-volume:
+Start the local PostgreSQL service using Docker Compose:
 
 ```bash
-docker compose up -d postgres
+docker compose up -d
 docker compose ps
+```
+
+The database uses a persistent Docker volume, so its data survives container restarts.
+
+The default development connection URL is:
+
+```text
+postgresql://limitrausch:limitrausch-dev-only@localhost:5432/limitrausch
+```
+
+To change the development password or host port, configure `POSTGRES_PASSWORD` or `POSTGRES_PORT` in the root `.env` file and update the backend connection URL accordingly.
+
+**Important:** These credentials are for local development only. Do not use them in production.
+
+To stop the services:
+
+```bash
 docker compose down
 ```
 
-The default development connection URL is
-`postgresql://limitrausch:limitrausch-dev-only@localhost:5432/limitrausch`. To change the
-development password or host port, set `POSTGRES_PASSWORD` or `POSTGRES_PORT`
-in a root `.env` file; update the password in the connection URL accordingly.
-These defaults are for local development only, not production.
+This does not remove the persistent database volume. Use `docker compose down -v` only if you intentionally want to delete the persisted database data.
 
-The backend's event store is still in memory and does not use this database yet.
-The Compose setup only provides the local PostgreSQL service; connecting the
-event store and adding its schema is a separate step.
+### 4. Start the application
 
-Generate migrations with `npx node-pg-migrate create <name of migration>`.
+Start the frontend and backend in separate terminals from the repository root:
+
+```bash
+npm run dev --workspace=frontend
+```
+
+```bash
+npm run dev --workspace=backend
+```
+
+The backend listens on port `3000` by default. The frontend uses the development server configured by Quasar.
+
+Make sure the environment variables and database are configured before starting the backend.
+
+## Development Commands
+
+Run the following commands from the repository root.
+
+| Command             | Description                                            |
+| ------------------- | ------------------------------------------------------ |
+| `npm run typecheck` | Type-check the shared contracts, frontend, and backend |
+| `npm run lint`      | Check code style and lint rules                        |
+| `npm run lint:fix`  | Automatically fix supported lint issues                |
+| `npm test`          | Run the available workspace tests                      |
+| `npm run build`     | Build the contracts, frontend, and backend             |
+
+The shared contracts are built before the frontend and backend where required.
+
+## Database Migrations
+
+Database migrations are managed with `node-pg-migrate`.
+
+Run the following commands from the repository root:
+
+```bash
+# Create a new migration
+npm run create-migration --workspace=backend -- <migration-name>
+
+# Preview pending migrations without applying them
+npm run migrate-dry --workspace=backend
+
+# Apply pending migrations
+npm run migrate --workspace=backend
+```
+
+The migration commands load environment variables from the root `.env` file.
+
+Review generated migrations before applying them to a database.
+
+## Project Status
+
+Limitrausch is under active development. Features, APIs, and setup instructions may change as the project evolves.
