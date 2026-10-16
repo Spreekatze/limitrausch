@@ -228,13 +228,6 @@ export const up = (pgm) => {
       status: {
         type: "text",
       },
-      entryTime: {
-        type: "bigint",
-        notNull: true,
-      },
-      position: {
-        type: "integer",
-      },
       jobFirstPrio: {
         type: "integer",
       },

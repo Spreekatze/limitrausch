@@ -79,8 +79,6 @@ function mapRaidHelperSignUpsToEventSignUps(
       name: signUp.name,
       userId: signUp.userId,
       status: mapRaidHelperClassToEventStatus(signUp.className),
-      entryTime: signUp.entryTime,
-      position: signUp.position,
       jobFirstPrio: firstPrioJob
         ? getJobFromRaidHelperName(firstPrioJob)
         : undefined,

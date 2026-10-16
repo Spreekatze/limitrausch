@@ -32,8 +32,6 @@ export function mapDatabaseEventRowToEvent(
       userId: signUp.discordUserId ?? undefined,
       name: signUp.usernameOnServer ?? undefined,
       status: signUp.status ?? undefined,
-      entryTime: Number(signUp.entryTime),
-      position: signUp.position ?? undefined,
       jobFirstPrio: signUp.jobFirstPrio
         ? getJobFromId(signUp.jobFirstPrio)
         : undefined,
