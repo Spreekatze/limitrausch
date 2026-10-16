@@ -13,7 +13,7 @@
   "scripts": {
     "build:contracts": "npm run build --workspace=@limitrausch/contracts",
     "typecheck": "npm run build:contracts && npm run typecheck --workspaces --if-present",
-    "test": "npm run test --workspace=backend",
+    "test": "npm run test --workspaces --if-present",
     "build": "npm run build:contracts && npm run build --workspace=frontend && npm run build --workspace=backend",
     "lint": "npm run lint:check --workspaces --if-present",
     "lint:fix": "npm run lint:fix --workspaces --if-present"

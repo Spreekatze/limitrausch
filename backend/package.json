@@ -15,7 +15,7 @@
     "lint:fix": "prettier --write \"**/*.{js,mjs,cjs,ts,json,md,yml,yaml}\" --ignore-path ../.gitignore && eslint --fix \"**/*.{js,mjs,cjs,ts}\"",
     "lint:check": "prettier --check \"**/*.{js,mjs,cjs,ts,json,md,yml,yaml}\" --ignore-path ../.gitignore && eslint \"**/*.{js,mjs,cjs,ts}\"",
     "pretest": "npm run build:contracts",
-    "test": "vitest",
+    "test": "vitest run --exclude dist/**",
     "migrate-dry": "npx node-pg-migrate up --dry-run --envPath ../.env",
     "migrate": "npx node-pg-migrate up --envPath ../.env",
     "create-migration": "npx node-pg-migrate create"
