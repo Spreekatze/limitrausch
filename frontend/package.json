@@ -1,17 +1,14 @@
 {
-  "name": "limitrausch",
-  "version": "0.0.1",
-  "description": "Event management for Limitrausch",
-  "productName": "limitrausch",
-  "author": "Spreekatze <rissaazzuen@gmail.com>",
+  "name": "limitrausch-frontend",
+  "version": "0.1.0",
   "type": "module",
   "private": true,
   "scripts": {
-    "build:contracts": "npm --prefix ../shared run build",
+    "build:contracts": "npm --prefix ../contracts run build",
     "predev": "npm run build:contracts",
     "dev": "quasar dev",
-    "lint": "prettier --write \"**/*.{js,ts,vue,css,scss,html,md,json}\" --ignore-path .gitignore && eslint --fix -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
-    "lint:check": "prettier \"**/*.{js,ts,vue,css,scss,html,md,json}\" --ignore-path .gitignore && eslint -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
+    "lint:fix": "prettier --write \"**/*.{js,ts,vue,css,scss,html,md,json}\" --ignore-path ../.gitignore && eslint --fix -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
+    "lint:check": "prettier --check \"**/*.{js,ts,vue,css,scss,html,md,json}\" --ignore-path ../.gitignore && eslint -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
     "prebuild": "npm run build:contracts",
     "build": "quasar build",
     "pretypecheck": "npm run build:contracts",
@@ -19,7 +16,7 @@
     "postinstall": "quasar prepare --silent"
   },
   "dependencies": {
-    "@limitrausch/contracts": "file:../shared",
+    "@limitrausch/contracts": "file:../contracts",
     "vue-i18n": "^11.3.0",
     "pinia": "^4.0.2",
     "@quasar/extras": "^2.1.0",
@@ -33,6 +30,7 @@
     "eslint-plugin-vue": "^10.8.0",
     "globals": "^17.4.0",
     "@vue/eslint-config-typescript": "^14.7.0",
+    "typescript-eslint": "8.70.1",
     "vite-plugin-checker": "^0.14.5",
     "vue-eslint-parser": "^10.4.0",
     "@vue/eslint-config-prettier": "^10.2.0",
@@ -43,7 +41,7 @@
     "@quasar/app-vite": "^3.10.0",
     "autoprefixer": "^10.4.27",
     "postcss": "^8.5.8",
-    "typescript": "^6.0.0"
+    "typescript": "6.0.3"
   },
   "keywords": [
     "quasar",

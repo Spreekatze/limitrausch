@@ -71,8 +71,8 @@ export async function getEventsFromRaidHelper(
 }
 
 //TODO: implement create, update, delete
-export async function createEventAtRaidHelper(event: Event): Promise<void> {}
+export async function createEventAtRaidHelper(_event: Event): Promise<void> {}
 
-export async function updateEventAtRaidHelper(event: Event): Promise<void> {}
+export async function updateEventAtRaidHelper(_event: Event): Promise<void> {}
 
-export async function deleteEventAtRaidHelper(event: Event): Promise<void> {}
+export async function deleteEventAtRaidHelper(_event: Event): Promise<void> {}

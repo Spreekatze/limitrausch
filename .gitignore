@@ -12,7 +12,7 @@ node_modules
 /dist
 /frontend/dist
 /backend/dist
-/shared/dist
+/contracts/dist
 /quasar.config.*.temporary.compiled*
 
 # Cordova related directories and files

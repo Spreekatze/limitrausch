@@ -1,7 +1,7 @@
 import { EVENT_DIFFICULTY } from '@limitrausch/contracts';
 import type { Event } from '../api/events';
 import { formatEventTime } from './calendar';
-
+//TODO: new URL("../assets/AE.png", import.meta.url) doesn't exist at build time, it will remain unchanged to be resolved at runtime
 const logoUrl = new URL('../assets/AE.png', import.meta.url).href;
 
 const importedScheduleBackgrounds = import.meta.glob<string>(

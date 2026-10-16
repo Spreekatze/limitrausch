@@ -1,1 +1,25 @@
-{}
+{
+  "name": "limitrausch",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Website for FFXIV Guides and Event-Management",
+  "productName": "limitrausch",
+  "author": "Spreekatze <rissaazzuen@gmail.com>",
+  "workspaces": [
+    "frontend",
+    "backend",
+    "contracts"
+  ],
+  "scripts": {
+    "build:contracts": "npm run build --workspace=@limitrausch/contracts",
+    "typecheck": "npm run build:contracts && npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspace=backend",
+    "build": "npm run build:contracts && npm run build --workspace=frontend && npm run build --workspace=backend",
+    "lint": "npm run lint:check --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces --if-present"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.2": true
+  }
+}

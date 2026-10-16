@@ -2,12 +2,7 @@ import type { ErrorRequestHandler } from "express";
 import logger from "../logger.js";
 import { HttpError } from "./httpError.js";
 
-const errorHandler: ErrorRequestHandler = (
-  error,
-  request,
-  response,
-  next,
-) => {
+const errorHandler: ErrorRequestHandler = (error, request, response, next) => {
   if (response.headersSent) {
     next(error);
     return;
