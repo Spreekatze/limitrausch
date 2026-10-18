@@ -2,7 +2,7 @@ import express from "express";
 import validateRaidHelperWebhook from "../middleware/webhook_raidhelper.js";
 import {
   addEvent,
-  deleteEvent,
+  deleteEventById,
   getEventByRaidHelperId,
   updateEventById,
 } from "../store/eventStore.js";
@@ -61,7 +61,7 @@ router.post(
       return;
     }
 
-    deleteEvent(existingEvent.id);
+    deleteEventById(existingEvent.id);
     response.sendStatus(200);
   },
 );
