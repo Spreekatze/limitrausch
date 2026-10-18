@@ -1,11 +1,7 @@
 import { mapDatabaseEventRowToEvent } from "../mapping/eventDatabaseMapping.js";
 import { pool } from "../database/databaseConnection.js";
 import { upsertDiscordTextChannel } from "../database/discordTextChannel.js";
-import {
-  deleteEventById,
-  insertEvent,
-  updateEvent,
-} from "../database/event.js";
+import { deleteEvent, insertEvent, updateEvent } from "../database/event.js";
 import {
   deleteAllCoLeadersFromEvent,
   insertEventCoLeader,
@@ -353,7 +349,7 @@ export async function updateEventById(
   return getEventById(id);
 }
 
-export async function deleteEvent(id: number): Promise<boolean> {
+export async function deleteEventById(id: number): Promise<boolean> {
   const client = await pool.connect();
-  return await deleteEventById(id, client);
+  return await deleteEvent(id, client);
 }

@@ -71,7 +71,7 @@ export async function updateEvent(
   );
 }
 
-export async function deleteEventById(
+export async function deleteEvent(
   id: number,
   client: Pool | PoolClient = pool,
 ): Promise<boolean> {
