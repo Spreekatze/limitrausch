@@ -29,8 +29,23 @@ async function upsertDiscordServerUser(
     )
     VALUES ($1, $2, $3)
     ON CONFLICT ("discordUserId", "discordServerId")
-    DO UPDATE SET "usernameOnServer" = EXCLUDED."usernameOnServer"
+    DO UPDATE SET 
+      "usernameOnServer" = EXCLUDED."usernameOnServer",
     `,
     [discordUserId, discordServerId, usernameOnServer],
   );
 }
+
+// async function updateDiscordServerUser(
+//   discordUserId: string,
+//   username: string,
+//   eventsAttended: number,
+//   client: Pool | PoolClient = pool,
+// ): Promise<void> {
+//   await client.query(
+//     `UPDATE "DiscordServerUser"
+//     SET VALUES ($1, $2)
+//    WHERE "id" = ${discordUserId}`,
+//     [username, eventsAttended],
+//   );
+// }

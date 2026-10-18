@@ -59,3 +59,26 @@ export async function insertEvent(
     lastUpdated: Number(result.rows[0].lastUpdated),
   };
 }
+
+export async function updateEvent(
+  assignments: string[],
+  values: (string | number | boolean | null)[],
+  client: Pool | PoolClient = pool,
+): Promise<void> {
+  await client.query(
+    `UPDATE "Event" SET ${assignments.join(", ")} WHERE "id" = $${values.length}`,
+    values,
+  );
+}
+
+export async function deleteEventById(
+  id: number,
+  client: Pool | PoolClient = pool,
+): Promise<boolean> {
+  const result = await client.query(
+    'DELETE FROM "Event" WHERE "id" = $1 RETURNING "id"',
+    [id],
+  );
+
+  return result.rowCount === 1;
+}

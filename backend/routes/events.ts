@@ -3,10 +3,10 @@ import requireAdmin from "../middleware/auth.js";
 import { importRaidHelperEvents } from "../services/raidHelperImport.js";
 import {
   addEvent,
-  deleteEvent,
+  deleteEventById,
   getEventById,
   getEvents,
-  updateEvent,
+  updateEventById,
 } from "../store/eventStore.js";
 import { addDiscordServer } from "../store/guildStore.js";
 import {
@@ -105,7 +105,7 @@ router.patch("/:id", requireAdmin, async (request, response) => {
     return;
   }
 
-  const updatedEvent = await updateEvent(id, {
+  const updatedEvent = await updateEventById(id, {
     ...result.data,
   });
 
@@ -124,7 +124,7 @@ router.delete("/:id", requireAdmin, async (request, response) => {
     response.status(400).json({ error: "Invalid event id" });
     return;
   }
-  const deleted = await deleteEvent(id);
+  const deleted = await deleteEventById(id);
   if (!deleted) {
     response.status(404).json({ error: "Event not found" });
     return;

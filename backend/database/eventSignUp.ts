@@ -33,3 +33,12 @@ export async function insertEventSignUp(
   );
   return result.rows[0].id;
 }
+
+export async function deleteAllSignUpsFromEvent(
+  eventId: number,
+  client: Pool | PoolClient = pool,
+): Promise<void> {
+  await client.query('DELETE FROM "EventSignUp" WHERE "eventId" = $1', [
+    eventId,
+  ]);
+}

@@ -16,3 +16,12 @@ export async function insertEventCoLeader(
     [discordUserId, eventId],
   );
 }
+
+export async function deleteAllCoLeadersFromEvent(
+  eventId: number,
+  client: Pool | PoolClient = pool,
+): Promise<void> {
+  await client.query('DELETE FROM "EventCoLeader" WHERE "eventId" = $1', [
+    eventId,
+  ]);
+}
