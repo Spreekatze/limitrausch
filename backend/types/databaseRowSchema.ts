@@ -46,8 +46,6 @@ export const databaseEventSignUpRowSchema = z.object({
   discordUserId: z.string().nullable(),
   raidHelperId: z.string().nullable(),
   status: statusTypeSchema.nullable(),
-  entryTime: z.string(),
-  position: z.number().nullable(),
   jobFirstPrio: z.number().nullable(),
   jobFlexSecondPrio: z.array(z.number()).nullable(),
   usernameOnServer: z.string().nullable(),
