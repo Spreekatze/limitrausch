@@ -89,11 +89,12 @@
 
 <script setup lang="ts">
 import { createEvent } from '@/api/events';
+import { useSearchOptions } from '@/composable/useSearchOptions';
 import { EVENT_DIFFICULTY_LABELS, EVENT_TYPE_OPTIONS } from '@/constants/event-settings-labels';
 import { GAME_CONTENT } from '@/constants/game-content';
 import { useAuthStore } from '@/stores/auth-store';
 import { getGuildIconUrl } from '@/utils/discordGuild';
-import { filterOptions, type SearchOption } from '@/utils/filterWithAliases';
+import { createLocalizedSearchFields } from '@/utils/searchOptions';
 import {
   type EventDiscordUser,
   type EventType,
@@ -116,7 +117,7 @@ const startTime = ref<string>('');
 const endTime = ref<string>('');
 const formattedDate = computed(() =>
   date.value
-    ? new Intl.DateTimeFormat('de-DE', {
+    ? new Intl.DateTimeFormat(locale.value, {
         weekday: 'short',
         day: 'numeric',
         month: 'long',
@@ -131,42 +132,28 @@ const typeOptions = computed(() =>
     .filter(([, option]) => option.labels.de !== '' || option.labels.en !== '')
     .map(([value, option]) => ({
       value: Number(value) as EventType,
-      label: option.labels[locale.value.startsWith('de') ? 'de' : 'en'],
-      aliases: [...option.aliases.de, ...option.aliases.en],
+      ...createLocalizedSearchFields(option.labels, locale.value, option.aliases),
     })),
 );
-const filteredTypeOptions = ref<SearchOption[]>(typeOptions.value);
-watch(typeOptions, (options) => {
-  filteredTypeOptions.value = options;
-});
+const { filteredOptions: filteredTypeOptions, filter: filterTypeOptions } =
+  useSearchOptions(typeOptions);
 
 const content = ref<string | undefined>(undefined);
 const contentOptions = computed(() =>
-  GAME_CONTENT.filter((content) => content.types.includes(type.value!)).map((content) => ({
-    value: content.value,
-    label: content.labels[locale.value.startsWith('de') ? 'de' : 'en'],
-    aliases: [...content.aliases.de, ...content.aliases.en],
+  GAME_CONTENT.filter((item) => item.types.includes(type.value!)).map((item) => ({
+    value: item.value,
+    ...createLocalizedSearchFields(item.labels, locale.value, item.aliases),
   })),
 );
-const filteredContentOptions = ref<SearchOption[]>(contentOptions.value);
-watch(contentOptions, (options) => {
-  filteredContentOptions.value = options;
-});
-
-function filterTypeOptions(input: string, update: (callback: () => void) => void) {
-  filterOptions(input, update, typeOptions.value, filteredTypeOptions);
-}
-
-function filterContentOptions(input: string, update: (callback: () => void) => void) {
-  filterOptions(input, update, contentOptions.value, filteredContentOptions);
-}
+const { filteredOptions: filteredContentOptions, filter: filterContentOptions } =
+  useSearchOptions(contentOptions);
 
 const goal = ref<string | undefined>(undefined);
 
 const difficulty = ref<EventDifficulty | undefined>(undefined);
 const difficultyLabels = computed(() =>
   Object.entries(EVENT_DIFFICULTY_LABELS)
-    .filter(([, label]) => label !== '')
+    .filter(([, label]) => label.labels.de !== '' || label.labels.en !== '')
     .map(([value, label]) => ({
       label,
       value: Number(value),

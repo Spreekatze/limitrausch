@@ -62,6 +62,7 @@
         }
       "
     />
+    <q-btn flat :label="locale.startsWith('de') ? 'DE' : 'EN'" @click="toggleLanguage" />
   </q-toolbar>
 </template>
 
@@ -69,8 +70,10 @@
 import { Dark } from 'quasar';
 import { ref, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth-store';
+import { useI18n } from 'vue-i18n';
 
 const authStore = useAuthStore();
+const { locale } = useI18n();
 
 const darkModeStorageKey = 'limitrausch-dark-mode';
 const darkMode = ref(localStorage.getItem(darkModeStorageKey) === 'false' ? false : true);
@@ -81,4 +84,8 @@ watch(darkMode, (isDark) => {
   Dark.set(isDark);
   localStorage.setItem(darkModeStorageKey, String(isDark));
 });
+
+function toggleLanguage() {
+  locale.value = locale.value.startsWith('de') ? 'en-US' : 'de-DE';
+}
 </script>

@@ -65,6 +65,7 @@ import { type Event } from '@limitrausch/contracts';
 import { nextTick, ref } from 'vue';
 import CalendarHover from './CalendarHover.vue';
 import { getGuildIconUrl } from '@/utils/discordGuild.js';
+import { useI18n } from 'vue-i18n';
 
 defineProps<{
   eventsByDay: ReadonlyMap<string, Event[]>;
@@ -74,9 +75,9 @@ defineProps<{
 const hoverCard = ref<HTMLElement | null>(null);
 const hoveredEvent = ref<Event | null>(null);
 const hoverPosition = ref({ x: 0, y: 0 });
-
+const { locale } = useI18n();
 function formatDay(date: Date) {
-  return date.toLocaleDateString('de-DE', {
+  return date.toLocaleDateString(locale.value, {
     weekday: 'long',
     day: 'numeric',
     month: 'long',

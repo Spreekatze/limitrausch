@@ -4,19 +4,14 @@ import {
   type EventDifficulty,
   type EventType,
 } from '@limitrausch/contracts';
+import type { LocalizedLabels, LocalizedAliases } from './event-settings-labels';
 
 interface GameContent {
   value: string;
   types: EventType[];
   patch: string;
-  labels: {
-    de: string;
-    en: string;
-  };
-  aliases: {
-    de: string[];
-    en: string[];
-  };
+  labels: LocalizedLabels;
+  aliases: LocalizedAliases;
   difficulty?: Partial<Record<EventType, EventDifficulty>>;
 }
 
