@@ -14,6 +14,7 @@
             @click="downloadWeekAsImage"
           />
           <p v-if="exportError" class="export-error">{{ exportError }}</p>
+          <q-btn @click="createDialog = true">Event erstellen</q-btn>
         </div>
         <q-select
           v-model="calendarViewMonthly"
@@ -40,6 +41,46 @@
       :viewMonthly="calendarViewMonthly"
     />
   </div>
+  <q-dialog v-model="createDialog">
+    <q-card style="min-width: 350px">
+      <q-select
+        v-model="guild"
+        label="Server"
+        :options="filteredGuilds"
+        option-label="name"
+        option-value="id"
+        outlined
+        use-input
+        @filter="filterGuilds"
+      >
+        <template #option="scope">
+          <q-item v-bind="scope.itemProps">
+            <q-item-section avatar>
+              <q-icon
+                :name="getGuildIconUrl(scope.opt.id, scope.opt.icon)"
+                width="32px"
+                height="32px"
+              />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>{{ scope.opt.name }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </template>
+        <template #selected-item="scope">
+          <q-item-section avatar>
+            <q-icon
+              :name="getGuildIconUrl(scope.opt.id, scope.opt.icon)"
+              width="32px"
+              height="32px"
+            />
+          </q-item-section>
+          <q-item-section>{{ scope.opt.name }}</q-item-section>
+        </template>
+      </q-select>
+      <q-btn label="Weiter" :disable="guild === null" @click="openEventCreation" />
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup lang="ts">
@@ -50,6 +91,9 @@ import Calendar from '@/components/Calendar.vue';
 import { useAuthStore } from '@/stores/auth-store';
 import { downloadWeeklyCalendarAsImage } from '../utils/calendar-export';
 import ListCalendar from '@/components/ListCalendar.vue';
+import { type DiscordGuild } from '@limitrausch/contracts';
+import { useRouter } from 'vue-router';
+import { getGuildIconUrl } from '@/utils/discordGuild';
 
 const authStore = useAuthStore();
 const isAdmin = computed(() => authStore.isAdmin);
@@ -82,6 +126,12 @@ const eventsByDay = computed(() => {
 });
 const monthlyWeeksDateArray = computed(() => generateMonthlyWeekArray());
 const displayedWeeks = computed(() => generateDisplayedWeekDates());
+
+const createDialog = ref<boolean>(false);
+const guild = ref<DiscordGuild | null>(null);
+const userGuilds = authStore.user?.userGuilds ?? [];
+const filteredGuilds = ref<DiscordGuild[]>([...userGuilds]);
+const router = useRouter();
 
 onMounted(() => {
   getEvents(getMonthlyCalendarStartDate())
@@ -141,6 +191,21 @@ function generateDisplayedWeekDates() {
   return monthlyWeeksDateArray.value.filter((week) =>
     week.some((day) => day.toDateString() === now.toDateString()),
   );
+}
+
+function filterGuilds(value: string, update: (callback: () => void) => void) {
+  update(() => {
+    const search = value.toLowerCase().trim();
+
+    filteredGuilds.value = search
+      ? userGuilds.filter((guild) => guild.name.toLowerCase().includes(search))
+      : userGuilds;
+  });
+}
+
+async function openEventCreation() {
+  if (guild.value === null) return;
+  await router.push({ name: '/createEvent', query: { id: guild.value.id } });
 }
 </script>
 

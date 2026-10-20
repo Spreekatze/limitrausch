@@ -1,4 +1,4 @@
-import type { RaidHelperImportResponse } from '@limitrausch/contracts';
+import type { CreateEvent, RaidHelperImportResponse } from '@limitrausch/contracts';
 import {
   EVENT_TYPE,
   eventsResponseSchema,
@@ -44,6 +44,28 @@ export async function importRaidHelperEvents(serverId: string): Promise<RaidHelp
   const result = raidHelperImportResponseSchema.safeParse(await response.json());
   if (!result.success) {
     throw new Error('The import API call returned an unexpected response format.');
+  }
+
+  return result.data;
+}
+
+export async function createEvent(event: CreateEvent): Promise<ApiEventsResponse> {
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+  const response = await fetch(`${apiBaseUrl}/events/new`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(event),
+  });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`API failed: ${response.status} ${text}`);
+  }
+
+  const result = eventsResponseSchema.safeParse(await response.json());
+  if (!result.success) {
+    throw new Error('The events API returned an unexpected response format.');
   }
 
   return result.data;

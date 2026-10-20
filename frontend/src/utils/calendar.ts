@@ -68,14 +68,3 @@ export function getEventTitle(event: Event): string {
   }
   return event.title;
 }
-
-export function getServerIconUrl(event: Event): string {
-  if (!event.discordServer) {
-    return 'img:~/assets/icons/xiv.png';
-  }
-  if (!event.discordServer.icon) {
-    return '';
-  }
-  const extension = event.discordServer.icon.startsWith('a_') ? 'gif' : 'png';
-  return `img:https://cdn.discordapp.com/icons/${event.discordServer.id}/${event.discordServer.icon}.${extension}?size=128`;
-}

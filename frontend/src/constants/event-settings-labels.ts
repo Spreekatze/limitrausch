@@ -14,23 +14,69 @@ export const EVENT_DIFFICULTY_LABELS: Record<EventDifficulty, string> = {
   [EVENT_DIFFICULTY.ULTIMATIV]: 'Profi',
 };
 
-export const EVENT_TYPE_LABELS: Record<EventType, string> = {
-  [EVENT_TYPE.TEST]: '',
-  [EVENT_TYPE.UNDEFINED]: '',
-  [EVENT_TYPE.TRIAL]: 'Extrem-Prüfung',
-  [EVENT_TYPE.RAID]: 'Epischer Raid',
-  [EVENT_TYPE.ULTIMATE]: 'Fataler Raid',
-  [EVENT_TYPE.SQENIX_EVENT]: 'SE - Event',
-  [EVENT_TYPE.FIELD_OPERATION]: 'Feldexkursion',
-  [EVENT_TYPE.DEEP_DUNGEON]: 'Tiefes Gewölbe',
-  [EVENT_TYPE.TREASUE_HUNT]: 'Schatzkarten',
-  [EVENT_TYPE.V_C_Dungeon]: 'Unstetes/Kurioses Gewölbe',
-  [EVENT_TYPE.LIMITED_JOB]: 'Beschränkter Job',
-  [EVENT_TYPE.UNSYNC]: 'Unsync',
-  [EVENT_TYPE.FATE]: 'Fates',
-  [EVENT_TYPE.MINE]: 'MINE (alter Content)',
-  [EVENT_TYPE.PVP]: 'PvP',
-  [EVENT_TYPE.SERVER]: 'Server-Event',
+interface EventTypeOption {
+  labels: {
+    de: string;
+    en: string;
+  };
+  aliases: {
+    de: string[];
+    en: string[];
+  };
+}
+
+export const EVENT_TYPE_OPTIONS: Partial<Record<EventType, EventTypeOption>> = {
+  [EVENT_TYPE.TRIAL]: {
+    labels: { de: 'Extrem-Prüfung', en: 'Extreme Trial' },
+    aliases: { de: [], en: [] },
+  },
+  [EVENT_TYPE.RAID]: {
+    labels: { de: 'Epischer Raid (Savage)', en: 'Savage Raid' },
+    aliases: { de: [], en: [] },
+  },
+  [EVENT_TYPE.ULTIMATE]: {
+    labels: { de: 'Fataler Raid (Ultimate)', en: 'Ultimate' },
+    aliases: { de: [], en: [] },
+  },
+  [EVENT_TYPE.FIELD_OPERATION]: {
+    labels: { de: 'Feldexkursion', en: 'Field Operation' },
+    aliases: { de: [], en: [] },
+  },
+  [EVENT_TYPE.DEEP_DUNGEON]: {
+    labels: { de: 'Tiefes Gewölbe', en: 'Deep Dungeon' },
+    aliases: { de: [], en: [] },
+  },
+  [EVENT_TYPE.TREASUE_HUNT]: {
+    labels: { de: 'Schatzkarten', en: 'Treasure Map' },
+    aliases: { de: [], en: [] },
+  },
+  [EVENT_TYPE.V_C_Dungeon]: {
+    labels: { de: 'Unstetes/Kurioses Gewölbe', en: 'Variant Dungeon / Criterion' },
+    aliases: { de: [], en: [] },
+  },
+  [EVENT_TYPE.LIMITED_JOB]: {
+    labels: { de: 'Beschränkter Job', en: 'Limited Job' },
+    aliases: { de: [], en: [] },
+  },
+  [EVENT_TYPE.UNSYNC]: { labels: { de: 'Unsync', en: 'Unsync' }, aliases: { de: [], en: [] } },
+  [EVENT_TYPE.FATE]: { labels: { de: 'Fates', en: 'Fates' }, aliases: { de: [], en: [] } },
+  [EVENT_TYPE.MINE]: {
+    labels: { de: 'MINE (alter Content)', en: 'MINE (old Content)' },
+    aliases: { de: [], en: [] },
+  },
+  [EVENT_TYPE.PVP]: { labels: { de: 'PvP', en: 'PvP' }, aliases: { de: [], en: [] } },
+  [EVENT_TYPE.SERVER]: {
+    labels: { de: 'Server-Event', en: 'Server event' },
+    aliases: { de: [], en: [] },
+  },
+  [EVENT_TYPE.CHAOS]: {
+    labels: { de: 'Chaotischer Allianz-Raid', en: 'Chaos Alliance Raid' },
+    aliases: { de: [], en: [] },
+  },
+  [EVENT_TYPE.UNREAL]: {
+    labels: { de: 'Traumprüfung', en: 'Unreal Trial' },
+    aliases: { de: [], en: [] },
+  },
 };
 
 export const EVENT_STATUS_LABEL: Record<StatusType, string> = {

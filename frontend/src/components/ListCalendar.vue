@@ -29,7 +29,10 @@
                   {{ getEventTitle(event) }}
                 </q-item-label>
                 <q-item-label class="event__guild">
-                  <q-icon class="server-icon" :name="`${getServerIconUrl(event)}`" />
+                  <q-icon
+                    class="server-icon"
+                    :name="`${getGuildIconUrl(event.discordServer?.id, event.discordServer?.icon)}`"
+                  />
                   {{ event.discordServer?.name }}
                 </q-item-label>
               </q-item-section>
@@ -57,10 +60,11 @@
 </template>
 
 <script setup lang="ts">
-import { formatEventTime, getEventTitle, getServerIconUrl } from '@/utils/calendar';
+import { formatEventTime, getEventTitle } from '@/utils/calendar';
 import { type Event } from '@limitrausch/contracts';
 import { nextTick, ref } from 'vue';
 import CalendarHover from './CalendarHover.vue';
+import { getGuildIconUrl } from '@/utils/discordGuild.js';
 
 defineProps<{
   eventsByDay: ReadonlyMap<string, Event[]>;

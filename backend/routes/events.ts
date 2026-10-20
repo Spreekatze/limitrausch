@@ -66,7 +66,7 @@ router.post("/new", requireAdmin, async (request, response) => {
   const createdEvent = await addEvent(event);
 
   // TODO: probably this should be a redirect
-  response.status(201).json({ event: createdEvent });
+  response.status(201).json({ postedEvents: [createdEvent] });
 });
 
 // Get (request) a single event by id

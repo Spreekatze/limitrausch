@@ -3,21 +3,23 @@ import { jobSchema } from "./jobSchema.js";
 
 export const EVENT_TYPE = {
   TEST: 999,
-  UNDEFINED: 9998,
+  UNDEFINED: 998,
+  SQENIX_EVENT: 997,
   TRIAL: 1,
   RAID: 2,
   ULTIMATE: 3,
-  SQENIX_EVENT: 4,
-  FIELD_OPERATION: 5,
-  DEEP_DUNGEON: 6,
-  TREASUE_HUNT: 7,
-  V_C_Dungeon: 8,
-  LIMITED_JOB: 9,
-  UNSYNC: 10,
-  FATE: 11,
-  MINE: 12,
-  PVP: 13,
-  SERVER: 14,
+  FIELD_OPERATION: 4,
+  DEEP_DUNGEON: 5,
+  TREASUE_HUNT: 6,
+  V_C_Dungeon: 7,
+  LIMITED_JOB: 8,
+  UNSYNC: 9,
+  FATE: 10,
+  MINE: 11,
+  PVP: 12,
+  SERVER: 13,
+  CHAOS: 14,
+  UNREAL: 15,
 } as const;
 
 export const eventTypeSchema = z.enum(EVENT_TYPE);
@@ -66,6 +68,12 @@ export const createEventSignUpSchema = eventSignUpSchema.omit({
   id: true,
 });
 export type CreateSignUp = z.infer<typeof createEventSignUpSchema>;
+
+export const discordChannelSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+export type DiscordChannel = z.infer<typeof discordChannelSchema>;
 
 export const eventDiscordDataSchema = z.object({
   id: z.string(),

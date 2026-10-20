@@ -57,7 +57,10 @@
                   {{ getEventTitle(event) }}
                 </q-card-section>
                 <q-card-actions>
-                  <q-icon class="server-icon" :name="`${getServerIconUrl(event)}`" />
+                  <q-icon
+                    class="server-icon"
+                    :name="`${getGuildIconUrl(event.discordServer?.id, event.discordServer?.icon)}`"
+                  />
                   <div><q-icon name="schedule" /> {{ formatEventTime(event.startTime) }}</div>
                 </q-card-actions>
               </q-card>
@@ -102,11 +105,11 @@ import {
   formatEventTitle,
   getEventColor,
   getEventTitle,
-  getServerIconUrl,
   isCurrentMonth,
   isToday,
 } from '../utils/calendar';
 import CalendarHover from './CalendarHover.vue';
+import { getGuildIconUrl } from '@/utils/discordGuild';
 
 const props = defineProps<{
   eventsByDay: ReadonlyMap<string, Event[]>;
