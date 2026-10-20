@@ -13,14 +13,12 @@ export async function insertEventSignUp(
       "discordUserId",
       "raidHelperId",
       "status",
-      "entryTime",
-      "position",
       "jobFirstPrio",
       "jobFlexSecondPrio"
     )
     VALUES (
     $1, $2, $3, $4, $5, 
-    $6, $7, $8
+    $6
     )
     RETURNING "id"
     `,
@@ -29,11 +27,18 @@ export async function insertEventSignUp(
       signUp.userId,
       signUp.raidHelperId,
       signUp.status,
-      signUp.entryTime,
-      signUp.position,
       signUp.jobFirstPrio?.id,
       signUp.jobFlexSecondPrio?.map((job) => job.id),
     ],
   );
   return result.rows[0].id;
+}
+
+export async function deleteAllSignUpsFromEvent(
+  eventId: number,
+  client: Pool | PoolClient = pool,
+): Promise<void> {
+  await client.query('DELETE FROM "EventSignUp" WHERE "eventId" = $1', [
+    eventId,
+  ]);
 }

@@ -2,9 +2,9 @@ import express from "express";
 import validateRaidHelperWebhook from "../middleware/webhook_raidhelper.js";
 import {
   addEvent,
-  deleteEvent,
+  deleteEventById,
   getEventByRaidHelperId,
-  updateEvent,
+  updateEventById,
 } from "../store/eventStore.js";
 import { mapRaidHelperWebhookEventToEvent } from "../mapping/eventRaidhelperMapping.js";
 
@@ -44,7 +44,7 @@ router.post(
       request.body,
       existingEvent.discordServer?.id ?? request.body.serverId,
     );
-    await updateEvent(existingEvent.id, event);
+    await updateEventById(existingEvent.id, event);
 
     console.log("Updated");
     response.sendStatus(200);
@@ -61,7 +61,7 @@ router.post(
       return;
     }
 
-    deleteEvent(existingEvent.id);
+    deleteEventById(existingEvent.id);
     response.sendStatus(200);
   },
 );

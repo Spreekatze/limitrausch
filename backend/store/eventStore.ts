@@ -1,9 +1,15 @@
 import { mapDatabaseEventRowToEvent } from "../mapping/eventDatabaseMapping.js";
 import { pool } from "../database/databaseConnection.js";
 import { upsertDiscordTextChannel } from "../database/discordTextChannel.js";
-import { insertEvent } from "../database/event.js";
-import { insertEventCoLeader } from "../database/eventCoLeader.js";
-import { insertEventSignUp } from "../database/eventSignUp.js";
+import { deleteEvent, insertEvent, updateEvent } from "../database/event.js";
+import {
+  deleteAllCoLeadersFromEvent,
+  insertEventCoLeader,
+} from "../database/eventCoLeader.js";
+import {
+  deleteAllSignUpsFromEvent,
+  insertEventSignUp,
+} from "../database/eventSignUp.js";
 import {
   DatabaseEventCoLeaderRow,
   DatabaseEventRow,
@@ -197,7 +203,7 @@ export async function addEvent(event: CreateEvent): Promise<Event> {
   }
 }
 
-export async function updateEvent(
+export async function updateEventById(
   id: number,
   update: Partial<UpdateEvent>,
 ): Promise<Event | undefined> {
@@ -316,24 +322,17 @@ export async function updateEvent(
     }
 
     values.push(id);
-    await client.query(
-      `UPDATE "Event" SET ${assignments.join(", ")} WHERE "id" = $${values.length}`,
-      values,
-    );
+    await updateEvent(assignments, values, client);
 
     if (hasField("coLeaders")) {
-      await client.query('DELETE FROM "EventCoLeader" WHERE "eventId" = $1', [
-        id,
-      ]);
+      await deleteAllCoLeadersFromEvent(id, client);
       for (const coLeader of update.coLeaders ?? []) {
         await insertEventCoLeader(coLeader.id, id, client);
       }
     }
 
     if (hasField("signUps") && existingEvent.discordServerId) {
-      await client.query('DELETE FROM "EventSignUp" WHERE "eventId" = $1', [
-        id,
-      ]);
+      await deleteAllSignUpsFromEvent(id, client);
       for (const signUp of update.signUps ?? []) {
         await insertEventSignUp(signUp, id, client);
       }
@@ -350,11 +349,7 @@ export async function updateEvent(
   return getEventById(id);
 }
 
-export async function deleteEvent(id: number): Promise<boolean> {
-  const result = await pool.query(
-    'DELETE FROM "Event" WHERE "id" = $1 RETURNING "id"',
-    [id],
-  );
-
-  return result.rowCount === 1;
+export async function deleteEventById(id: number): Promise<boolean> {
+  const client = await pool.connect();
+  return await deleteEvent(id, client);
 }

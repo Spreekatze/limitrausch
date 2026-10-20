@@ -55,8 +55,6 @@ export const eventSignUpSchema = z.object({
   name: z.string().optional(),
   userId: z.string().optional(),
   status: statusTypeSchema.optional(),
-  entryTime: z.number(),
-  position: z.number().optional(),
   jobFirstPrio: jobSchema.optional(),
   jobFlexSecondPrio: z.array(jobSchema).optional(),
 });
