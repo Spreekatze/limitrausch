@@ -8,11 +8,13 @@ import {
   type EventType,
   type EventsResponse,
 } from '@limitrausch/contracts';
+import { useNotify } from '@/composable/useNotify';
 
 export { EVENT_TYPE };
 export type { Event, EventType };
 export type DiscordUser = EventDiscordUser;
 export type ApiEventsResponse = EventsResponse;
+const responseToast = useNotify();
 
 export async function getEvents(date: Date): Promise<ApiEventsResponse> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
@@ -60,11 +62,14 @@ export async function createEvent(event: CreateEvent): Promise<ApiEventsResponse
   });
   if (!response.ok) {
     const text = await response.text();
+    console.log(text);
+    responseToast.error(text);
     throw new Error(`API failed: ${response.status} ${text}`);
   }
 
   const result = eventsResponseSchema.safeParse(await response.json());
   if (!result.success) {
+    responseToast.error(result.error.message);
     throw new Error('The events API returned an unexpected response format.');
   }
 
