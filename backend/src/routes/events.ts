@@ -1,5 +1,4 @@
 import express from "express";
-import requireWebsiteAdmin from "../middleware/requireWebsiteAdmin.js";
 import { importRaidHelperEvents } from "../services/raidHelperImport.js";
 import {
   addEvent,
@@ -22,7 +21,7 @@ const router = express.Router();
 // Request events from raid-helper by serverId
 router.get(
   "/raid-helper/:id",
-  requireWebsiteAdmin,
+  requireGuildManager,
   async (request, response, next) => {
     const serverId = request.params.id;
     if (typeof serverId !== "string") {
@@ -95,7 +94,7 @@ router.get("/:id", async (request, response, next) => {
 });
 
 // Edit (Update) a single event by id
-router.patch("/:id", requireWebsiteAdmin, async (request, response, next) => {
+router.patch("/:id", requireGuildManager, async (request, response, next) => {
   const id = Number(request.params.id);
   if (!Number.isSafeInteger(id) || id <= 0) {
     return next(new HttpError(400, "Invalid event id"));
@@ -123,7 +122,7 @@ router.patch("/:id", requireWebsiteAdmin, async (request, response, next) => {
 });
 
 // Delete a single event by id
-router.delete("/:id", requireWebsiteAdmin, async (request, response, next) => {
+router.delete("/:id", requireGuildManager, async (request, response, next) => {
   const id = Number(request.params.id);
   if (!Number.isSafeInteger(id) || id <= 0) {
     return next(new HttpError(400, "Invalid event id"));

@@ -32,7 +32,7 @@ const requireGuildManager: RequestHandler = async (req, res, next) => {
   }
 };
 
-export async function isGuildManager(
+async function isGuildManager(
   userId: string,
   guildId: string,
 ): Promise<boolean> {
