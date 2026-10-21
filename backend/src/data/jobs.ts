@@ -1,4 +1,4 @@
-import { Job, ROLE_TYPE } from "../types/jobSchema.js";
+import { Job, ROLE_TYPE } from "@limitrausch/contracts";
 
 export const jobs: Job[] = [
   {

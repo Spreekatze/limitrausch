@@ -17,7 +17,7 @@ describe("getRaidHelperEvents", () => {
   // DONE - allows a whitelisted server id to fetch events
   // DONE - rejects server ids that are not on the whitelist
   // - no whitelist env var configured should reject with 403
-  // DONE - missing RAID_HELPER_API_KEY should reject with 503
+  // DONE - missing RAIDHELPER_API_KEY should reject with 503
   // - response.ok === false should reject with the upstream HTTP status
   // DONE - non-JSON content type should reject with 502 "Raid Helper API response is not JSON"
   // DONE - invalid JSON from response.json() should reject with 502 "Raid Helper API returned invalid JSON"
@@ -27,7 +27,7 @@ describe("getRaidHelperEvents", () => {
 
   beforeEach(() => {
     vi.stubEnv("RAIDHELPER_DISCORDSERVER_ID_WHITELIST", validServer.id);
-    vi.stubEnv("RAID_HELPER_API_KEY", "test-api-key");
+    vi.stubEnv("RAIDHELPER_API_KEY", "test-api-key");
   });
 
   afterEach(() => {

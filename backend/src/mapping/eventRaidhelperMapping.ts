@@ -2,9 +2,9 @@ import {
   RaidHelperEvent,
   RaidHelperSignUp,
   RaidHelperWebHookEvent,
-} from "../types/raidhelperSchema.js";
+} from "../src/types/raidhelperSchema.js";
 import { jobsByRaidHelperName } from "../data/jobs.js";
-import { Job } from "../types/jobSchema.js";
+import { Job } from "../src/types/jobSchema.js";
 import {
   DiscordGuild,
   EVENT_TYPE,

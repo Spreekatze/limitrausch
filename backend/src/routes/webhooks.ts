@@ -1,5 +1,5 @@
 import express from "express";
-import validateRaidHelperWebhook from "../middleware/webhook_raidhelper.js";
+import validateRaidHelperWebhook from "../middleware/validateRaidHelperWebhook.js";
 import {
   addEvent,
   deleteEventById,

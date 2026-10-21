@@ -1,5 +1,5 @@
 import express from "express";
-import requireAdmin from "../middleware/auth.js";
+import requireWebsiteAdmin from "../middleware/requireWebsiteAdmin.js";
 import { importRaidHelperEvents } from "../services/raidHelperImport.js";
 import {
   addEvent,
@@ -14,33 +14,38 @@ import {
   createEventSchema,
   updateEventSchema,
 } from "@limitrausch/contracts";
+import requireServerManager from "../middleware/requireServerManager.js";
 
 const router = express.Router();
 
 // Request events from raid-helper by serverId
-router.get("/raid-helper/:id", requireAdmin, async (request, response) => {
-  const serverId = request.params.id;
-  if (typeof serverId !== "string") {
-    response.status(400).json({ error: "Invalid server id" });
-    return;
-  }
+router.get(
+  "/raid-helper/:id",
+  requireWebsiteAdmin,
+  async (request, response) => {
+    const serverId = request.params.id;
+    if (typeof serverId !== "string") {
+      response.status(400).json({ error: "Invalid server id" });
+      return;
+    }
 
-  const server = request.session.authUser?.userGuilds.find(
-    (guild) => guild.id === serverId,
-  );
-  if (!server) {
-    return response.status(404).json({
-      error: "Import failed due to user not being member of requested guild",
-    });
-  }
+    const server = request.session.authUser?.userGuilds.find(
+      (guild) => guild.id === serverId,
+    );
+    if (!server) {
+      return response.status(404).json({
+        error: "Import failed due to user not being member of requested guild",
+      });
+    }
 
-  //TODO: move server adding to its own route
-  await addDiscordServer(server);
+    //TODO: move server adding to its own route
+    await addDiscordServer(server);
 
-  const result = await importRaidHelperEvents(server);
+    const result = await importRaidHelperEvents(server);
 
-  response.status(200).json(result);
-});
+    response.status(200).json(result);
+  },
+);
 
 // Get all events
 router.get("/", async (request, response) => {
@@ -49,7 +54,7 @@ router.get("/", async (request, response) => {
 });
 
 // Create an event
-router.post("/new", requireAdmin, async (request, response) => {
+router.post("/new", requireServerManager, async (request, response) => {
   const result = createEventSchema.safeParse(request.body);
   if (!result.success) {
     response.status(400).json({
@@ -91,7 +96,7 @@ router.get("/:id", async (request, response) => {
 });
 
 // Edit (Update) a single event by id
-router.patch("/:id", requireAdmin, async (request, response) => {
+router.patch("/:id", requireWebsiteAdmin, async (request, response) => {
   const id = Number(request.params.id);
   if (!Number.isSafeInteger(id) || id <= 0) {
     response.status(400).json({ error: "Invalid event id" });
@@ -122,7 +127,7 @@ router.patch("/:id", requireAdmin, async (request, response) => {
 });
 
 // Delete a single event by id
-router.delete("/:id", requireAdmin, async (request, response) => {
+router.delete("/:id", requireWebsiteAdmin, async (request, response) => {
   const id = Number(request.params.id);
   if (!Number.isSafeInteger(id) || id <= 0) {
     response.status(400).json({ error: "Invalid event id" });

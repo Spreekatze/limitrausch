@@ -1,6 +1,7 @@
 import type { RequestHandler } from "express";
 
-const requireAdmin: RequestHandler = (req, res, next) => {
+const requireWebsiteAdmin: RequestHandler = (req, res, next) => {
+  // Double check login status for safety
   const authUser = req.session.authUser;
   if (!authUser) {
     return res.status(401).json({ message: "User is not logged in." });
@@ -14,4 +15,4 @@ const requireAdmin: RequestHandler = (req, res, next) => {
   next();
 };
 
-export default requireAdmin;
+export default requireWebsiteAdmin;

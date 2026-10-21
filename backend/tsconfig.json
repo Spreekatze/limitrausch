@@ -12,16 +12,16 @@
     "types": ["node"]
   },
   "include": [
-    "index.ts",
-    "routes/**/*.ts",
-    "views/**/*.ts",
-    "types/**/*.ts",
-    "middleware/**/*.ts",
+    "src/index.ts",
+    "src/routes/**/*.ts",
+    "src/views/**/*.ts",
+    "src/types/**/*.ts",
+    "src/middleware/**/*.ts",
     "services/**/*.ts",
     "mapping/**/*.ts",
     "store/**/*.ts",
     "config/**/*.ts",
-    "database/**/*.ts",
+    "src/database/**/*.ts",
     "data/jobs.ts"
   ],
   "exclude": ["node_modules", "dist"]

@@ -1,5 +1,4 @@
 import type { ErrorRequestHandler } from "express";
-import logger from "../logger.js";
 import { HttpError } from "./httpError.js";
 
 const errorHandler: ErrorRequestHandler = (error, request, response, next) => {
@@ -21,16 +20,16 @@ const errorHandler: ErrorRequestHandler = (error, request, response, next) => {
     };
 
     if (error.status >= 500) {
-      logger.error({ ...logContext, err: error }, "Request failed");
+      request.log.error({ ...logContext, err: error }, "Request failed");
     } else {
-      logger.warn(logContext, error.message);
+      request.log.warn(logContext, error.message);
     }
 
     response.status(error.status).json({ error: error.message });
     return;
   }
 
-  logger.error({ ...context, err: error }, "Unhandled request error");
+  request.log.error({ ...context, err: error }, "Unhandled request error");
   response.status(500).json({ error: "Internal server error" });
 };
 

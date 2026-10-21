@@ -1,10 +1,10 @@
+import { HttpError } from "../errors/httpError.js";
+import logger from "../logger.js";
 import { mapRaidHelperGeneralEventDataToEvent } from "../mapping/eventRaidhelperMapping.js";
 import { addEvent, getEvents } from "../store/eventStore.js";
 import { raidHelperEventsResponseSchema } from "../types/raidhelperSchema.js";
 import { getEventsFromRaidHelper } from "./raidHelperAPI.js";
-import { HttpError } from "../errors/httpError.js";
 import { DiscordGuild, RaidHelperImportResponse } from "@limitrausch/contracts";
-import logger from "../logger.js";
 
 export async function importRaidHelperEvents(
   server: DiscordGuild,

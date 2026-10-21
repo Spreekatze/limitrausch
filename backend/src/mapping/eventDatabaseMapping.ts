@@ -2,9 +2,9 @@ import {
   DatabaseEventCoLeaderRow,
   DatabaseEventRow,
   DatabaseEventSignUpRow,
-} from "../types/databaseRowSchema.js";
+} from "../src/types/databaseRowSchema.js";
 import { Event } from "@limitrausch/contracts";
-import { Job } from "../types/jobSchema.js";
+import { Job } from "../src/types/jobSchema.js";
 import { jobsById } from "../data/jobs.js";
 
 function getJobFromId(id: number): Job {

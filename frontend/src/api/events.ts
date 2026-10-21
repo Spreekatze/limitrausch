@@ -39,8 +39,30 @@ export async function importRaidHelperEvents(serverId: string): Promise<RaidHelp
   const response = await fetch(`${apiBaseUrl}/events/raid-helper/${serverId}`);
 
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Import failed: ${response.status} ${text}`);
+    let message = `Request failed (${response.status})`;
+
+    try {
+      const body: unknown = await response.json();
+
+      if (
+        typeof body === 'object' &&
+        body !== null &&
+        'message' in body &&
+        typeof body.message === 'string'
+      ) {
+        message = body.message;
+      } else if (
+        typeof body === 'object' &&
+        body !== null &&
+        'error' in body &&
+        typeof body.error === 'string'
+      ) {
+        message = body.error;
+      }
+    } catch {
+      // Response wasnt valid JSON
+    }
+    throw new Error(message || `Import failed: ${response.status}`);
   }
 
   const result = raidHelperImportResponseSchema.safeParse(await response.json());

@@ -1,4 +1,4 @@
-import "./config/loadEnv.js";
+import "../config/loadEnv.js";
 import { readFile } from "node:fs/promises";
 import { basename, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -12,6 +12,8 @@ import jobRoutes from "./routes/jobs.js";
 import { renderRouteRows } from "./views/route-list.js";
 import { testDatabaseConnection } from "./database/databaseConnection.js";
 import errorHandler from "./errors/errorHandler.js";
+import requestLogger from "./middleware/requestLogger.js";
+import { connectDiscord } from "./discord/client.js";
 
 // Initialize Express app and configure environment variables
 const app = express();
@@ -28,6 +30,7 @@ const backendPageTemplate = await readFile(
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
+
 // Middleware to parse URL-encoded request bodies
 app.use(
   session({
@@ -43,11 +46,7 @@ app.use(
 );
 
 // Middleware to log incoming requests
-app.use((request, response, next) => {
-  console.log(`Request received at ${new Date().toISOString()}`);
-  console.log(request.method, request.url);
-  next();
-});
+app.use(requestLogger);
 
 // Serve static assets from the "views/assets" directory
 app.use(
@@ -76,11 +75,14 @@ app.use(errorHandler);
 
 testDatabaseConnection()
   .then(() => {
+    connectDiscord();
+  })
+  .then(() => {
     app.listen(port, () => {
-      console.log(`limitrausch backend listening on port ${port}`);
+      console.log(`Limitrausch backend listening on port ${port}`);
     });
   })
   .catch((error) => {
-    console.error("Database connection failed:", error);
+    console.error("Failed to start server:", error);
     process.exit(1);
   });

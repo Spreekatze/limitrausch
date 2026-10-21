@@ -1,5 +1,5 @@
-import { HttpError } from "../errors/httpError.js";
 import { Event } from "@limitrausch/contracts";
+import { HttpError } from "../errors/httpError.js";
 
 export async function getEventsFromRaidHelper(
   serverId: string,
@@ -17,7 +17,7 @@ export async function getEventsFromRaidHelper(
     );
   }
 
-  const apiKey = process.env.RAID_HELPER_API_KEY;
+  const apiKey = process.env.RAIDHELPER_API_KEY;
   if (!apiKey) {
     throw new HttpError(503, "Raid Helper API key is not configured");
   }
