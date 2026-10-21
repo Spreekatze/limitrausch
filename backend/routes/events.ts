@@ -63,7 +63,11 @@ router.post("/new", requireAdmin, async (request, response) => {
     ...result.data,
   };
 
-  const createdEvent = await addEvent(event);
+  const guild = request.session.authUser?.userGuilds.find(
+    (item) => item.id === event.discordServer?.id,
+  );
+
+  const createdEvent = await addEvent(event, guild);
 
   // TODO: probably this should be a redirect
   response.status(201).json({ postedEvents: [createdEvent] });

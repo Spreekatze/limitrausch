@@ -15,11 +15,9 @@
             label="Event-Typ *"
             :options="filteredTypeOptions"
             input-debounce="0"
-            use-input
             emit-value
             map-options
             outlined
-            required
             @filter="filterTypeOptions"
             @keydown.backspace="clearType"
           />
@@ -34,7 +32,6 @@
             use-input
             input-debounce="0"
             outlined
-            required
             @filter="filterContentOptions"
             @keydown.backspace="clearContent"
           />
@@ -43,6 +40,8 @@
             v-model="difficulty"
             label="Schwierigkeit"
             :options="difficultyLabels"
+            option-label="label"
+            option-value="value"
             emit-value
             map-options
             outlined
@@ -77,9 +76,11 @@
         </div>
 
         <q-input :model-value="title" label="Titel" filled @update:model-value="onTitleInput" />
-        <!-- <q-input v-model.lazy="goal" label="Ziel" filled /> -->
         <q-input v-model.lazy="description" label="Beschreibung" type="textarea" filled />
-
+        <!-- TODO: leader -->
+        <!-- TODO: Coleaders -->
+        <!-- TODO: Image -->
+        <!-- TODO: isPublic -->
         <q-btn label="Event erstellen" type="submit" :disable="!creationAllowed" />
         <!-- TODO: reset button -->
       </q-form>
@@ -129,10 +130,10 @@ const formattedDate = computed(() =>
 const type = ref<EventType | undefined>(undefined);
 const typeOptions = computed(() =>
   Object.entries(EVENT_TYPE_OPTIONS)
-    .filter(([, option]) => option.labels.de !== '' || option.labels.en !== '')
-    .map(([value, option]) => ({
+    .filter(([, item]) => item.labels.de !== '' || item.labels.en !== '')
+    .map(([value, item]) => ({
       value: Number(value) as EventType,
-      ...createLocalizedSearchFields(option.labels, locale.value, option.aliases),
+      ...createLocalizedSearchFields(item.labels, locale.value, item.aliases),
     })),
 );
 const { filteredOptions: filteredTypeOptions, filter: filterTypeOptions } =
@@ -153,12 +154,23 @@ const goal = ref<string | undefined>(undefined);
 const difficulty = ref<EventDifficulty | undefined>(undefined);
 const difficultyLabels = computed(() =>
   Object.entries(EVENT_DIFFICULTY_LABELS)
-    .filter(([, label]) => label.labels.de !== '' || label.labels.en !== '')
-    .map(([value, label]) => ({
-      label,
+    .filter(([, item]) => item.labels.de !== '' || item.labels.en !== '')
+    .map(([value, item]) => ({
       value: Number(value),
+      ...createLocalizedSearchFields(item.labels, locale.value),
     })),
 );
+const difficultyEdited = ref<boolean>(false);
+const generatedDifficulty = computed(() => {
+  if (!type.value || !content.value) return undefined;
+  return GAME_CONTENT.find((item) => item.value === content.value)?.difficulty?.[type.value];
+});
+
+watch(generatedDifficulty, (value) => {
+  if (!difficultyEdited.value) {
+    difficulty.value = value;
+  }
+});
 
 const title = ref<string>('');
 const titleEdited = ref<boolean>(false);
