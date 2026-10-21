@@ -17,7 +17,10 @@
           <q-icon name="discord" />
         </div>
         <div>
-          <q-icon class="server-icon" :name="`${getServerIconUrl(hoveredEvent)}`" />
+          <q-icon
+            class="server-icon"
+            :name="`${getGuildIconUrl(hoveredEvent.discordServer?.id, hoveredEvent.discordServer?.icon)}`"
+          />
           {{ hoveredEvent.discordServer?.name }}
         </div>
       </q-card-section>
@@ -58,12 +61,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  formatEventDay,
-  formatEventTime,
-  formatEventTitle,
-  getServerIconUrl,
-} from '@/utils/calendar';
+import { formatEventDay, formatEventTime, formatEventTitle } from '@/utils/calendar';
+import { getGuildIconUrl } from '@/utils/discordGuild';
 import { type Event, EVENT_TYPE } from '@limitrausch/contracts';
 
 defineProps<{

@@ -24,7 +24,6 @@
     <div v-else-if="authStore.loggedIn && authStore.isAdmin">
       <p>Spannende Dinge für die Admins</p>
       <q-btn
-        flat
         class="app-header__button"
         label="Import von Aetheris"
         icon="admin_panel_settings"

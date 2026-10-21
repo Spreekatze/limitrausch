@@ -114,6 +114,7 @@ export default defineConfig((ctx) => {
       config: {
         dark: true,
       },
+      lang: 'de-DE',
 
       // iconSet: 'material-icons', // Quasar icon set
       // lang: 'en-US', // Quasar language pack
@@ -126,7 +127,7 @@ export default defineConfig((ctx) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: ['Notify'],
     },
 
     // animations: 'all', // --- includes all animations

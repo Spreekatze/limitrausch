@@ -16,7 +16,13 @@ import {
   DatabaseEventSignUpRow,
 } from "../types/databaseRowSchema.js";
 import { ensureDiscordServerUser } from "../database/discordServerUser.js";
-import { CreateEvent, UpdateEvent, Event } from "@limitrausch/contracts";
+import {
+  CreateEvent,
+  UpdateEvent,
+  Event,
+  DiscordGuild,
+} from "@limitrausch/contracts";
+import { upsertDiscordServer } from "../database/discordServer.js";
 
 export async function getEvents(): Promise<Event[]> {
   const result = await pool.query<DatabaseEventRow>(`
@@ -125,11 +131,18 @@ export const getEventById = (id: number) => getEventBy("id", id);
 export const getEventByRaidHelperId = (id: string) =>
   getEventBy("raidHelperId", id);
 
-export async function addEvent(event: CreateEvent): Promise<Event> {
+export async function addEvent(
+  event: CreateEvent,
+  guild?: DiscordGuild,
+): Promise<Event> {
   const client = await pool.connect();
 
   try {
     await client.query("BEGIN");
+
+    if (guild) {
+      await upsertDiscordServer(guild);
+    }
 
     if (event.discordServer?.textChannelId && event.discordServer?.id) {
       //TODO: add fetching channel name
