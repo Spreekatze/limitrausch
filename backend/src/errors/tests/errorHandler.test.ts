@@ -11,13 +11,24 @@ function createResponse(headersSent = false): Response {
   } as unknown as Response;
 }
 
+function createRequest(method: string, path: string): Request {
+  return {
+    method,
+    path,
+    log: {
+      warn: vi.fn(),
+      error: vi.fn(),
+    },
+  } as unknown as Request;
+}
+
 describe("errorHandler", () => {
   it("returns the status and message from an HttpError", () => {
     const response = createResponse();
 
     errorHandler(
       new HttpError(404, "Event not found"),
-      { method: "GET", path: "/events/unknown" } as Request,
+      createRequest("GET", "/events/unknown"),
       response,
       vi.fn() as NextFunction,
     );
@@ -26,12 +37,30 @@ describe("errorHandler", () => {
     expect(response.json).toHaveBeenCalledWith({ error: "Event not found" });
   });
 
+  it("includes provided validation details in the response", () => {
+    const response = createResponse();
+    const details = [{ path: ["title"], message: "Required" }];
+
+    errorHandler(
+      new HttpError(400, "Invalid event data", {}, details),
+      createRequest("POST", "/events"),
+      response,
+      vi.fn() as NextFunction,
+    );
+
+    expect(response.status).toHaveBeenCalledWith(400);
+    expect(response.json).toHaveBeenCalledWith({
+      error: "Invalid event data",
+      details,
+    });
+  });
+
   it("hides unknown error details behind a generic 500 response", () => {
     const response = createResponse();
 
     errorHandler(
       new Error("Database password leaked"),
-      { method: "GET", path: "/events" } as Request,
+      createRequest("GET", "/events"),
       response,
       vi.fn() as NextFunction,
     );
@@ -49,7 +78,7 @@ describe("errorHandler", () => {
 
     errorHandler(
       error,
-      { method: "GET", path: "/events" } as Request,
+      createRequest("GET", "/events"),
       response,
       next,
     );

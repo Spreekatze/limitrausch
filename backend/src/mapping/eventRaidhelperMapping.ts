@@ -1,10 +1,5 @@
-import {
-  RaidHelperEvent,
-  RaidHelperSignUp,
-  RaidHelperWebHookEvent,
-} from "../src/types/raidhelperSchema.js";
 import { jobsByRaidHelperName } from "../data/jobs.js";
-import { Job } from "../src/types/jobSchema.js";
+
 import {
   DiscordGuild,
   EVENT_TYPE,
@@ -13,7 +8,13 @@ import {
   statusTypeSchema,
   CreateEvent,
   CreateSignUp,
+  Job,
 } from "@limitrausch/contracts";
+import {
+  RaidHelperEvent,
+  RaidHelperSignUp,
+  RaidHelperWebHookEvent,
+} from "../types/raidhelperSchema.js";
 
 export function mapRaidHelperGeneralEventDataToEvent(
   raidhelperEvent: RaidHelperEvent,

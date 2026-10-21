@@ -61,7 +61,7 @@ router.post(
       return;
     }
 
-    deleteEventById(existingEvent.id);
+    await deleteEventById(existingEvent.id);
     response.sendStatus(200);
   },
 );

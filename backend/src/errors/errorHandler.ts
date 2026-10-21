@@ -25,7 +25,10 @@ const errorHandler: ErrorRequestHandler = (error, request, response, next) => {
       request.log.warn(logContext, error.message);
     }
 
-    response.status(error.status).json({ error: error.message });
+    response.status(error.status).json({
+      error: error.message,
+      ...(error.details === undefined ? {} : { details: error.details }),
+    });
     return;
   }
 

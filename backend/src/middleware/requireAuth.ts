@@ -1,10 +1,9 @@
 import type { RequestHandler } from "express";
+import { HttpError } from "../errors/httpError.js";
 
 const requireAuth: RequestHandler = (req, res, next) => {
   if (!req.session.authUser) {
-    return res.status(401).json({
-      message: "User is not logged in.",
-    });
+    return next(new HttpError(401, "User is not logged in."));
   }
 
   next();

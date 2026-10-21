@@ -1,11 +1,10 @@
-import {
-  DatabaseEventCoLeaderRow,
-  DatabaseEventRow,
-  DatabaseEventSignUpRow,
-} from "../src/types/databaseRowSchema.js";
-import { Event } from "@limitrausch/contracts";
-import { Job } from "../src/types/jobSchema.js";
+import { Event, Job } from "@limitrausch/contracts";
 import { jobsById } from "../data/jobs.js";
+import {
+  DatabaseEventRow,
+  DatabaseEventCoLeaderRow,
+  DatabaseEventSignUpRow,
+} from "../types/databaseRowSchema.js";
 
 function getJobFromId(id: number): Job {
   const job = jobsById.get(id);

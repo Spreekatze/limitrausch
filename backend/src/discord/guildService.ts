@@ -6,12 +6,6 @@ export interface GuildMemberInfo {
   roleIds: string[];
 }
 
-/**
- * Ruft die Mitgliedschaft und Rollen eines Nutzers
- * auf einem Discord-Server ab.
- *
- * Gibt null zurück, wenn der Nutzer kein Mitglied ist.
- */
 export async function getGuildMemberInfo(
   guildId: string,
   userId: string,

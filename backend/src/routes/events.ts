@@ -14,7 +14,8 @@ import {
   createEventSchema,
   updateEventSchema,
 } from "@limitrausch/contracts";
-import requireServerManager from "../middleware/requireServerManager.js";
+import requireGuildManager from "../middleware/requireGuildManager.js";
+import { HttpError } from "../errors/httpError.js";
 
 const router = express.Router();
 
@@ -22,20 +23,22 @@ const router = express.Router();
 router.get(
   "/raid-helper/:id",
   requireWebsiteAdmin,
-  async (request, response) => {
+  async (request, response, next) => {
     const serverId = request.params.id;
     if (typeof serverId !== "string") {
-      response.status(400).json({ error: "Invalid server id" });
-      return;
+      return next(new HttpError(400, "Invalid server id"));
     }
 
     const server = request.session.authUser?.userGuilds.find(
       (guild) => guild.id === serverId,
     );
     if (!server) {
-      return response.status(404).json({
-        error: "Import failed due to user not being member of requested guild",
-      });
+      return next(
+        new HttpError(
+          404,
+          "Import failed due to user not being member of requested guild",
+        ),
+      );
     }
 
     //TODO: move server adding to its own route
@@ -54,14 +57,12 @@ router.get("/", async (request, response) => {
 });
 
 // Create an event
-router.post("/new", requireServerManager, async (request, response) => {
+router.post("/new", requireGuildManager, async (request, response, next) => {
   const result = createEventSchema.safeParse(request.body);
   if (!result.success) {
-    response.status(400).json({
-      error: "Invalid event data",
-      details: result.error.issues,
-    });
-    return;
+    return next(
+      new HttpError(400, "Invalid event data", {}, result.error.issues),
+    );
   }
 
   const event: CreateEvent = {
@@ -79,28 +80,25 @@ router.post("/new", requireServerManager, async (request, response) => {
 });
 
 // Get (request) a single event by id
-router.get("/:id", async (request, response) => {
+router.get("/:id", async (request, response, next) => {
   const id = Number(request.params.id);
   if (!Number.isSafeInteger(id) || id <= 0) {
-    response.status(400).json({ error: "Invalid event id" });
-    return;
+    return next(new HttpError(400, "Invalid event id"));
   }
 
   const event = await getEventById(id);
   if (!event) {
-    response.status(404).json({ error: "Event not found" });
-    return;
+    return next(new HttpError(404, "Event not found"));
   }
 
   response.json(event);
 });
 
 // Edit (Update) a single event by id
-router.patch("/:id", requireWebsiteAdmin, async (request, response) => {
+router.patch("/:id", requireWebsiteAdmin, async (request, response, next) => {
   const id = Number(request.params.id);
   if (!Number.isSafeInteger(id) || id <= 0) {
-    response.status(400).json({ error: "Invalid event id" });
-    return;
+    return next(new HttpError(400, "Invalid event id"));
   }
 
   const result = updateEventSchema.safeParse({
@@ -108,10 +106,9 @@ router.patch("/:id", requireWebsiteAdmin, async (request, response) => {
   });
 
   if (!result.success) {
-    response
-      .status(400)
-      .json({ error: "Invalid event data", details: result.error.issues });
-    return;
+    return next(
+      new HttpError(400, "Invalid event data", {}, result.error.issues),
+    );
   }
 
   const updatedEvent = await updateEventById(id, {
@@ -119,24 +116,21 @@ router.patch("/:id", requireWebsiteAdmin, async (request, response) => {
   });
 
   if (!updatedEvent) {
-    response.status(404).json({ error: "Event not found" });
-    return;
+    return next(new HttpError(404, "Event not found"));
   }
 
   response.json(updatedEvent);
 });
 
 // Delete a single event by id
-router.delete("/:id", requireWebsiteAdmin, async (request, response) => {
+router.delete("/:id", requireWebsiteAdmin, async (request, response, next) => {
   const id = Number(request.params.id);
   if (!Number.isSafeInteger(id) || id <= 0) {
-    response.status(400).json({ error: "Invalid event id" });
-    return;
+    return next(new HttpError(400, "Invalid event id"));
   }
   const deleted = await deleteEventById(id);
   if (!deleted) {
-    response.status(404).json({ error: "Event not found" });
-    return;
+    return next(new HttpError(404, "Event not found"));
   }
   response.status(204).send();
 });

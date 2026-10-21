@@ -6,6 +6,7 @@ import {
   discordGuildSchema,
   discordOAuthUserSchema,
 } from "@limitrausch/contracts";
+import { HttpError } from "../errors/httpError.js";
 
 const router = express.Router();
 
@@ -18,8 +19,7 @@ router.get("/discord", (request, response) => {
 
   const clientId = process.env.DISCORD_CLIENT_ID;
   if (!clientId) {
-    response.status(500).send("Discord OAuth is not configured.");
-    return;
+    throw new HttpError(500, "Discord OAuth is not configured.");
   }
 
   const state = crypto.randomBytes(32).toString("hex"); // Generate a random state parameter for CSRF protection
@@ -37,18 +37,16 @@ router.get("/discord", (request, response) => {
   response.redirect(discordAuthUrl);
 });
 
-router.get("/discord/callback", async (request, response) => {
+router.get("/discord/callback", async (request, response, next) => {
   // Handle the callback from Discord after user authorization
   const code = request.query.code as string;
   if (!code) {
-    response.status(400).send("Missing authorization code.");
-    return;
+    throw new HttpError(400, "Missing authorization code.");
   }
   // Verify the state parameter to prevent CSRF attacks
   const state = request.query.state as string;
   if (state !== request.session.discordOAuthState) {
-    response.status(400).send("Invalid OAuth state parameter.");
-    return;
+    throw new HttpError(400, "Invalid OAuth state parameter.");
   }
   delete request.session.discordOAuthState; // Clear the state from the session after verification
 
@@ -68,11 +66,9 @@ router.get("/discord/callback", async (request, response) => {
   });
   const tokenData = await tokenResponse.json();
   if (!tokenResponse.ok) {
-    console.error("Discord OAuth token request failed:", tokenData);
-    response
-      .status(tokenResponse.status)
-      .send("Discord OAuth token request failed.");
-    return;
+    throw new HttpError(502, "Discord OAuth token request failed.", {
+      upstreamStatus: tokenResponse.status,
+    });
   }
 
   // Use the access token to fetch user information
@@ -83,17 +79,14 @@ router.get("/discord/callback", async (request, response) => {
   });
   const discordUser = await userResponse.json();
   if (!userResponse.ok) {
-    console.error("Discord OAuth user request failed:", discordUser);
-    response
-      .status(userResponse.status)
-      .send("Discord OAuth user request failed.");
-    return;
+    throw new HttpError(502, "Discord OAuth user request failed.", {
+      upstreamStatus: userResponse.status,
+    });
   }
 
   const discordOAuthUserResult = discordOAuthUserSchema.safeParse(discordUser);
   if (!discordOAuthUserResult.success) {
-    response.status(502).send("Discord returned invalid user data.");
-    return;
+    throw new HttpError(502, "Discord returned invalid user data.");
   }
   const discordOAuthUser = discordOAuthUserResult.data;
 
@@ -108,21 +101,15 @@ router.get("/discord/callback", async (request, response) => {
   );
   const discordUserGuilds = await userGuildsResponse.json();
   if (!userGuildsResponse.ok) {
-    console.error(
-      "Discord OAuth user guild request failed:",
-      discordUserGuilds,
-    );
-    response
-      .status(userGuildsResponse.status)
-      .send("Discord OAuth user guild request failed.");
-    return;
+    throw new HttpError(502, "Discord OAuth user guild request failed.", {
+      upstreamStatus: userGuildsResponse.status,
+    });
   }
   const discordUserGuildsResult = discordGuildSchema
     .array()
     .safeParse(discordUserGuilds);
   if (!discordUserGuildsResult.success) {
-    response.status(502).send("Discord returned invalid guild data.");
-    return;
+    throw new HttpError(502, "Discord returned invalid guild data.");
   }
 
   // Check if the user is in the whitelist of admins
@@ -144,14 +131,12 @@ router.get("/discord/callback", async (request, response) => {
 
   const frontendUrl = process.env.FRONTEND_URL;
   if (!frontendUrl) {
-    response.status(500).send("Frontend URL is not configured.");
-    return;
+    throw new HttpError(500, "Frontend URL is not configured.");
   }
 
   request.session.save((error) => {
     if (error) {
-      console.error("Failed to save OAuth session:", error);
-      response.status(500).send("Failed to create login session.");
+      next(error);
       return;
     }
     response.redirect(`${frontendUrl}/#/dashboard`);
@@ -173,11 +158,10 @@ router.get("/me", (request, response) => {
   );
 });
 
-router.get("/logout", (request, response) => {
-  request.session.destroy((err) => {
-    if (err) {
-      console.error("Error occurred while destroying session:", err);
-      response.status(500).json({ message: "Failed to logout." });
+router.get("/logout", (request, response, next) => {
+  request.session.destroy((error) => {
+    if (error) {
+      next(error);
       return;
     }
     response.clearCookie("connect.sid"); // Clear the session cookie

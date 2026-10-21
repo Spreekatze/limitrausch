@@ -32,9 +32,28 @@ export async function getDiscordServer(
   `,
     [serverId],
   );
-  const row = result.rows[0];
-  if (!row) {
+  const guild = result.rows[0];
+  if (!guild) {
     return undefined;
   }
-  return { id: row.id, name: row.name, icon: row.icon };
+  return guild;
+}
+
+export async function getDiscordServerManagerRoles(
+  serverId: string,
+): Promise<string[]> {
+  const result = await pool.query<Partial<DatabaseGuildRow>>(
+    `
+    SELECT
+    guild."rolesAllowedToManageEvents"
+    FROM "DiscordServer" guild
+    WHERE guild.id = $1
+  `,
+    [serverId],
+  );
+  const roles = result.rows[0];
+  if (!roles) {
+    return [];
+  }
+  return roles.rolesAllowedToManageEvents ?? [];
 }
