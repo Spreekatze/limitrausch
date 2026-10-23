@@ -1,25 +1,39 @@
 import { HttpError } from "../errors/httpError.js";
 import logger from "../logger.js";
-import { mapRaidHelperGeneralEventDataToEvent } from "../mapping/eventRaidhelperMapping.js";
-import { addEvent, getEvents } from "../store/eventStore.js";
-import { raidHelperEventsResponseSchema } from "../types/raidhelperSchema.js";
-import { getEventsFromRaidHelper } from "./raidHelperAPI.js";
+import {
+  mapRaidHelperDetailledEventDataToEvent,
+  mapRaidHelperGeneralEventDataToEvent,
+} from "../mapping/eventRaidhelperMapping.js";
+import {
+  addEvent,
+  getEventByRaidHelperId,
+  getEvents,
+  updateEventById,
+} from "../store/eventStore.js";
+import {
+  raidHelperDetailledEventSchema,
+  raidHelperEventsResponseSchema,
+} from "../types/raidhelperSchema.js";
+import {
+  getEventFromRaidHelperById,
+  getEventsFromRaidHelperByServer,
+} from "./raidHelperAPI.js";
 import { DiscordGuild, RaidHelperImportResponse } from "@limitrausch/contracts";
 
-export async function importRaidHelperEvents(
-  server: DiscordGuild,
-  fetchEvents = getEventsFromRaidHelper,
+export async function importRaidHelperEventsFromGuild(
+  guild: DiscordGuild,
+  fetchEvents = getEventsFromRaidHelperByServer,
 ): Promise<RaidHelperImportResponse> {
   let imported = 0;
   let skipped = 0;
   let failed = 0;
 
-  const raidHelperData = await fetchEvents(server.id);
+  const raidHelperData = await fetchEvents(guild.id);
 
   const result = raidHelperEventsResponseSchema.safeParse(raidHelperData);
   if (!result.success) {
     throw new HttpError(502, "Invalid answer from raid-helper.xyz", {
-      serverId: server.id,
+      serverId: guild.id,
       validationIssues: result.error.issues.map(({ code, path }) => ({
         code,
         path,
@@ -37,9 +51,10 @@ export async function importRaidHelperEvents(
     try {
       const mappedEvent = mapRaidHelperGeneralEventDataToEvent(
         raidHelperEvent,
-        server,
+        guild,
       );
 
+      //TODO: add updating
       if (existingRaidHelperEventIds.has(mappedEvent.raidHelperId)) {
         skipped++;
         continue;
@@ -51,16 +66,70 @@ export async function importRaidHelperEvents(
     } catch (error) {
       failed++;
       logger.error(
-        { err: error, serverId: server.id, eventId: raidHelperEvent.id },
+        { err: error, serverId: guild.id, eventId: raidHelperEvent.id },
         "Failed to import RaidHelper event",
       );
     }
   }
 
   logger.info(
-    { serverId: server.id, imported, skipped, failed },
+    { serverId: guild.id, imported, skipped, failed },
     "RaidHelper event import completed",
   );
 
-  return { success: true, imported, skipped, failed };
+  return { imported, updated: 0, skipped, failed };
+}
+
+export async function importRaidHelperEventById(
+  guilds: DiscordGuild[],
+  eventId: string,
+  fetchEvents = getEventFromRaidHelperById,
+): Promise<RaidHelperImportResponse> {
+  let imported = 0;
+  let updated = 0;
+  let failed = 0;
+
+  const raidHelperData = await fetchEvents(eventId);
+  const result = raidHelperDetailledEventSchema.safeParse(raidHelperData);
+  if (!result.success) {
+    throw new HttpError(502, "Invalid answer from raid-helper.xyz", {
+      eventId: eventId,
+      validationIssues: result.error.issues.map(({ code, path }) => ({
+        code,
+        path,
+      })),
+    });
+  }
+
+  const existingEvent = await getEventByRaidHelperId(eventId);
+  const guild = guilds.find((guild) => guild.id === result.data.serverId);
+  if (!guild) {
+    throw new HttpError(401, "User is not part of event guild");
+  }
+
+  try {
+    const mappedEvent = mapRaidHelperDetailledEventDataToEvent(result.data);
+
+    //TODO: add check for skip?
+    if (existingEvent) {
+      await updateEventById(existingEvent.id, mappedEvent);
+      updated++;
+    } else {
+      await addEvent(mappedEvent, guild);
+      imported++;
+    }
+  } catch (error) {
+    failed++;
+    logger.error(
+      { err: error, eventId: eventId },
+      "Failed to import RaidHelper event",
+    );
+  }
+
+  logger.info(
+    { eventId: eventId, imported, updated, skipped: 0, failed },
+    "RaidHelper event import completed",
+  );
+
+  return { imported, updated, skipped: 0, failed };
 }

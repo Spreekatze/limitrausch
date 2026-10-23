@@ -1,5 +1,8 @@
 import express from "express";
-import { importRaidHelperEvents } from "../services/raidHelperImport.js";
+import {
+  importRaidHelperEventById,
+  importRaidHelperEventsFromGuild,
+} from "../services/raidHelperImport.js";
 import {
   addEvent,
   deleteEventById,
@@ -15,12 +18,13 @@ import {
 } from "@limitrausch/contracts";
 import requireGuildManager from "../middleware/requireGuildManager.js";
 import { HttpError } from "../errors/httpError.js";
+import requireAuth from "../middleware/requireAuth.js";
 
 const router = express.Router();
 
 // Request events from raid-helper by serverId
 router.get(
-  "/raid-helper/:id",
+  "/raid-helper/server/:id",
   requireGuildManager,
   async (request, response, next) => {
     const serverId = request.params.id;
@@ -43,11 +47,31 @@ router.get(
     //TODO: move server adding to its own route
     await addDiscordServer(server);
 
-    const result = await importRaidHelperEvents(server);
+    const result = await importRaidHelperEventsFromGuild(server);
 
     response.status(200).json(result);
   },
 );
+
+// Request event from raid-helper by eventId
+router.get("/raid-helper/:id", requireAuth, async (request, response, next) => {
+  const eventId = request.params.id;
+  if (typeof eventId !== "string") {
+    return next(new HttpError(400, "Invalid event id"));
+  }
+  const userGuilds = request.session.authUser?.userGuilds;
+  if (!userGuilds) {
+    return next(
+      new HttpError(404, "Import failed due to missing guild information"),
+    );
+  }
+  const result = await importRaidHelperEventById(userGuilds, eventId);
+  if (result.failed) {
+    return next(new HttpError(500, "Import failed due to server error"));
+  }
+
+  response.status(200).json(result);
+});
 
 // Get all events
 router.get("/", async (request, response) => {

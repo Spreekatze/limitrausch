@@ -13,7 +13,7 @@ import {
 import {
   RaidHelperEvent,
   RaidHelperSignUp,
-  RaidHelperWebHookEvent,
+  RaidHelperDetailledEvent,
 } from "../types/raidhelperSchema.js";
 
 export function mapRaidHelperGeneralEventDataToEvent(
@@ -90,9 +90,8 @@ function mapRaidHelperSignUpsToEventSignUps(
   return signUps;
 }
 
-export function mapRaidHelperWebhookEventToEvent(
-  raidhelperEvent: RaidHelperWebHookEvent,
-  serverId: string,
+export function mapRaidHelperDetailledEventDataToEvent(
+  raidhelperEvent: RaidHelperDetailledEvent,
 ): CreateEvent {
   const event: CreateEvent = {
     creator: raidhelperEvent.creator,
@@ -111,8 +110,9 @@ export function mapRaidHelperWebhookEventToEvent(
     endTime: raidhelperEvent.endTime,
     eventType: EVENT_TYPE.UNDEFINED,
     discordServer: {
-      id: serverId,
+      id: raidhelperEvent.serverId,
       textChannelId: raidhelperEvent.channelId,
+      textChannelName: raidhelperEvent.channelName,
     },
     raidHelperId: raidhelperEvent.id,
     signUps: mapRaidHelperSignUpsToEventSignUps(raidhelperEvent.signUps),

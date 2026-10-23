@@ -2,7 +2,6 @@ import type { RequestHandler } from "express";
 import { HttpError } from "../errors/httpError.js";
 
 const requireWebsiteAdmin: RequestHandler = (req, res, next) => {
-  // Double check login status for safety
   const authUser = req.session.authUser;
   if (!authUser) {
     return next(new HttpError(401, "User is not logged in."));

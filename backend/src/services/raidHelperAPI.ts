@@ -1,7 +1,8 @@
 import { Event } from "@limitrausch/contracts";
 import { HttpError } from "../errors/httpError.js";
+import { RaidHelperUserApiKey } from "../types/raidhelperSchema.js";
 
-export async function getEventsFromRaidHelper(
+export async function getEventsFromRaidHelperByServer(
   serverId: string,
 ): Promise<unknown> {
   const allowedServerIds = new Set(
@@ -33,6 +34,94 @@ export async function getEventsFromRaidHelper(
           StartTimeFilter: String(startTime),
           IncludeSignUps: String(true),
         },
+        signal: AbortSignal.timeout(10_000),
+      },
+    );
+
+    if (!response.ok) {
+      throw new HttpError(
+        response.status,
+        `Raid Helper API request failed with status ${response.status}`,
+      );
+    }
+
+    const contentType = response.headers.get("content-type")?.split(";")[0];
+    if (
+      !contentType ||
+      (contentType !== "application/json" && !contentType.endsWith("+json"))
+    ) {
+      throw new HttpError(502, "Raid Helper API response is not JSON");
+    }
+
+    try {
+      return await response.json();
+    } catch {
+      throw new HttpError(502, "Raid Helper API returned invalid JSON");
+    }
+  } catch (error) {
+    if (error instanceof HttpError) {
+      throw error;
+    }
+
+    if (error instanceof Error && error.name === "TimeoutError") {
+      throw new HttpError(504, "Raid Helper API request timed out");
+    }
+
+    throw new HttpError(502, "Raid Helper API request failed");
+  }
+}
+
+export async function getEventFromRaidHelperById(
+  eventId: string,
+): Promise<unknown> {
+  try {
+    const response = await fetch(
+      `https://raid-helper.xyz/api/v4/events/${eventId}`,
+      {
+        signal: AbortSignal.timeout(10_000),
+      },
+    );
+
+    if (!response.ok) {
+      throw new HttpError(
+        response.status,
+        `Raid Helper API request failed with status ${response.status}`,
+      );
+    }
+
+    const contentType = response.headers.get("content-type")?.split(";")[0];
+    if (
+      !contentType ||
+      (contentType !== "application/json" && !contentType.endsWith("+json"))
+    ) {
+      throw new HttpError(502, "Raid Helper API response is not JSON");
+    }
+
+    try {
+      return await response.json();
+    } catch {
+      throw new HttpError(502, "Raid Helper API returned invalid JSON");
+    }
+  } catch (error) {
+    if (error instanceof HttpError) {
+      throw error;
+    }
+
+    if (error instanceof Error && error.name === "TimeoutError") {
+      throw new HttpError(504, "Raid Helper API request timed out");
+    }
+
+    throw new HttpError(502, "Raid Helper API request failed");
+  }
+}
+
+export async function getEventsFromRaidHelperByUser(
+  userKey: RaidHelperUserApiKey,
+): Promise<unknown> {
+  try {
+    const response = await fetch(
+      `https://raid-helper.xyz/api/v4/users/${userKey.apiKey}/events`,
+      {
         signal: AbortSignal.timeout(10_000),
       },
     );

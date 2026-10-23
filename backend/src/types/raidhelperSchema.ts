@@ -24,7 +24,7 @@ export const raidHelperSignUpSchema = z.object({
 });
 export type RaidHelperSignUp = z.infer<typeof raidHelperSignUpSchema>;
 
-export const raidHelperWebhookEventSchema = z.object({
+export const raidHelperDetailledEventSchema = z.object({
   id: z.string(),
   date: z.string(),
   time: z.string(),
@@ -47,15 +47,15 @@ export const raidHelperWebhookEventSchema = z.object({
   closingTime: z.number(),
   description: z.string(),
   lastUpdated: z.number(),
-  displayTitle: z.string(),
+  // displayTitle: z.string(),
   // announcements: Array
   advancedSettings: raidHelperAdvancedSettingsSchema,
 });
-export type RaidHelperWebHookEvent = z.infer<
-  typeof raidHelperWebhookEventSchema
+export type RaidHelperDetailledEvent = z.infer<
+  typeof raidHelperDetailledEventSchema
 >;
 
-// This interface represents an event in the form of the answer from Raidhelper-API.
+// This interface represents an event in the form of the answer from Raidhelper-API when fetching all events from a server.
 export const raidHelperEventSchema = z.object({
   id: z.string(),
   channelId: z.string(),
@@ -88,3 +88,8 @@ export const raidHelperEventsResponseSchema = z.object({
 export type RaidHelperEventsResponse = z.infer<
   typeof raidHelperEventsResponseSchema
 >;
+
+export const apiKeySchema = z.strictObject({
+  apiKey: z.string().trim().min(1).max(500),
+});
+export type RaidHelperUserApiKey = z.infer<typeof apiKeySchema>;
