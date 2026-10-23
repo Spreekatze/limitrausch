@@ -169,7 +169,7 @@ export const up = (pgm) => {
       constraints: {
         check: [
           '"discordTextChannelId" IS NULL OR "discordServerId" IS NOT NULL',
-          '"eventType" IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 999, 9998)',
+          '"eventType" IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 999, 998, 997)',
           '"eventDifficulty" IS NULL OR "eventDifficulty" IN (1, 2, 3, 4)',
         ],
         foreignKeys: {

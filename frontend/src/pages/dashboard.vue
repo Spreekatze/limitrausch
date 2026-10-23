@@ -29,7 +29,8 @@
         icon="admin_panel_settings"
         @click="importFromAetheris"
       />
-      <p>{{ importMessage }}</p>
+      <q-input outlined v-model="eventId" label="ID eines Raid-Helper Events" />
+      <q-btn label="Import Event" @click="importRaidHelperEventById" />
     </div>
     <div v-else>
       <p>Aktuell nur für Admins nützlich.</p>
@@ -38,15 +39,37 @@
 </template>
 
 <script setup lang="ts">
-import { importRaidHelperEvents } from '@/api/events';
+import { importRaidHelperEvent, importRaidHelperEventsByServer } from '@/api/events';
+import { useNotify } from '@/composable/useNotify';
 import { useAuthStore } from '@/stores/auth-store';
 import { type RaidHelperImportResponse } from '@limitrausch/contracts';
 import { ref } from 'vue';
 
 const authStore = useAuthStore();
+const notify = useNotify();
 const importMessage = ref<RaidHelperImportResponse | null>(null);
 
 async function importFromAetheris() {
-  importMessage.value = await importRaidHelperEvents('1408172814879559721');
+  try {
+    importMessage.value = await importRaidHelperEventsByServer('1414538581921370127');
+    notify.success(JSON.stringify(importMessage.value));
+  } catch (error) {
+    importMessage.value = null;
+    notify.error(error instanceof Error ? error.message : 'Import fehlgeschlagen.');
+  }
+}
+
+const eventId = ref<string>();
+async function importRaidHelperEventById() {
+  if (!eventId.value) {
+    return;
+  }
+  try {
+    importMessage.value = await importRaidHelperEvent(eventId.value);
+    notify.success(JSON.stringify(importMessage.value));
+  } catch (error) {
+    importMessage.value = null;
+    notify.error(error instanceof Error ? error.message : 'Import fehlgeschlagen.');
+  }
 }
 </script>

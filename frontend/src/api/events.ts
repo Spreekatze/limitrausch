@@ -34,13 +34,76 @@ export async function getEvents(date: Date): Promise<ApiEventsResponse> {
   return result.data;
 }
 
-export async function importRaidHelperEvents(serverId: string): Promise<RaidHelperImportResponse> {
+export async function importRaidHelperEventsByServer(
+  serverId: string,
+): Promise<RaidHelperImportResponse> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
-  const response = await fetch(`${apiBaseUrl}/events/raid-helper/${serverId}`);
+  const response = await fetch(`${apiBaseUrl}/events/raid-helper/server/${serverId}`);
 
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Import failed: ${response.status} ${text}`);
+    let message = `Request failed (${response.status})`;
+
+    try {
+      const body: unknown = await response.json();
+
+      if (
+        typeof body === 'object' &&
+        body !== null &&
+        'message' in body &&
+        typeof body.message === 'string'
+      ) {
+        message = body.message;
+      } else if (
+        typeof body === 'object' &&
+        body !== null &&
+        'error' in body &&
+        typeof body.error === 'string'
+      ) {
+        message = body.error;
+      }
+    } catch {
+      // Response wasnt valid JSON
+    }
+    throw new Error(message || `Import failed: ${response.status}`);
+  }
+
+  const result = raidHelperImportResponseSchema.safeParse(await response.json());
+  if (!result.success) {
+    throw new Error('The import API call returned an unexpected response format.');
+  }
+
+  return result.data;
+}
+
+export async function importRaidHelperEvent(eventId: string): Promise<RaidHelperImportResponse> {
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+  const response = await fetch(`${apiBaseUrl}/events/raid-helper/${eventId}`);
+
+  if (!response.ok) {
+    let message = `Request failed (${response.status})`;
+
+    try {
+      const body: unknown = await response.json();
+
+      if (
+        typeof body === 'object' &&
+        body !== null &&
+        'message' in body &&
+        typeof body.message === 'string'
+      ) {
+        message = body.message;
+      } else if (
+        typeof body === 'object' &&
+        body !== null &&
+        'error' in body &&
+        typeof body.error === 'string'
+      ) {
+        message = body.error;
+      }
+    } catch {
+      // Response wasnt valid JSON
+    }
+    throw new Error(message || `Import failed: ${response.status}`);
   }
 
   const result = raidHelperImportResponseSchema.safeParse(await response.json());

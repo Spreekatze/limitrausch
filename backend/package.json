@@ -6,7 +6,7 @@
   "scripts": {
     "build:contracts": "npm --prefix ../contracts run build",
     "predev": "npm run build:contracts",
-    "dev": "tsx watch index.ts",
+    "dev": "tsx watch src/index.ts",
     "prebuild": "npm run build:contracts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
@@ -22,12 +22,14 @@
   },
   "dependencies": {
     "@limitrausch/contracts": "file:../contracts",
+    "discord.js": "^14.27.0",
     "dotenv": "^18.0.5",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
     "node-pg-migrate": "^9.0.0",
     "pg": "^8.23.1",
     "pino": "^10.4.0",
+    "pino-http": "^11.0.0",
     "zod": "^4.6.5"
   },
   "devDependencies": {

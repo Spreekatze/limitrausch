@@ -5,6 +5,7 @@ export function useNotify() {
     Notify.create({
       type: 'positive',
       progress: true,
+      position: 'top-right',
       message,
     });
   }
@@ -13,6 +14,7 @@ export function useNotify() {
     Notify.create({
       type: 'negative',
       progress: true,
+      position: 'top-right',
       message,
     });
   }
@@ -21,6 +23,7 @@ export function useNotify() {
     Notify.create({
       type: 'warning',
       progress: true,
+      position: 'top-right',
       message,
     });
   }

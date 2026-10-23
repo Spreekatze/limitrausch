@@ -138,8 +138,8 @@ export const eventsResponseSchema = z.object({
 export type EventsResponse = z.infer<typeof eventsResponseSchema>;
 
 export const raidHelperImportResponseSchema = z.object({
-  success: z.boolean(),
   imported: z.number(),
+  updated: z.number(),
   skipped: z.number(),
   failed: z.number(),
 });
