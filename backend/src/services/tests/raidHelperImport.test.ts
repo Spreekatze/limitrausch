@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { HttpError } from "../../errors/httpError.js";
 import { getEvents } from "../../store/eventStore.js";
 import type { RaidHelperEvent } from "../../types/raidhelperSchema.js";
-import { importRaidHelperEvents } from "../raidHelperImport.js";
+import { importRaidHelperEventsFromGuild } from "../raidHelperImport.js";
 import { createRaidHelperEvents, validServer } from "./raidHelperTestUtils.js";
 
 const mockStore = vi.hoisted(() => ({
@@ -48,14 +48,14 @@ describe("importRaidHelperEvents", () => {
   });
 
   it("works fine when there are no events in the import", async () => {
-    const result = await importRaidHelperEvents(
+    const result = await importRaidHelperEventsFromGuild(
       validServer,
       buildFetchEvents([]),
     );
 
     expect(result).toEqual({
-      success: true,
       imported: 0,
+      updated: 0,
       skipped: 0,
       failed: 0,
     });
@@ -63,14 +63,14 @@ describe("importRaidHelperEvents", () => {
   });
 
   it("imports valid events and counts failed rows without stopping the batch", async () => {
-    const result = await importRaidHelperEvents(
+    const result = await importRaidHelperEventsFromGuild(
       validServer,
       buildFetchEvents(),
     );
 
     expect(result).toEqual({
-      success: true,
       imported: 2,
+      updated: 0,
       skipped: 0,
       failed: 1,
     });
@@ -86,16 +86,16 @@ describe("importRaidHelperEvents", () => {
   });
 
   it("skips events that were already imported in the store", async () => {
-    await importRaidHelperEvents(validServer, buildFetchEvents());
+    await importRaidHelperEventsFromGuild(validServer, buildFetchEvents());
 
-    const result = await importRaidHelperEvents(
+    const result = await importRaidHelperEventsFromGuild(
       validServer,
       buildFetchEvents(),
     );
 
     expect(result).toEqual({
-      success: true,
       imported: 0,
+      updated: 0,
       skipped: 2,
       failed: 1,
     });
@@ -103,7 +103,9 @@ describe("importRaidHelperEvents", () => {
 
   it("rejects invalid RaidHelper payloads with the expected HttpError", async () => {
     await expect(
-      importRaidHelperEvents(validServer, async () => ({ hello: "hello" })),
+      importRaidHelperEventsFromGuild(validServer, async () => ({
+        hello: "hello",
+      })),
     ).rejects.toThrow("Invalid answer from raid-helper.xyz");
   });
 
@@ -116,7 +118,7 @@ describe("importRaidHelperEvents", () => {
     };
 
     await expect(
-      importRaidHelperEvents(validServer, fetchEvents),
+      importRaidHelperEventsFromGuild(validServer, fetchEvents),
     ).rejects.toMatchObject({
       name: "HttpError",
       status: 502,

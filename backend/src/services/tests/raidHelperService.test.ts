@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getEventsFromRaidHelper } from "../raidHelperAPI.js";
+import { getEventsFromRaidHelperByServer } from "../raidHelperAPI.js";
 import {
   createSuccessfulFetchResponse,
   validServer,
@@ -39,7 +39,7 @@ describe("getRaidHelperEvents", () => {
     mockSuccessfulFetch();
 
     await expect(
-      getEventsFromRaidHelper(validServer.id),
+      getEventsFromRaidHelperByServer(validServer.id),
     ).resolves.toMatchObject({
       pages: 1,
     });
@@ -51,7 +51,7 @@ describe("getRaidHelperEvents", () => {
       .mockResolvedValue(createSuccessfulFetchResponse());
     vi.stubGlobal("fetch", fetchMock);
     await expect(
-      getEventsFromRaidHelper("not-whitelisted"),
+      getEventsFromRaidHelperByServer("not-whitelisted"),
     ).rejects.toMatchObject({
       name: "HttpError",
       status: 403,
@@ -71,13 +71,13 @@ describe("getRaidHelperEvents", () => {
       }),
     );
 
-    await expect(getEventsFromRaidHelper(validServer.id)).rejects.toMatchObject(
-      {
-        name: "HttpError",
-        status: 502,
-        message: "Raid Helper API response is not JSON",
-      },
-    );
+    await expect(
+      getEventsFromRaidHelperByServer(validServer.id),
+    ).rejects.toMatchObject({
+      name: "HttpError",
+      status: 502,
+      message: "Raid Helper API response is not JSON",
+    });
   });
 
   it("rejects invalid JSON bodies even when the content type is JSON", async () => {
@@ -92,13 +92,13 @@ describe("getRaidHelperEvents", () => {
       }),
     );
 
-    await expect(getEventsFromRaidHelper(validServer.id)).rejects.toMatchObject(
-      {
-        name: "HttpError",
-        status: 502,
-        message: "Raid Helper API returned invalid JSON",
-      },
-    );
+    await expect(
+      getEventsFromRaidHelperByServer(validServer.id),
+    ).rejects.toMatchObject({
+      name: "HttpError",
+      status: 502,
+      message: "Raid Helper API returned invalid JSON",
+    });
   });
 
   it("allows JSON-compatible content types", async () => {
@@ -118,7 +118,7 @@ describe("getRaidHelperEvents", () => {
     );
 
     await expect(
-      getEventsFromRaidHelper(validServer.id),
+      getEventsFromRaidHelperByServer(validServer.id),
     ).resolves.toMatchObject({
       pages: 1,
     });
@@ -134,13 +134,13 @@ describe("getRaidHelperEvents", () => {
       ),
     );
 
-    await expect(getEventsFromRaidHelper(validServer.id)).rejects.toMatchObject(
-      {
-        name: "HttpError",
-        status: 504,
-        message: "Raid Helper API request timed out",
-      },
-    );
+    await expect(
+      getEventsFromRaidHelperByServer(validServer.id),
+    ).rejects.toMatchObject({
+      name: "HttpError",
+      status: 504,
+      message: "Raid Helper API request timed out",
+    });
   });
 
   it("rejects generic unexpected fetch errors with 502", async () => {
@@ -153,13 +153,13 @@ describe("getRaidHelperEvents", () => {
         ),
     );
 
-    await expect(getEventsFromRaidHelper(validServer.id)).rejects.toMatchObject(
-      {
-        name: "HttpError",
-        status: 502,
-        message: "Raid Helper API request failed",
-      },
-    );
+    await expect(
+      getEventsFromRaidHelperByServer(validServer.id),
+    ).rejects.toMatchObject({
+      name: "HttpError",
+      status: 502,
+      message: "Raid Helper API request failed",
+    });
   });
 
   it("sends the expected RaidHelper request headers", async () => {
@@ -168,7 +168,7 @@ describe("getRaidHelperEvents", () => {
       .mockResolvedValue(createSuccessfulFetchResponse());
     vi.stubGlobal("fetch", fetchMock);
 
-    await getEventsFromRaidHelper(validServer.id);
+    await getEventsFromRaidHelperByServer(validServer.id);
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock).toHaveBeenCalledWith(
@@ -187,12 +187,12 @@ describe("getRaidHelperEvents", () => {
     vi.stubEnv("RAIDHELPER_DISCORDSERVER_ID_WHITELIST", validServer.id);
 
     mockSuccessfulFetch();
-    await expect(getEventsFromRaidHelper(validServer.id)).rejects.toMatchObject(
-      {
-        name: "HttpError",
-        status: 503,
-        message: "Raid Helper API key is not configured",
-      },
-    );
+    await expect(
+      getEventsFromRaidHelperByServer(validServer.id),
+    ).rejects.toMatchObject({
+      name: "HttpError",
+      status: 503,
+      message: "Raid Helper API key is not configured",
+    });
   });
 });
