@@ -76,12 +76,7 @@ describe("errorHandler", () => {
     const next = vi.fn() as NextFunction;
     const error = new Error("Stream failed");
 
-    errorHandler(
-      error,
-      createRequest("GET", "/events"),
-      response,
-      next,
-    );
+    errorHandler(error, createRequest("GET", "/events"), response, next);
 
     expect(next).toHaveBeenCalledWith(error);
     expect(response.status).not.toHaveBeenCalled();
