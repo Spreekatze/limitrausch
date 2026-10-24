@@ -54,7 +54,7 @@
                 @mouseleave="hideEventInfo"
                 @click="onEventClicked(event)"
               >
-                <q-card-section class="event-title" v-if="formatEventTitle(event.title).length > 1">
+                <q-card-section class="event-title">
                   {{ getEventTitle(event) }}
                 </q-card-section>
                 <q-card-actions>
@@ -103,7 +103,6 @@ import { computed, nextTick, reactive, ref, type ComponentPublicInstance } from 
 import { type Event } from '@limitrausch/contracts';
 import {
   formatEventTime,
-  formatEventTitle,
   getEventColor,
   getEventTitle,
   isCurrentMonth,

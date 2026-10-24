@@ -1,6 +1,6 @@
 import { EVENT_DIFFICULTY } from '@limitrausch/contracts';
 import type { Event } from '../api/events';
-import { formatEventTime } from './calendar';
+import { formatEventTime, getEventTitle } from './calendar';
 import logoUrl from '../assets/aetheris/AE.png';
 
 const importedScheduleBackgrounds = import.meta.glob<string>(
@@ -231,7 +231,7 @@ export async function downloadWeeklyCalendarAsImage(
   const days = weekDays.map((date) => {
     const events = (eventsByDay.get(date.toDateString()) ?? []).map((event) => {
       measuringContext.font = eventStyle;
-      const titleLines = wrapCanvasText(measuringContext, event.title, columnWidth);
+      const titleLines = wrapCanvasText(measuringContext, getEventTitle(event), columnWidth);
       const cardHeight = titleLines.length * eventFontSize + timeFontSize * 2;
       return { event, titleLines, cardHeight };
     });

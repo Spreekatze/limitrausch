@@ -114,13 +114,25 @@ export const up = (pgm) => {
         type: "text",
         references: '"DiscordUser"',
       },
+      eventType: {
+        type: "integer",
+        notNull: true,
+      },
+      eventContent: {
+        type: "text",
+      },
+      eventDifficulty: {
+        type: "integer",
+      },
+      eventGoal: {
+        type: "text",
+      },
       leaderId: {
         type: "text",
         references: '"DiscordUser"',
       },
       title: {
         type: "text",
-        notNull: true,
       },
       description: {
         type: "text",
@@ -136,16 +148,6 @@ export const up = (pgm) => {
         type: "bigint",
         notNull: true,
       },
-      eventType: {
-        type: "integer",
-        notNull: true,
-      },
-      eventDifficulty: {
-        type: "integer",
-      },
-      eventGoal: {
-        type: "text",
-      },
       discordServerId: {
         type: "text",
         references: '"DiscordServer"',
@@ -155,6 +157,7 @@ export const up = (pgm) => {
       },
       discordMessageId: {
         type: "text",
+        unique: true,
       },
       raidHelperId: {
         type: "text",

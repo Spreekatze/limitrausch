@@ -112,7 +112,7 @@ const authStore = useAuthStore();
 const notify = useNotify();
 const { locale } = useI18n();
 const guild = computed(() =>
-  authStore.user?.userGuilds.find((guild) => guild.id === String(route.query.id)),
+  authStore.user?.userGuilds.find((guild) => guild.id === String(route.query.serverId)),
 );
 
 const date = ref<string>('');
