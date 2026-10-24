@@ -14,7 +14,7 @@
             @click="downloadWeekAsImage"
           />
           <p v-if="exportError" class="export-error">{{ exportError }}</p>
-          <q-btn @click="createDialog = true">Event erstellen</q-btn>
+          <q-btn @click="showCreateDialog = true">Event erstellen</q-btn>
         </div>
         <q-select
           v-model="calendarViewMonthly"
@@ -41,7 +41,7 @@
       :viewMonthly="calendarViewMonthly"
     />
   </div>
-  <q-dialog v-model="createDialog">
+  <q-dialog v-model="showCreateDialog">
     <q-card style="min-width: 350px">
       <q-select
         v-model="guild"
@@ -52,6 +52,7 @@
         outlined
         use-input
         @filter="filterGuilds"
+        @update:model-value="onGuildSelected"
       >
         <template #option="scope">
           <q-item v-bind="scope.itemProps">
@@ -78,7 +79,6 @@
           <q-item-section>{{ scope.opt.name }}</q-item-section>
         </template>
       </q-select>
-      <q-btn label="Weiter" :disable="guild === null" @click="openEventCreation" />
     </q-card>
   </q-dialog>
 </template>
@@ -127,7 +127,7 @@ const eventsByDay = computed(() => {
 const monthlyWeeksDateArray = computed(() => generateMonthlyWeekArray());
 const displayedWeeks = computed(() => generateDisplayedWeekDates());
 
-const createDialog = ref<boolean>(false);
+const showCreateDialog = ref<boolean>(false);
 const guild = ref<DiscordGuild | null>(null);
 const userGuilds = authStore.user?.userGuilds ?? [];
 const filteredGuilds = ref<DiscordGuild[]>([...userGuilds]);
@@ -203,9 +203,12 @@ function filterGuilds(value: string, update: (callback: () => void) => void) {
   });
 }
 
-async function openEventCreation() {
-  if (guild.value === null) return;
-  await router.push({ name: '/createEvent', query: { id: guild.value.id } });
+function onGuildSelected() {
+  if (guild.value === null) {
+    return;
+  }
+  showCreateDialog.value = false;
+  void router.push({ name: '/createEvent', query: { id: guild.value.id } });
 }
 </script>
 

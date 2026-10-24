@@ -52,9 +52,16 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/events': RouteRecordInfo<
-      '/events',
-      '/events',
+    '/event': RouteRecordInfo<
+      '/event',
+      '/event',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/eventOverview': RouteRecordInfo<
+      '/eventOverview',
+      '/eventOverview',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -96,9 +103,17 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
-    'src/pages/events.vue': {
+    'src/pages/event.vue': {
       routes:
-        | '/events'
+        | '/event'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/pages/eventOverview.vue': {
+      routes:
+        | '/eventOverview'
       views:
         | never
       pathParamNames:
