@@ -13,7 +13,6 @@
             :loading="isExporting"
             @click="downloadWeekAsImage"
           />
-          <p v-if="exportError" class="export-error">{{ exportError }}</p>
           <q-btn @click="showCreateDialog = true">Event erstellen</q-btn>
         </div>
         <q-select
@@ -28,7 +27,6 @@
         />
       </div>
     </div>
-    <p v-if="error">{{ error }}</p>
     <ListCalendar
       v-if="$q.screen.width < 1170"
       :events-by-day="eventsByDay"
@@ -94,11 +92,12 @@ import ListCalendar from '@/components/ListCalendar.vue';
 import { type DiscordGuild } from '@limitrausch/contracts';
 import { useRouter } from 'vue-router';
 import { getGuildIconUrl } from '@/utils/discordGuild';
+import { useNotify } from '@/composable/useNotify';
 
 const authStore = useAuthStore();
+const notify = useNotify();
 const isAdmin = computed(() => authStore.isAdmin);
 const isExporting = ref(false);
-const exportError = ref<string | null>(null);
 
 const now = new Date();
 const calendarViewMonthly = ref<boolean>(true);
@@ -107,7 +106,6 @@ const calendarOptions: { label: string; value: boolean }[] = [
   { label: 'Aktuelle Woche', value: false },
 ];
 const events = ref<Event[]>([]);
-const error = ref<string | null>(null);
 const eventsByDay = computed(() => {
   const groupedEvents = new Map<string, Event[]>();
 
@@ -138,9 +136,8 @@ onMounted(() => {
     .then((response) => {
       events.value = response.postedEvents;
     })
-    .catch((err: unknown) => {
-      error.value = err instanceof Error ? err.message : String(err);
-      console.error(err);
+    .catch((error: unknown) => {
+      notify.error(error instanceof Error ? error.message : String(error));
     });
 });
 
@@ -150,7 +147,6 @@ async function downloadWeekAsImage(): Promise<void> {
   }
 
   isExporting.value = true;
-  exportError.value = null;
 
   try {
     const today = new Date();
@@ -158,9 +154,8 @@ async function downloadWeekAsImage(): Promise<void> {
       week.some((day) => day.toDateString() === today.toDateString()),
     );
     await downloadWeeklyCalendarAsImage(week[0]!, eventsByDay.value);
-  } catch (err) {
-    exportError.value = err instanceof Error ? err.message : String(err);
-    console.error(err);
+  } catch (error) {
+    notify.error(error instanceof Error ? error.message : String(error));
   } finally {
     isExporting.value = false;
   }
@@ -208,7 +203,7 @@ function onGuildSelected() {
     return;
   }
   showCreateDialog.value = false;
-  void router.push({ name: '/createEvent', query: { id: guild.value.id } });
+  void router.push({ name: '/createEvent', query: { serverId: guild.value.id } });
 }
 </script>
 

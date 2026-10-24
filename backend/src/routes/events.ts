@@ -73,6 +73,21 @@ router.get("/raid-helper/:id", requireAuth, async (request, response, next) => {
   response.status(200).json(result);
 });
 
+// Get (request) a single event by id
+router.get("/:id", async (request, response, next) => {
+  const id = Number(request.params.id);
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    return next(new HttpError(400, "Invalid event id"));
+  }
+
+  const event = await getEventById(id);
+  if (!event) {
+    return next(new HttpError(404, "Event not found"));
+  }
+
+  response.json(event);
+});
+
 // Get all events
 router.get("/", async (request, response) => {
   const events = await getEvents();
@@ -100,21 +115,6 @@ router.post("/new", requireGuildManager, async (request, response, next) => {
 
   // TODO: probably this should be a redirect
   response.status(201).json({ postedEvents: [createdEvent] });
-});
-
-// Get (request) a single event by id
-router.get("/:id", async (request, response, next) => {
-  const id = Number(request.params.id);
-  if (!Number.isSafeInteger(id) || id <= 0) {
-    return next(new HttpError(400, "Invalid event id"));
-  }
-
-  const event = await getEventById(id);
-  if (!event) {
-    return next(new HttpError(404, "Event not found"));
-  }
-
-  response.json(event);
 });
 
 // Edit (Update) a single event by id

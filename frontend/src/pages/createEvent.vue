@@ -90,6 +90,7 @@
 
 <script setup lang="ts">
 import { createEvent } from '@/api/events';
+import { useNotify } from '@/composable/useNotify';
 import { useSearchOptions } from '@/composable/useSearchOptions';
 import { EVENT_DIFFICULTY_LABELS, EVENT_TYPE_OPTIONS } from '@/constants/event-settings-labels';
 import { GAME_CONTENT } from '@/constants/game-content';
@@ -108,6 +109,7 @@ import { useRoute } from 'vue-router';
 
 const route = useRoute();
 const authStore = useAuthStore();
+const notify = useNotify();
 const { locale } = useI18n();
 const guild = computed(() =>
   authStore.user?.userGuilds.find((guild) => guild.id === String(route.query.id)),
@@ -253,30 +255,34 @@ function onTitleInput(value: string | number | null) {
 }
 
 async function createEventFromForm() {
-  await createEvent({
-    creator: {
-      name: '',
-      id: authStore.user!.id,
-    },
-    leader: leader.value,
-    coLeaders: coLeaders.value,
-    title: title.value,
-    description: description.value,
-    imageUrl: imageUrl.value,
-    startTime: toUnixTimes(date.value, startTime.value, endTime.value).startTime,
-    endTime: toUnixTimes(date.value, startTime.value, endTime.value).endTime,
-    eventType: type.value!,
-    eventDifficulty: difficulty.value,
-    eventGoal: goal.value,
-    isPublic: isPublic.value,
-    discordServer: {
-      id: guild.value!.id,
-      name: guild.value!.name,
-      icon: guild.value!.icon ?? undefined,
-      textChannelId: channel.value?.id,
-      textChannelName: channel.value?.name,
-    },
-  });
+  try {
+    await createEvent({
+      creator: {
+        name: '',
+        id: authStore.user!.id,
+      },
+      leader: leader.value,
+      coLeaders: coLeaders.value,
+      title: title.value,
+      description: description.value,
+      imageUrl: imageUrl.value,
+      startTime: toUnixTimes(date.value, startTime.value, endTime.value).startTime,
+      endTime: toUnixTimes(date.value, startTime.value, endTime.value).endTime,
+      eventType: type.value!,
+      eventDifficulty: difficulty.value,
+      eventGoal: goal.value,
+      isPublic: isPublic.value,
+      discordServer: {
+        id: guild.value!.id,
+        name: guild.value!.name,
+        icon: guild.value!.icon ?? undefined,
+        textChannelId: channel.value?.id,
+        textChannelName: channel.value?.name,
+      },
+    });
+  } catch (error) {
+    notify.error(error instanceof Error ? error.message : String(error));
+  }
 }
 </script>
 <style lang="scss">
