@@ -1,4 +1,4 @@
-import { JOB_ID, type JobId } from '@limitrausch/contracts/jobSchema';
+import { JOB_ID, type JobId } from '@limitrausch/contracts';
 
 import tankIcon from '../assets/jobIcons/Role_Tank.png';
 import healerIcon from '../assets/jobIcons/Role_Healer.png';

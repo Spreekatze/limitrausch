@@ -1,6 +1,5 @@
 import type { CreateEvent, RaidHelperImportResponse } from '@limitrausch/contracts';
 import {
-  EVENT_TYPE,
   eventSchema,
   eventsResponseSchema,
   raidHelperImportResponseSchema,
@@ -10,7 +9,6 @@ import {
   type EventsResponse,
 } from '@limitrausch/contracts';
 
-export { EVENT_TYPE };
 export type { Event, EventType };
 export type DiscordUser = EventDiscordUser;
 export type ApiEventsResponse = EventsResponse;

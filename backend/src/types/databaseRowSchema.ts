@@ -2,6 +2,7 @@ import {
   eventTypeSchema,
   eventDifficultySchema,
   statusTypeSchema,
+  jobIdSchema,
 } from "@limitrausch/contracts";
 import { z } from "zod";
 
@@ -46,8 +47,8 @@ export const databaseEventSignUpRowSchema = z.object({
   discordUserId: z.string().nullable(),
   raidHelperId: z.string().nullable(),
   status: statusTypeSchema.nullable(),
-  jobFirstPrio: z.number().nullable(),
-  jobFlexSecondPrio: z.array(z.number()).nullable(),
+  jobFirstPrio: jobIdSchema.nullable(),
+  jobFlexSecondPrio: z.array(jobIdSchema).nullable(),
   usernameOnServer: z.string().nullable(),
 });
 export type DatabaseEventSignUpRow = z.infer<

@@ -50,7 +50,7 @@
       <div>Angemeldet: {{ event.signUpCount }}</div>
       <div>Gesucht:</div>
       <div v-for="signUp in event.signUps" :key="signUp.id">
-        {{ signUp.jobFirstPrio?.germanName }}
+        {{ signUp.jobFirstPrio?.name[currentLocale] }}
       </div>
     </q-card-section>
   </q-card>
@@ -60,16 +60,20 @@
 </template>
 
 <script setup lang="ts">
-import { EVENT_TYPE, getEventById } from '@/api/events';
+import { getEventById } from '@/api/events';
 import { useNotify } from '@/composable/useNotify';
 import { formatEventDay, formatEventTime, getEventTitle } from '@/utils/calendar';
 import { getGuildIconUrl } from '@/utils/discordGuild';
-import type { Event } from '@limitrausch/contracts';
-import { onMounted, ref } from 'vue';
+import { EVENT_TYPE, type Locale, type Event } from '@limitrausch/contracts';
+import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
 const notify = useNotify();
+const { locale } = useI18n();
+
+const currentLocale = computed<Locale>(() => (locale.value === 'en' ? 'en' : 'de'));
 
 const event = ref<Event | null>(null);
 const loading = ref<boolean>(false);

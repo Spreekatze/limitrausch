@@ -1,6 +1,12 @@
-import { EVENT_TYPE } from '@/api/events';
-import type { EventDifficulty, EventType, LabelOptions, StatusType } from '@limitrausch/contracts';
-import { EVENT_DIFFICULTY, STATUS_TYPE } from '@limitrausch/contracts/eventSchema';
+import {
+  type EventDifficulty,
+  type LabelOptions,
+  type EventType,
+  type StatusType,
+  EVENT_TYPE,
+  STATUS_TYPE,
+  EVENT_DIFFICULTY,
+} from '@limitrausch/contracts';
 
 export const EVENT_DIFFICULTY_LABELS: Record<EventDifficulty, LabelOptions> = {
   [EVENT_DIFFICULTY.EASY]: { labels: { de: 'Einfach', en: 'Easy' } },

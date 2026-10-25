@@ -1,10 +1,11 @@
 import {
-  EVENT_DIFFICULTY,
-  EVENT_TYPE,
+  type LocalizedAliases,
+  type LocalizedLabels,
   type EventDifficulty,
   type EventType,
+  EVENT_DIFFICULTY,
+  EVENT_TYPE,
 } from '@limitrausch/contracts';
-import type { LocalizedLabels, LocalizedAliases } from './event-settings-labels';
 
 interface GameContent {
   value: string;

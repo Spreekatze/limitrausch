@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import { formatEventDay, formatEventTime } from '@/utils/calendar';
 import { getGuildIconUrl } from '@/utils/discordGuild';
-import { type Event, EVENT_TYPE } from '@limitrausch/contracts';
+import { EVENT_TYPE, type Event } from '@limitrausch/contracts';
 
 defineProps<{
   hoveredEvent: Event;

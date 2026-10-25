@@ -8,7 +8,6 @@ import eventRoutes from "./routes/events.js";
 import statusRoutes from "./routes/status.js";
 import authRoutes from "./routes/auth.js";
 import webHookRoutes from "./routes/webhooks.js";
-import jobRoutes from "./routes/jobs.js";
 import { renderRouteRows } from "./views/route-list.js";
 import { testDatabaseConnection } from "./database/databaseConnection.js";
 import errorHandler from "./errors/errorHandler.js";
@@ -68,7 +67,6 @@ app.use("/status", statusRoutes);
 app.use("/auth", authRoutes);
 app.use("/events", eventRoutes);
 app.use("/webhooks", webHookRoutes);
-app.use("/jobs", jobRoutes);
 
 // Handle errors
 app.use(errorHandler);
