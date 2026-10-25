@@ -72,6 +72,12 @@
         min-width: 300px;
       }
     }
+
+    &.event-signups {
+      .signup-icon {
+        width: 24px;
+      }
+    }
   }
   .q-separator {
     margin: 10px 0;

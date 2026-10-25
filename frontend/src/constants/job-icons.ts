@@ -1,9 +1,15 @@
 import { JOB_ID, type JobId } from '@limitrausch/contracts';
 
+import allrounderIcon from '../assets/jobIcons/Role_Allrounder.png';
+import tankHealIcon from '../assets/jobIcons/Role_TankHeal.png';
+import tankDpsIcon from '../assets/jobIcons/Role_TankDps.png';
+import healDpsIcon from '../assets/jobIcons/Role_HealDps.png';
+// import barrierHealIcon from '../assets/jobIcons/Role_BarrierHeal.png';
+// import regenHealIcon from '../assets/jobIcons/Role_RegenHeal.png';
 import tankIcon from '../assets/jobIcons/Role_Tank.png';
 import healerIcon from '../assets/jobIcons/Role_Healer.png';
 import meleeIcon from '../assets/jobIcons/Role_Melee.png';
-import prangedIcon from '../assets/jobIcons/Role_PRanged.png';
+import prangedIcon from '../assets/jobIcons/Role_PhysRanged.png';
 import casterIcon from '../assets/jobIcons/Role_Caster.png';
 import dpsIcon from '../assets/jobIcons/Role_DPS.png';
 import paladinIcon from '../assets/jobIcons/Paladin.png';
@@ -31,7 +37,7 @@ import blueMageIcon from '../assets/jobIcons/BlueMage.png';
 import beastmasterIcon from '../assets/jobIcons/Beastmaster.png';
 
 export const JOB_ICONS: Record<JobId, string> = {
-  [JOB_ID.ALLROUNDER]: '',
+  [JOB_ID.ALLROUNDER]: allrounderIcon,
   [JOB_ID.ALL_TANK]: tankIcon,
   [JOB_ID.ALL_HEAL]: healerIcon,
   [JOB_ID.ALL_MELEE]: meleeIcon,
@@ -61,7 +67,14 @@ export const JOB_ICONS: Record<JobId, string> = {
   [JOB_ID.PCT]: pictoIcon,
   [JOB_ID.BLU]: blueMageIcon,
   [JOB_ID.BST]: beastmasterIcon,
-};
+} as const;
+
+export const FLEX_ICONS = {
+  ALLROUNDER: allrounderIcon,
+  TANK_HEAL: tankHealIcon,
+  TANK_DPS: tankDpsIcon,
+  HEAL_DPS: healDpsIcon,
+} as const;
 
 export function getJobIcon(jobId: JobId): string | undefined {
   return JOB_ICONS[jobId];

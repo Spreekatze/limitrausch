@@ -45,13 +45,13 @@
 
     <q-separator />
 
-    <q-card-section>
+    <q-card-section class="event-signups">
       <div>Anmeldungen</div>
       <div>Angemeldet: {{ event.signUpCount }}</div>
-      <div>Gesucht:</div>
       <div v-for="signUp in event.signUps" :key="signUp.id">
-        {{ signUp.jobFirstPrio?.name[currentLocale] }}
+        <q-img class="signup-icon" :src="getJobIcon(signUp.jobFirstPrio.id)" />
       </div>
+      <div>Gesucht:</div>
     </q-card-section>
   </q-card>
   <q-card v-if="!loading && !event">
@@ -62,6 +62,7 @@
 <script setup lang="ts">
 import { getEventById } from '@/api/events';
 import { useNotify } from '@/composable/useNotify';
+import { getJobIcon } from '@/constants/job-icons';
 import { formatEventDay, formatEventTime, getEventTitle } from '@/utils/calendar';
 import { getGuildIconUrl } from '@/utils/discordGuild';
 import { EVENT_TYPE, type Locale, type Event } from '@limitrausch/contracts';

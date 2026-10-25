@@ -3,7 +3,6 @@ import { jobsByRaidHelperName } from "../data/jobs.js";
 import {
   DiscordGuild,
   EVENT_TYPE,
-  STATUS_TYPE,
   StatusType,
   statusTypeSchema,
   CreateEvent,
@@ -52,13 +51,6 @@ function getJobFromRaidHelperName(name: string): Job {
   return job;
 }
 
-function getJobName(name: string | undefined): string | undefined {
-  if (Object.values(STATUS_TYPE).some((status) => status === name)) {
-    return;
-  }
-  return name;
-}
-
 function mapRaidHelperClassToEventStatus(
   className: string,
 ): StatusType | undefined {
@@ -71,18 +63,17 @@ function mapRaidHelperSignUpsToEventSignUps(
 ): CreateSignUp[] {
   const signUps = raidHelperSignUps.map((signUp) => {
     const flexJobs = [signUp.spec2Name, signUp.spec3Name]
-      .filter((name): name is string => getJobName(name) !== undefined)
+      .filter((name): name is string => name !== undefined)
       .map(getJobFromRaidHelperName);
-    const firstPrioJob = getJobName(signUp.specName);
 
     return {
       raidHelperId: String(signUp.id),
       name: signUp.name,
       userId: signUp.userId,
       status: mapRaidHelperClassToEventStatus(signUp.className),
-      jobFirstPrio: firstPrioJob
-        ? getJobFromRaidHelperName(firstPrioJob)
-        : undefined,
+      jobFirstPrio: getJobFromRaidHelperName(
+        signUp.specName ?? signUp.className,
+      ),
       jobFlexSecondPrio: flexJobs.length > 0 ? flexJobs : undefined,
     };
   });
