@@ -6,6 +6,7 @@ import tankDpsIcon from '../assets/jobIcons/Role_TankDps.png';
 import healDpsIcon from '../assets/jobIcons/Role_HealDps.png';
 // import barrierHealIcon from '../assets/jobIcons/Role_BarrierHeal.png';
 // import regenHealIcon from '../assets/jobIcons/Role_RegenHeal.png';
+import unknownIcon from '../assets/jobIcons/Role_Unknown.png';
 import tankIcon from '../assets/jobIcons/Role_Tank.png';
 import healerIcon from '../assets/jobIcons/Role_Healer.png';
 import meleeIcon from '../assets/jobIcons/Role_Melee.png';
@@ -79,7 +80,7 @@ export const FLEX_ICONS = {
 export function getJobIcon(jobId: JobId | undefined): string | undefined {
   if (jobId === undefined) {
     //TODO: add unknown job icon
-    return '';
+    return unknownIcon;
   }
   return JOB_ICONS[jobId];
 }

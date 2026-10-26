@@ -21,14 +21,14 @@
         </div>
       </q-card-section>
       <q-card-section class="event-date" horizontal>
-        <div>Termin:</div>
+        <div style="font-style: italic">Termin:</div>
         <div>
           {{ formatEventDay(event.startTime) }}, {{ formatEventTime(event.startTime) }} -
           {{ formatEventTime(event.endTime) }}
         </div>
       </q-card-section>
       <q-card-section class="event-leader" horizontal>
-        <div>Raidlead:</div>
+        <div style="font-style: italic">Raidlead:</div>
         <div>
           {{ event.leader?.name }}
         </div>
@@ -47,24 +47,29 @@
 
     <q-card-section class="event-signups">
       <!-- <div class="event-signups_looking">Gesucht:</div> -->
-      <div class="event-signups__signups">
-        <div>Angemeldet: {{ event.signUpCount }}</div>
-        <div class="signup-list">
-          <q-card
-            class="signup-card"
-            v-for="signUp in signUpsByStatus?.Normal ?? []"
-            :key="signUp.id"
-          >
-            <q-card-section class="firstPrio">
-              <q-img class="signup-icon" :src="getJobIcon(signUp.jobFirstPrio?.id)" />
-            </q-card-section>
-            <q-card-section class="flex">
-              <template v-for="job in signUp.jobFlexSecondPrio ?? []" :key="job.id">
-                <q-img class="signup-icon" :src="getJobIcon(job.id)" />
-              </template>
-            </q-card-section>
-          </q-card>
-        </div>
+      <!-- <div>
+        Angemeldet: {{ signUpsByStatus?.Normal?.length }} + ( {{ signUpsByStatus?.Bench?.length }} )
+      </div> -->
+      <div class="signup-category">
+        <template v-for="{ signups, status } in signUpsByStatus" :key="status">
+          <section class="signup-list">
+            <p>
+              {{ t(`event.signUpStatus.${status}`) }}
+            </p>
+            <q-card class="signup-card" v-for="signUp in signups ?? []" :key="signUp.id">
+              <q-card-section class="firstPrio row">
+                <q-img class="signup-icon" :src="getJobIcon(signUp.jobFirstPrio?.id)" />
+                <div>{{ signUp.name }}</div>
+              </q-card-section>
+              <q-card-section class="flex" v-if="signUp.jobFlexSecondPrio">
+                <template v-for="job in signUp.jobFlexSecondPrio ?? []" :key="job.id">
+                  Flex:
+                  <q-img class="signup-icon" :src="getJobIcon(job.id)" />
+                </template>
+              </q-card-section>
+            </q-card>
+          </section>
+        </template>
       </div>
     </q-card-section>
   </q-card>
@@ -79,24 +84,36 @@ import { useNotify } from '@/composable/useNotify';
 import { getJobIcon } from '@/constants/job-icons';
 import { formatEventDay, formatEventTime, getEventTitle } from '@/utils/calendar';
 import { getGuildIconUrl } from '@/utils/discordGuild';
-import { EVENT_TYPE, type Locale, type Event } from '@limitrausch/contracts';
+import { EVENT_TYPE, type Event, STATUS_TYPE } from '@limitrausch/contracts';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
 const notify = useNotify();
-const { locale } = useI18n();
+const { t } = useI18n();
 
 const loading = ref<boolean>(false);
-const currentLocale = computed<Locale>(() => (locale.value === 'en' ? 'en' : 'de'));
 
 const event = ref<Event | null>(null);
+type SignUpStatus = NonNullable<NonNullable<Event['signUps']>[number]['status']> | 'Registered';
+const statusOrder: SignUpStatus[] = [
+  'Registered',
+  STATUS_TYPE.TENTATIVE,
+  STATUS_TYPE.LATE,
+  STATUS_TYPE.BENCH,
+  STATUS_TYPE.ABSENCE,
+];
+
 const signUpsByStatus = computed(() => {
-  if (event.value?.signUps) {
-    return Object.groupBy(event.value?.signUps, (signUp) => signUp.status ?? 'Normal');
-  }
-  return undefined;
+  const signUps = event.value?.signUps ?? [];
+
+  const grouped = Object.groupBy(signUps, (signUp) => signUp.status ?? 'Registered');
+
+  return statusOrder.map((status) => ({
+    status,
+    signups: grouped[status] ?? [],
+  }));
 });
 
 onMounted(async () => {
