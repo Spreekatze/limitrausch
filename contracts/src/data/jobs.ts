@@ -141,7 +141,7 @@ export const JOBS = [
     id: JOB_ID.VPR,
     role: ROLE_TYPE.MELEE,
     name: { de: "Viper", en: "Viper" },
-    shortName: { de: "VIP", en: "VPR" },
+    shortName: { de: "VPR", en: "VPR" },
     raidHelperName: "Viper",
   },
   {

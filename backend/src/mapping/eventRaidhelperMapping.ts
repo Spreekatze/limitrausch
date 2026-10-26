@@ -1,14 +1,14 @@
-import { jobsByRaidHelperName } from "../data/jobs.js";
-
 import {
   DiscordGuild,
+  CreateEvent,
   EVENT_TYPE,
+  STATUS_TYPE,
+  Job,
   StatusType,
   statusTypeSchema,
-  CreateEvent,
   CreateSignUp,
-  Job,
 } from "@limitrausch/contracts";
+import { jobsByRaidHelperName } from "../data/jobs.js";
 import {
   RaidHelperEvent,
   RaidHelperSignUp,
@@ -43,6 +43,13 @@ export function mapRaidHelperGeneralEventDataToEvent(
   return event;
 }
 
+function getJobName(name: string | undefined): string | undefined {
+  if (Object.values(STATUS_TYPE).some((status) => status === name)) {
+    return;
+  }
+  return name;
+}
+
 function getJobFromRaidHelperName(name: string): Job {
   const job = jobsByRaidHelperName.get(name);
   if (!job) {
@@ -63,17 +70,18 @@ function mapRaidHelperSignUpsToEventSignUps(
 ): CreateSignUp[] {
   const signUps = raidHelperSignUps.map((signUp) => {
     const flexJobs = [signUp.spec2Name, signUp.spec3Name]
-      .filter((name): name is string => name !== undefined)
+      .filter((name): name is string => getJobName(name) !== undefined)
       .map(getJobFromRaidHelperName);
+    const firstPrioJob = getJobName(signUp.specName ?? signUp.className);
 
     return {
       raidHelperId: String(signUp.id),
       name: signUp.name,
       userId: signUp.userId,
       status: mapRaidHelperClassToEventStatus(signUp.className),
-      jobFirstPrio: getJobFromRaidHelperName(
-        signUp.specName ?? signUp.className,
-      ),
+      jobFirstPrio: firstPrioJob
+        ? getJobFromRaidHelperName(firstPrioJob)
+        : undefined,
       jobFlexSecondPrio: flexJobs.length > 0 ? flexJobs : undefined,
     };
   });

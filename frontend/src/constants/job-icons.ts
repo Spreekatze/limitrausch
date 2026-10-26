@@ -76,6 +76,10 @@ export const FLEX_ICONS = {
   HEAL_DPS: healDpsIcon,
 } as const;
 
-export function getJobIcon(jobId: JobId): string | undefined {
+export function getJobIcon(jobId: JobId | undefined): string | undefined {
+  if (jobId === undefined) {
+    //TODO: add unknown job icon
+    return '';
+  }
   return JOB_ICONS[jobId];
 }

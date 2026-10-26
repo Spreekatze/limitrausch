@@ -74,8 +74,24 @@
     }
 
     &.event-signups {
-      .signup-icon {
-        width: 24px;
+      .event-signups__signups .signup-list {
+        display: flex;
+        flex-direction: row;
+
+        .signup-card {
+          margin: 2px;
+          padding: 5px;
+          .signup-icon {
+            width: 40px;
+          }
+
+          .flex {
+            justify-content: center;
+            .signup-icon {
+              width: 24px;
+            }
+          }
+        }
       }
     }
   }

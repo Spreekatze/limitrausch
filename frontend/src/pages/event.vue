@@ -46,12 +46,26 @@
     <q-separator />
 
     <q-card-section class="event-signups">
-      <div>Anmeldungen</div>
-      <div>Angemeldet: {{ event.signUpCount }}</div>
-      <div v-for="signUp in event.signUps" :key="signUp.id">
-        <q-img class="signup-icon" :src="getJobIcon(signUp.jobFirstPrio.id)" />
+      <!-- <div class="event-signups_looking">Gesucht:</div> -->
+      <div class="event-signups__signups">
+        <div>Angemeldet: {{ event.signUpCount }}</div>
+        <div class="signup-list">
+          <q-card
+            class="signup-card"
+            v-for="signUp in signUpsByStatus?.Normal ?? []"
+            :key="signUp.id"
+          >
+            <q-card-section class="firstPrio">
+              <q-img class="signup-icon" :src="getJobIcon(signUp.jobFirstPrio?.id)" />
+            </q-card-section>
+            <q-card-section class="flex">
+              <template v-for="job in signUp.jobFlexSecondPrio ?? []" :key="job.id">
+                <q-img class="signup-icon" :src="getJobIcon(job.id)" />
+              </template>
+            </q-card-section>
+          </q-card>
+        </div>
       </div>
-      <div>Gesucht:</div>
     </q-card-section>
   </q-card>
   <q-card v-if="!loading && !event">
@@ -74,10 +88,16 @@ const route = useRoute();
 const notify = useNotify();
 const { locale } = useI18n();
 
+const loading = ref<boolean>(false);
 const currentLocale = computed<Locale>(() => (locale.value === 'en' ? 'en' : 'de'));
 
 const event = ref<Event | null>(null);
-const loading = ref<boolean>(false);
+const signUpsByStatus = computed(() => {
+  if (event.value?.signUps) {
+    return Object.groupBy(event.value?.signUps, (signUp) => signUp.status ?? 'Normal');
+  }
+  return undefined;
+});
 
 onMounted(async () => {
   loading.value = true;

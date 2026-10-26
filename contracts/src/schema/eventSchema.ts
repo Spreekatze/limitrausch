@@ -25,7 +25,7 @@ export const eventSignUpSchema = z.object({
   name: z.string().optional(),
   userId: z.string().optional(),
   status: statusTypeSchema.optional(),
-  jobFirstPrio: jobSchema,
+  jobFirstPrio: jobSchema.optional(),
   jobFlexSecondPrio: z.array(jobSchema).optional(),
 });
 export type EventSignUp = z.infer<typeof eventSignUpSchema>;
