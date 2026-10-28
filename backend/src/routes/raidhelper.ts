@@ -5,7 +5,7 @@ import {
 } from "../services/raidHelperImport.js";
 import { addDiscordServer } from "../store/guildStore.js";
 
-import requireGuildManager from "../middleware/requireGuildManager.js";
+import requireEventManager from "../middleware/requireGuildManager.js";
 import { HttpError } from "../errors/httpError.js";
 import requireAuth from "../middleware/requireAuth.js";
 
@@ -14,7 +14,7 @@ const router = express.Router();
 // Request events from raid-helper by serverId
 router.get(
   "/server/:id",
-  requireGuildManager,
+  requireEventManager,
   async (request, response, next) => {
     const serverId = request.params.id;
     if (typeof serverId !== "string") {

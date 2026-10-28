@@ -106,6 +106,7 @@ router.get("/discord/callback", async (request, response, next) => {
       upstreamStatus: userGuildsResponse.status,
     });
   }
+
   const discordUserGuildsResult = discordGuildSchema
     .array()
     .safeParse(discordUserGuilds);

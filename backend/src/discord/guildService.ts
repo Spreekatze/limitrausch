@@ -5,6 +5,8 @@ export interface GuildMemberInfo {
   userId: string;
   guildId: string;
   roleIds: string[];
+  isOwner: boolean;
+  isAdmin: boolean;
 }
 
 export async function getGuilds(): Promise<DiscordGuild[]> {
@@ -29,6 +31,8 @@ export async function getGuildMemberInfo(
       userId: member.id,
       guildId: guild.id,
       roleIds: member.roles.cache.map((role) => role.id),
+      isOwner: guild.ownerId === member.id,
+      isAdmin: member.permissions.has("Administrator"),
     };
   } catch (error: unknown) {
     // Discord-API-Error 10007: Unknown Member

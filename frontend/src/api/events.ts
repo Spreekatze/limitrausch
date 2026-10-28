@@ -150,9 +150,12 @@ export async function importRaidHelperEvent(eventId: string): Promise<RaidHelper
   return result.data;
 }
 
-export async function createEvent(event: CreateEvent): Promise<ApiEventsResponse> {
+export async function createEventOnServer(
+  event: CreateEvent,
+  serverId: string,
+): Promise<ApiEventsResponse> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
-  const response = await fetch(`${apiBaseUrl}/events/new`, {
+  const response = await fetch(`${apiBaseUrl}/events/${encodeURIComponent(serverId)}/new`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
