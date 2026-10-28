@@ -43,7 +43,7 @@
     <q-card style="min-width: 350px">
       <q-select
         v-model="guild"
-        label="Server"
+        label="Bitte Servernamen eingeben"
         :options="filteredGuilds"
         option-label="name"
         option-value="id"

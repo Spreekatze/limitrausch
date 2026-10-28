@@ -1,9 +1,19 @@
-import { client } from "./client";
+import { DiscordGuild } from "@limitrausch/contracts";
+import { client } from "./client.js";
 
 export interface GuildMemberInfo {
   userId: string;
   guildId: string;
   roleIds: string[];
+}
+
+export async function getGuilds(): Promise<DiscordGuild[]> {
+  const guilds = await client.guilds.fetch();
+  return guilds.map((guild) => ({
+    id: guild.id,
+    name: guild.name,
+    icon: guild.icon,
+  }));
 }
 
 export async function getGuildMemberInfo(

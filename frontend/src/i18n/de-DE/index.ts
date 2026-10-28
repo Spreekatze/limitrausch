@@ -4,7 +4,7 @@ export default {
       Registered: 'Angemeldet',
       Tentative: 'Vielleicht',
       Late: 'Verspätet',
-      Bench: 'Bank',
+      Bench: 'Bank (Ersatz)',
       Absence: 'Abwesend',
     },
   },

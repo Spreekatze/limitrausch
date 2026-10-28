@@ -31,6 +31,7 @@
       />
       <q-input outlined v-model="eventId" label="ID eines Raid-Helper Events" />
       <q-btn label="Import Event" @click="importRaidHelperEventById" />
+      <q-btn label="Import Events eines Users" @click="importRaidHelperEventsByUser" />
     </div>
     <div v-else>
       <p>Aktuell nur für Admins nützlich.</p>
@@ -39,7 +40,11 @@
 </template>
 
 <script setup lang="ts">
-import { importRaidHelperEvent, importRaidHelperEventsByServer } from '@/api/events';
+import {
+  importRaidHelperEvent,
+  importRaidHelperEventsByServer,
+  importRaidHelperEventsByUser,
+} from '@/api/events';
 import { useNotify } from '@/composable/useNotify';
 import { useAuthStore } from '@/stores/auth-store';
 import { type RaidHelperImportResponse } from '@limitrausch/contracts';

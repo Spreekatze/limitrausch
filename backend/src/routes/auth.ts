@@ -6,6 +6,7 @@ import {
   discordGuildSchema,
   discordOAuthUserSchema,
 } from "@limitrausch/contracts";
+import { getGuilds } from "../discord/guildService.js";
 import { HttpError } from "../errors/httpError.js";
 
 const router = express.Router();
@@ -111,6 +112,11 @@ router.get("/discord/callback", async (request, response, next) => {
   if (!discordUserGuildsResult.success) {
     throw new HttpError(502, "Discord returned invalid guild data.");
   }
+  const botGuilds = await getGuilds();
+  const botGuildIds = new Set(botGuilds.map((guild) => guild.id));
+  const sharedGuilds = discordUserGuildsResult.data.filter((guild) =>
+    botGuildIds.has(guild.id),
+  );
 
   // Check if the user is in the whitelist of admins
   const whitelist = process.env.DISCORD_USER_ID_WHITELIST?.split(",")
@@ -126,7 +132,7 @@ router.get("/discord/callback", async (request, response, next) => {
     username: discordOAuthUser.global_name,
     avatar: discordOAuthUser.avatar,
     isAdmin,
-    userGuilds: discordUserGuildsResult.data,
+    userGuilds: sharedGuilds,
   });
 
   const frontendUrl = process.env.FRONTEND_URL;

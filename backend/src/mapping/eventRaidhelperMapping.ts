@@ -8,7 +8,7 @@ import {
   statusTypeSchema,
   CreateSignUp,
 } from "@limitrausch/contracts";
-import { jobsByRaidHelperName } from "../data/jobs.js";
+import { jobsByRaidHelperName } from "../services/jobService.js";
 import {
   RaidHelperEvent,
   RaidHelperSignUp,

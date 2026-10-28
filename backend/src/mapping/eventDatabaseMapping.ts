@@ -1,10 +1,10 @@
 import { Event, Job, JobId } from "@limitrausch/contracts";
-import { jobsById } from "../data/jobs.js";
 import {
   DatabaseEventRow,
   DatabaseEventCoLeaderRow,
   DatabaseEventSignUpRow,
 } from "../types/databaseRowSchema.js";
+import { jobsById } from "../services/jobService.js";
 
 function getJobFromId(id: JobId): Job {
   const job = jobsById.get(id);

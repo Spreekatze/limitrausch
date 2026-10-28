@@ -133,3 +133,5 @@ export async function importRaidHelperEventById(
 
   return { imported, updated, skipped: 0, failed };
 }
+
+export async function importRaidHelperEventsFromUser() {}
