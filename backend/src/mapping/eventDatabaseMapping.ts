@@ -1,4 +1,4 @@
-import { Event, Job } from "@limitrausch/contracts";
+import { Event, Job, JobId } from "@limitrausch/contracts";
 import { jobsById } from "../data/jobs.js";
 import {
   DatabaseEventRow,
@@ -6,7 +6,7 @@ import {
   DatabaseEventSignUpRow,
 } from "../types/databaseRowSchema.js";
 
-function getJobFromId(id: number): Job {
+function getJobFromId(id: JobId): Job {
   const job = jobsById.get(id);
   if (!job) {
     throw new Error(`Unknown job: ${id}`);

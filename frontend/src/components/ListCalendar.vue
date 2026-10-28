@@ -19,6 +19,7 @@
               @mouseenter="showEventInfo($event, event)"
               @mousemove="updateEventInfoPosition"
               @mouseleave="hideEventInfo"
+              @click="onEventClicked(event)"
             >
               <q-item-section side class="event__time">
                 <div class="event__time__start">{{ formatEventTime(event.startTime) }}</div>
@@ -66,11 +67,13 @@ import { nextTick, ref } from 'vue';
 import CalendarHover from './CalendarHover.vue';
 import { getGuildIconUrl } from '@/utils/discordGuild.js';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 
 defineProps<{
   eventsByDay: ReadonlyMap<string, Event[]>;
   displayedWeeks: Date[][];
 }>();
+const router = useRouter();
 
 const hoverCard = ref<HTMLElement | null>(null);
 const hoveredEvent = ref<Event | null>(null);
@@ -124,5 +127,9 @@ function updateEventInfoPosition(mouseEvent: MouseEvent) {
 
 function hideEventInfo() {
   hoveredEvent.value = null;
+}
+
+function onEventClicked(event: Event) {
+  void router.push({ name: '/event', query: { id: event.id } });
 }
 </script>

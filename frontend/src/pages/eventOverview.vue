@@ -13,8 +13,7 @@
             :loading="isExporting"
             @click="downloadWeekAsImage"
           />
-          <p v-if="exportError" class="export-error">{{ exportError }}</p>
-          <q-btn @click="createDialog = true">Event erstellen</q-btn>
+          <q-btn @click="showCreateDialog = true">Event erstellen</q-btn>
         </div>
         <q-select
           v-model="calendarViewMonthly"
@@ -28,7 +27,6 @@
         />
       </div>
     </div>
-    <p v-if="error">{{ error }}</p>
     <ListCalendar
       v-if="$q.screen.width < 1170"
       :events-by-day="eventsByDay"
@@ -41,7 +39,7 @@
       :viewMonthly="calendarViewMonthly"
     />
   </div>
-  <q-dialog v-model="createDialog">
+  <q-dialog v-model="showCreateDialog">
     <q-card style="min-width: 350px">
       <q-select
         v-model="guild"
@@ -52,6 +50,7 @@
         outlined
         use-input
         @filter="filterGuilds"
+        @update:model-value="onGuildSelected"
       >
         <template #option="scope">
           <q-item v-bind="scope.itemProps">
@@ -78,7 +77,6 @@
           <q-item-section>{{ scope.opt.name }}</q-item-section>
         </template>
       </q-select>
-      <q-btn label="Weiter" :disable="guild === null" @click="openEventCreation" />
     </q-card>
   </q-dialog>
 </template>
@@ -94,11 +92,12 @@ import ListCalendar from '@/components/ListCalendar.vue';
 import { type DiscordGuild } from '@limitrausch/contracts';
 import { useRouter } from 'vue-router';
 import { getGuildIconUrl } from '@/utils/discordGuild';
+import { useNotify } from '@/composable/useNotify';
 
 const authStore = useAuthStore();
+const notify = useNotify();
 const isAdmin = computed(() => authStore.isAdmin);
 const isExporting = ref(false);
-const exportError = ref<string | null>(null);
 
 const now = new Date();
 const calendarViewMonthly = ref<boolean>(true);
@@ -107,7 +106,6 @@ const calendarOptions: { label: string; value: boolean }[] = [
   { label: 'Aktuelle Woche', value: false },
 ];
 const events = ref<Event[]>([]);
-const error = ref<string | null>(null);
 const eventsByDay = computed(() => {
   const groupedEvents = new Map<string, Event[]>();
 
@@ -127,7 +125,7 @@ const eventsByDay = computed(() => {
 const monthlyWeeksDateArray = computed(() => generateMonthlyWeekArray());
 const displayedWeeks = computed(() => generateDisplayedWeekDates());
 
-const createDialog = ref<boolean>(false);
+const showCreateDialog = ref<boolean>(false);
 const guild = ref<DiscordGuild | null>(null);
 const userGuilds = authStore.user?.userGuilds ?? [];
 const filteredGuilds = ref<DiscordGuild[]>([...userGuilds]);
@@ -138,9 +136,8 @@ onMounted(() => {
     .then((response) => {
       events.value = response.postedEvents;
     })
-    .catch((err: unknown) => {
-      error.value = err instanceof Error ? err.message : String(err);
-      console.error(err);
+    .catch((error: unknown) => {
+      notify.error(error instanceof Error ? error.message : String(error));
     });
 });
 
@@ -150,7 +147,6 @@ async function downloadWeekAsImage(): Promise<void> {
   }
 
   isExporting.value = true;
-  exportError.value = null;
 
   try {
     const today = new Date();
@@ -158,9 +154,8 @@ async function downloadWeekAsImage(): Promise<void> {
       week.some((day) => day.toDateString() === today.toDateString()),
     );
     await downloadWeeklyCalendarAsImage(week[0]!, eventsByDay.value);
-  } catch (err) {
-    exportError.value = err instanceof Error ? err.message : String(err);
-    console.error(err);
+  } catch (error) {
+    notify.error(error instanceof Error ? error.message : String(error));
   } finally {
     isExporting.value = false;
   }
@@ -203,9 +198,12 @@ function filterGuilds(value: string, update: (callback: () => void) => void) {
   });
 }
 
-async function openEventCreation() {
-  if (guild.value === null) return;
-  await router.push({ name: '/createEvent', query: { id: guild.value.id } });
+function onGuildSelected() {
+  if (guild.value === null) {
+    return;
+  }
+  showCreateDialog.value = false;
+  void router.push({ name: '/createEvent', query: { serverId: guild.value.id } });
 }
 </script>
 

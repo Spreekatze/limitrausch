@@ -1,26 +1,12 @@
 import {
-  EVENT_DIFFICULTY,
-  type EventType,
   type EventDifficulty,
-  EVENT_TYPE,
+  type LabelOptions,
+  type EventType,
   type StatusType,
+  EVENT_TYPE,
   STATUS_TYPE,
+  EVENT_DIFFICULTY,
 } from '@limitrausch/contracts';
-
-export type LocalizedLabels = {
-  de: string;
-  en: string;
-};
-
-export type LocalizedAliases = {
-  de: string[];
-  en: string[];
-};
-
-interface LabelOptions {
-  labels: LocalizedLabels;
-  aliases?: LocalizedAliases;
-}
 
 export const EVENT_DIFFICULTY_LABELS: Record<EventDifficulty, LabelOptions> = {
   [EVENT_DIFFICULTY.EASY]: { labels: { de: 'Einfach', en: 'Easy' } },

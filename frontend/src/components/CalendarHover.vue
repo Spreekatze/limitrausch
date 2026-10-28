@@ -2,11 +2,7 @@
   <q-card>
     <q-card-section class="event-title">
       <div>
-        {{
-          hoveredEvent.eventType !== EVENT_TYPE.UNDEFINED
-            ? hoveredEvent.eventType
-            : formatEventTitle(hoveredEvent.title)[0]
-        }}
+        {{ hoveredEvent.eventType !== EVENT_TYPE.UNDEFINED ? hoveredEvent.eventType : '' }}
       </div>
       <div>{{ hoveredEvent.title }}</div>
     </q-card-section>
@@ -61,9 +57,9 @@
 </template>
 
 <script setup lang="ts">
-import { formatEventDay, formatEventTime, formatEventTitle } from '@/utils/calendar';
+import { formatEventDay, formatEventTime } from '@/utils/calendar';
 import { getGuildIconUrl } from '@/utils/discordGuild';
-import { type Event, EVENT_TYPE } from '@limitrausch/contracts';
+import { EVENT_TYPE, type Event } from '@limitrausch/contracts';
 
 defineProps<{
   hoveredEvent: Event;

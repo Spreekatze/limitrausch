@@ -58,13 +58,8 @@ export function getEventColor(event: Event): string {
 export function getEventTitle(event: Event): string {
   // Temporary fix for aetheris server
   // TODO: remove upon changing to own event version
-  if (
-    event.eventType === EVENT_TYPE.UNDEFINED &&
-    event.discordServer?.id === '1408172814879559721'
-  ) {
-    const formattedTitle = formatEventTitle(event.title);
-    formattedTitle.shift();
-    return formattedTitle.join(' - ');
+  if (event.eventType === EVENT_TYPE.UNDEFINED || event.title) {
+    return event.title ?? '';
   }
-  return event.title;
+  return event.eventContent + ' - ' + event.eventGoal;
 }

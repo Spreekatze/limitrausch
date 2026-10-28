@@ -51,7 +51,7 @@ const importMessage = ref<RaidHelperImportResponse | null>(null);
 
 async function importFromAetheris() {
   try {
-    importMessage.value = await importRaidHelperEventsByServer('1414538581921370127');
+    importMessage.value = await importRaidHelperEventsByServer('1408172814879559721');
     notify.success(JSON.stringify(importMessage.value));
   } catch (error) {
     importMessage.value = null;

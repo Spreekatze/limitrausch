@@ -1,10 +1,10 @@
-import type { LocalizedLabels, LocalizedAliases } from '@/constants/event-settings-labels';
+import type { LocalizedLabels, LocalizedAliases } from '@limitrausch/contracts';
 import type { Ref } from 'vue';
 
 export interface SearchOption {
   value: string | number;
-  label: string;
-  aliases?: string[];
+  label: LocalizedLabels;
+  aliases?: LocalizedAliases;
 }
 
 export function filterOptions<T extends SearchOption>(
@@ -16,11 +16,11 @@ export function filterOptions<T extends SearchOption>(
   update(() => {
     const search = input.toLowerCase().trim();
 
-    filteredOptions.value = options.filter(
-      (option) =>
-        option.label.toLowerCase().includes(search) ||
-        (option.aliases ?? []).some((alias) => alias.toLowerCase().includes(search)),
-    );
+    filteredOptions.value = options.filter((option) => {
+      const labels: string[] = [option.label.de, option.label.en];
+      const aliases: string[] = [...(option.aliases?.de ?? []), ...(option.aliases.en ?? [])];
+      return [...labels, ...aliases].some((text) => text.toLowerCase().includes(search));
+    });
   });
 }
 

@@ -52,8 +52,9 @@
                 @mouseenter="showEventInfo($event, event)"
                 @mousemove="updateEventInfoPosition"
                 @mouseleave="hideEventInfo"
+                @click="onEventClicked(event)"
               >
-                <q-card-section class="event-title" v-if="formatEventTitle(event.title).length > 1">
+                <q-card-section class="event-title">
                   {{ getEventTitle(event) }}
                 </q-card-section>
                 <q-card-actions>
@@ -102,7 +103,6 @@ import { computed, nextTick, reactive, ref, type ComponentPublicInstance } from 
 import { type Event } from '@limitrausch/contracts';
 import {
   formatEventTime,
-  formatEventTitle,
   getEventColor,
   getEventTitle,
   isCurrentMonth,
@@ -110,12 +110,14 @@ import {
 } from '../utils/calendar';
 import CalendarHover from './CalendarHover.vue';
 import { getGuildIconUrl } from '@/utils/discordGuild';
+import { useRouter } from 'vue-router';
 
 const props = defineProps<{
   eventsByDay: ReadonlyMap<string, Event[]>;
   viewMonthly: boolean;
   displayedWeeks: Date[][];
 }>();
+const router = useRouter();
 const hoverCard = ref<HTMLElement | null>(null);
 const hoveredEvent = ref<Event | null>(null);
 const hoverPosition = ref({ x: 0, y: 0 });
@@ -209,5 +211,9 @@ function scrollEvents(key: string, direction: 'up' | 'down') {
     top: el.clientHeight * 0.8 * (direction === 'down' ? 1 : -1),
     behavior: 'smooth',
   });
+}
+
+function onEventClicked(event: Event) {
+  void router.push({ name: '/event', query: { id: event.id } });
 }
 </script>

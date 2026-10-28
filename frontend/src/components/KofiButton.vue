@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import teaCat from '../assets/TeaCat.png';
+import teaCat from '../assets/TeaCat2.png';
 const kofiLink = 'https://ko-fi.com/spreekatze';
 </script>
 

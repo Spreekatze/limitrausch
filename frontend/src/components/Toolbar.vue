@@ -15,7 +15,13 @@
         icon="dashboard"
         to="/dashboard"
       />
-      <q-btn flat class="app-header__button" label="Event-Übersicht" icon="event" to="/events" />
+      <q-btn
+        flat
+        class="app-header__button"
+        label="Event-Übersicht"
+        icon="event"
+        to="/eventOverview"
+      />
 
       <!-- TODO: when you enable the below: remove login button from dashboard and enable beforeEach on Router -->
       <!-- <q-btn

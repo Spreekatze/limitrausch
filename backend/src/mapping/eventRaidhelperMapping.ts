@@ -1,15 +1,14 @@
-import { jobsByRaidHelperName } from "../data/jobs.js";
-
 import {
   DiscordGuild,
+  CreateEvent,
   EVENT_TYPE,
   STATUS_TYPE,
+  Job,
   StatusType,
   statusTypeSchema,
-  CreateEvent,
   CreateSignUp,
-  Job,
 } from "@limitrausch/contracts";
+import { jobsByRaidHelperName } from "../data/jobs.js";
 import {
   RaidHelperEvent,
   RaidHelperSignUp,
@@ -44,19 +43,19 @@ export function mapRaidHelperGeneralEventDataToEvent(
   return event;
 }
 
+function getJobName(name: string | undefined): string | undefined {
+  if (Object.values(STATUS_TYPE).some((status) => status === name)) {
+    return;
+  }
+  return name;
+}
+
 function getJobFromRaidHelperName(name: string): Job {
   const job = jobsByRaidHelperName.get(name);
   if (!job) {
     throw new Error(`Unknown Raidhelper job: ${name}`);
   }
   return job;
-}
-
-function getJobName(name: string | undefined): string | undefined {
-  if (Object.values(STATUS_TYPE).some((status) => status === name)) {
-    return;
-  }
-  return name;
 }
 
 function mapRaidHelperClassToEventStatus(
@@ -73,7 +72,7 @@ function mapRaidHelperSignUpsToEventSignUps(
     const flexJobs = [signUp.spec2Name, signUp.spec3Name]
       .filter((name): name is string => getJobName(name) !== undefined)
       .map(getJobFromRaidHelperName);
-    const firstPrioJob = getJobName(signUp.specName);
+    const firstPrioJob = getJobName(signUp.specName ?? signUp.className);
 
     return {
       raidHelperId: String(signUp.id),

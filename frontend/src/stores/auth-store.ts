@@ -1,4 +1,5 @@
 import { beginDiscordLogin, getLoginStatus, logout } from '@/api/auth';
+import { useNotify } from '@/composable/useNotify';
 import type { AuthUser } from '@limitrausch/contracts';
 import { defineStore, acceptHMRUpdate } from 'pinia';
 
@@ -10,6 +11,7 @@ interface AuthState {
 }
 
 let authPromise: Promise<void> | null = null;
+const notify = useNotify();
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
@@ -29,6 +31,7 @@ export const useAuthStore = defineStore('auth', {
         this.isAdmin = response.loggedIn && response.user.isAdmin;
       } catch (error: unknown) {
         console.error(error);
+        notify.error(error instanceof Error ? error.message : String(error));
         this.loggedIn = false;
         this.user = null;
         this.isAdmin = false;
@@ -64,6 +67,7 @@ export const useAuthStore = defineStore('auth', {
         this.isAdmin = false;
       } catch (error: unknown) {
         console.error(error);
+        notify.error(error instanceof Error ? error.message : String(error));
       } finally {
         this.loading = false;
       }
