@@ -59,11 +59,21 @@ export async function getGuildMemberInfo(
 export async function getGuildRoles(
   guildId: string,
 ): Promise<DiscordRoleOption[]> {
-  const guild = await client.guilds.fetch(guildId);
-  const roles = await guild.roles.fetch();
+  //TODO: add feedback if bot is not on guild and add at frontend options for adding roles via ids
+  try {
+    const guild = await client.guilds.fetch(guildId);
+    const roles = await guild.roles.fetch();
 
-  return roles.map((role) => ({
-    id: role.id,
-    name: role.name,
-  }));
+    return roles.map((role) => ({
+      id: role.id,
+      name: role.name,
+    }));
+  } catch (error: unknown) {
+    // Discord-API-Error 10004: Unknown Guild
+    if (error instanceof DiscordAPIError && error.code === 10004) {
+      return [];
+    }
+
+    throw error;
+  }
 }

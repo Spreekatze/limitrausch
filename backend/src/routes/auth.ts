@@ -9,6 +9,7 @@ import { HttpError } from "../errors/httpError.js";
 import { mapGuildDataToUserGuild } from "../mapping/guildMapping.js";
 import { authGuildSchema } from "../types/guildSchema.js";
 import { getGuilds } from "../discord/guildService.js";
+import { discordTokenResponseSchema } from "../types/discordSchema.js";
 
 const router = express.Router();
 
@@ -66,12 +67,17 @@ router.get("/discord/callback", async (request, response, next) => {
       redirect_uri: process.env.DISCORD_REDIRECT_URI!,
     }),
   });
-  const tokenData = await tokenResponse.json();
   if (!tokenResponse.ok) {
     throw new HttpError(502, "Discord OAuth token request failed.", {
       upstreamStatus: tokenResponse.status,
     });
   }
+  const tokenResult = await tokenResponse.json();
+  const tokenParsed = discordTokenResponseSchema.safeParse(tokenResult);
+  if (!tokenParsed.success) {
+    throw new HttpError(502, "Discord returned an invalid token.");
+  }
+  const tokenData = tokenParsed.data;
 
   // Use the access token to fetch user information
   const userResponse = await fetch("https://discord.com/api/users/@me", {
@@ -142,6 +148,12 @@ router.get("/discord/callback", async (request, response, next) => {
   if (!frontendUrl) {
     throw new HttpError(500, "Frontend URL is not configured.");
   }
+
+  // Save access token
+  request.session.discordAccessToken = tokenData.access_token;
+  request.session.discordRefreshToken = tokenData.refresh_token;
+  request.session.discordTokenExpiresAt =
+    Date.now() + tokenData.expires_in * 1000;
 
   request.session.save((error) => {
     if (error) {

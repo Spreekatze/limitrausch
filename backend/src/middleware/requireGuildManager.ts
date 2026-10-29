@@ -1,11 +1,16 @@
 import type { RequestHandler } from "express";
 import { HttpError } from "../errors/httpError.js";
-import { getGuildMemberInfo } from "../discord/guildService.js";
+import { authGuildSchema } from "../types/guildSchema.js";
 
 const requireGuildManager: RequestHandler = async (req, res, next) => {
   const authUser = req.session.authUser;
   if (!authUser) {
     return next(new HttpError(401, "User is not logged in."));
+  }
+
+  const accessToken = req.session.discordAccessToken;
+  if (!accessToken) {
+    throw new HttpError(401, "Discord authorization required.");
   }
 
   const guildId = req.params.guildId;
@@ -14,7 +19,7 @@ const requireGuildManager: RequestHandler = async (req, res, next) => {
   }
 
   try {
-    const isManager = await isGuildManager(authUser.id, guildId);
+    const isManager = await isGuildOwnerOrAdmin(accessToken, guildId);
 
     if (!isManager) {
       return next(
@@ -31,16 +36,37 @@ const requireGuildManager: RequestHandler = async (req, res, next) => {
   }
 };
 
-async function isGuildManager(
-  userId: string,
+async function isGuildOwnerOrAdmin(
+  accessToken: string,
   guildId: string,
 ): Promise<boolean> {
-  const member = await getGuildMemberInfo(guildId, userId);
+  const response = await fetch("https://discord.com/api/users/@me/guilds", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 
-  if (member?.isAdmin || member?.isOwner) {
-    return true;
+  if (!response.ok) {
+    throw new HttpError(502, "Discord OAuth user guild request failed.", {
+      upstreamStatus: response.status,
+    });
   }
-  return false;
+
+  const userGuild = await response.json();
+  const discordUserGuildsResult = authGuildSchema.array().safeParse(userGuild);
+  if (!discordUserGuildsResult.success) {
+    throw new HttpError(502, "Discord returned invalid guild data.");
+  }
+
+  const guild = discordUserGuildsResult.data.find(
+    (entry) => entry.id === guildId,
+  );
+
+  if (!guild) {
+    return false;
+  }
+
+  return guild.owner || guild.permissions.has("Administrator");
 }
 
 export default requireGuildManager;
