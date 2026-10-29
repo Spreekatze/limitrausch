@@ -8,6 +8,7 @@ import {
 import { HttpError } from "../errors/httpError.js";
 import { mapGuildDataToUserGuild } from "../mapping/guildMapping.js";
 import { authGuildSchema } from "../types/guildSchema.js";
+import { getGuilds } from "../discord/guildService.js";
 
 const router = express.Router();
 
@@ -112,10 +113,12 @@ router.get("/discord/callback", async (request, response, next) => {
   if (!discordUserGuildsResult.success) {
     throw new HttpError(502, "Discord returned invalid guild data.");
   }
+  const botGuilds = await getGuilds();
+  const botGuildIds = new Set(botGuilds.map((guild) => guild.id));
 
   const manageableGuilds = await Promise.all(
     discordUserGuildsResult.data.map((guild) =>
-      mapGuildDataToUserGuild(discordOAuthUser.id, guild),
+      mapGuildDataToUserGuild(discordOAuthUser.id, guild, botGuildIds),
     ),
   );
 
@@ -127,7 +130,6 @@ router.get("/discord/callback", async (request, response, next) => {
   const isAdmin = Boolean(whitelist?.includes(discordOAuthUser.id));
 
   //TODO: fetch preferences and get them in the session.authuser
-
   request.session.authUser = authUserSchema.parse({
     id: discordOAuthUser.id,
     username: discordOAuthUser.global_name,
