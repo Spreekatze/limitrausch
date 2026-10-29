@@ -107,7 +107,7 @@ import {
   getEventTitle,
   isCurrentMonth,
   isToday,
-} from '../utils/calendar';
+} from '../../utils/calendar';
 import CalendarHover from './CalendarHover.vue';
 import { getGuildIconUrl } from '@/utils/discordGuild';
 import { useRouter } from 'vue-router';

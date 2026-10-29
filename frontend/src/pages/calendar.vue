@@ -41,42 +41,11 @@
   </div>
   <q-dialog v-model="showCreateDialog">
     <q-card style="min-width: 350px">
-      <q-select
+      <GuildSelect
         v-model="guild"
-        label="Bitte Servernamen eingeben"
-        :options="filteredGuilds"
-        option-label="name"
-        option-value="id"
-        outlined
-        use-input
-        @filter="filterGuilds"
+        label="Server auswählen/eingeben"
         @update:model-value="onGuildSelected"
-      >
-        <template #option="scope">
-          <q-item v-bind="scope.itemProps">
-            <q-item-section avatar>
-              <q-icon
-                :name="getGuildIconUrl(scope.opt.id, scope.opt.icon)"
-                width="32px"
-                height="32px"
-              />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>{{ scope.opt.name }}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </template>
-        <template #selected-item="scope">
-          <q-item-section avatar>
-            <q-icon
-              :name="getGuildIconUrl(scope.opt.id, scope.opt.icon)"
-              width="32px"
-              height="32px"
-            />
-          </q-item-section>
-          <q-item-section>{{ scope.opt.name }}</q-item-section>
-        </template>
-      </q-select>
+      />
     </q-card>
   </q-dialog>
 </template>
@@ -85,14 +54,14 @@
 import { computed, onMounted, ref } from 'vue';
 import { getEvents, type Event } from '../api/events';
 import { getMonthlyCalendarStartDate } from '../utils/calendar';
+import { type UserGuild } from '@limitrausch/contracts';
 import Calendar from '@/components/Calendar.vue';
 import { useAuthStore } from '@/stores/auth-store';
 import { downloadWeeklyCalendarAsImage } from '../utils/calendar-export';
 import ListCalendar from '@/components/ListCalendar.vue';
-import { type UserGuild } from '@limitrausch/contracts';
 import { useRouter } from 'vue-router';
-import { getGuildIconUrl } from '@/utils/discordGuild';
 import { useNotify } from '@/composable/useNotify';
+import GuildSelect from '@/components/GuildSelect.vue';
 
 const authStore = useAuthStore();
 const notify = useNotify();
@@ -127,8 +96,6 @@ const displayedWeeks = computed(() => generateDisplayedWeekDates());
 
 const showCreateDialog = ref<boolean>(false);
 const guild = ref<UserGuild | null>(null);
-const userGuilds = authStore.user?.manageableGuilds ?? [];
-const filteredGuilds = ref<UserGuild[]>([...userGuilds]);
 const router = useRouter();
 
 onMounted(() => {
@@ -188,22 +155,12 @@ function generateDisplayedWeekDates() {
   );
 }
 
-function filterGuilds(value: string, update: (callback: () => void) => void) {
-  update(() => {
-    const search = value.toLowerCase().trim();
-
-    filteredGuilds.value = search
-      ? userGuilds.filter((guild) => guild.name.toLowerCase().includes(search))
-      : userGuilds;
-  });
-}
-
-function onGuildSelected() {
-  if (guild.value === null) {
+function onGuildSelected(selectedGuild: UserGuild | null) {
+  if (selectedGuild === null) {
     return;
   }
   showCreateDialog.value = false;
-  void router.push({ name: '/createEvent', query: { serverId: guild.value.id } });
+  void router.push({ name: '/createEvent', query: { serverId: selectedGuild.id } });
 }
 </script>
 

@@ -64,7 +64,7 @@
 import { formatEventTime, getEventTitle } from '@/utils/calendar';
 import { type Event } from '@limitrausch/contracts';
 import { nextTick, ref } from 'vue';
-import CalendarHover from './CalendarHover.vue';
+import CalendarHover from './calendar/CalendarHover.vue';
 import { getGuildIconUrl } from '@/utils/discordGuild.js';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';

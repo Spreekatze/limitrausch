@@ -23,6 +23,7 @@
     </div>
     <div v-else-if="authStore.loggedIn && authStore.isAdmin">
       <p>Spannende Dinge für die Admins sind grad auskommentiert</p>
+      <q-btn label="Server-Konfigurationen" to="/guild"></q-btn>
       <!-- <q-btn
         class="app-header__button"
         label="Import von Aetheris"
