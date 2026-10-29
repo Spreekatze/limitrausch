@@ -1,15 +1,15 @@
 import { GuildConfig, UserGuild } from "@limitrausch/contracts";
 import { pool } from "../database/databaseConnection.js";
-import { upsertDiscordServer } from "../database/discordServer.js";
+import { upsertDiscordGuild } from "../database/discordGuild.js";
 import { DatabaseGuildRow } from "../types/databaseRowSchema.js";
 
-export async function addDiscordServer(server: UserGuild) {
+export async function addDiscordGuild(guild: UserGuild) {
   const client = await pool.connect();
 
   try {
     await client.query("BEGIN");
 
-    await upsertDiscordServer(server, client);
+    await upsertDiscordGuild(guild, client);
 
     await client.query("COMMIT");
   } catch (error) {
@@ -20,17 +20,17 @@ export async function addDiscordServer(server: UserGuild) {
   }
 }
 
-export async function getDiscordServer(
-  serverId: string,
+export async function getDiscordGuild(
+  guildId: string,
 ): Promise<GuildConfig | undefined> {
   const result = await pool.query<DatabaseGuildRow>(
     `
     SELECT
       guild.*
-    FROM "DiscordServer" guild
+    FROM "DiscordGuild" guild
     WHERE guild.id = $1
   `,
-    [serverId],
+    [guildId],
   );
   const guild = result.rows[0];
   if (!guild) {
@@ -39,17 +39,17 @@ export async function getDiscordServer(
   return guild;
 }
 
-export async function getDiscordServerManagerRoles(
-  serverId: string,
+export async function getDiscordGuildManagerRoles(
+  guildId: string,
 ): Promise<string[]> {
   const result = await pool.query<Partial<DatabaseGuildRow>>(
     `
     SELECT
     guild."rolesAllowedToManageEvents"
-    FROM "DiscordServer" guild
+    FROM "DiscordGuild" guild
     WHERE guild.id = $1
   `,
-    [serverId],
+    [guildId],
   );
   const roles = result.rows[0];
   if (!roles) {

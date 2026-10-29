@@ -17,13 +17,13 @@
       icon="logout"
       @click="authStore.logoutCurrentUser"
     />
+
     <div v-if="authStore.loggedIn && !authStore.isAdmin" class="column align-center text-center">
       <p>Hier stehen später spannende Dinge für dich!</p>
-      <p>Aktuell ist es aber nur für die Admins nützlich. :c</p>
+      <q-btn label="Server-Konfigurationen" to="/guild"></q-btn>
     </div>
     <div v-else-if="authStore.loggedIn && authStore.isAdmin">
       <p>Spannende Dinge für die Admins sind grad auskommentiert</p>
-      <q-btn label="Server-Konfigurationen" to="/guild"></q-btn>
       <!-- <q-btn
         class="app-header__button"
         label="Import von Aetheris"

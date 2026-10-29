@@ -3,47 +3,47 @@ import { pool } from "./databaseConnection.js";
 import { ensureDiscordUser } from "./discordUser.js";
 import { EventDiscordUser } from "@limitrausch/contracts";
 
-export async function ensureDiscordServerUser(
+export async function ensureDiscordGuildUser(
   user: EventDiscordUser,
-  discordServerId: string | undefined,
+  discordGuildId: string | undefined,
   client: Pool | PoolClient = pool,
 ): Promise<void> {
   await ensureDiscordUser(user, client);
 
-  if (discordServerId) {
-    await upsertDiscordServerUser(user.id, discordServerId, user.name, client);
+  if (discordGuildId) {
+    await upsertDiscordGuildUser(user.id, discordGuildId, user.name, client);
   }
 }
 
-async function upsertDiscordServerUser(
+async function upsertDiscordGuildUser(
   discordUserId: string,
-  discordServerId: string,
-  usernameOnServer: string,
+  discordGuildId: string,
+  usernameOnGuild: string,
   client: Pool | PoolClient = pool,
 ): Promise<void> {
   await client.query(
-    `INSERT INTO "DiscordServerUser" (
+    `INSERT INTO "DiscordGuildUser" (
         "discordUserId",
-        "discordServerId",
-        "usernameOnServer"
+        "discordGuildId",
+        "usernameOnGuild"
     )
     VALUES ($1, $2, $3)
-    ON CONFLICT ("discordUserId", "discordServerId")
+    ON CONFLICT ("discordUserId", "discordGuildId")
     DO UPDATE SET 
-      "usernameOnServer" = EXCLUDED."usernameOnServer"
+      "usernameOnGuild" = EXCLUDED."usernameOnGuild"
     `,
-    [discordUserId, discordServerId, usernameOnServer],
+    [discordUserId, discordGuildId, usernameOnGuild],
   );
 }
 
-// async function updateDiscordServerUser(
+// async function updateDiscordGuildUser(
 //   discordUserId: string,
 //   username: string,
 //   eventsAttended: number,
 //   client: Pool | PoolClient = pool,
 // ): Promise<void> {
 //   await client.query(
-//     `UPDATE "DiscordServerUser"
+//     `UPDATE "DiscordGuildUser"
 //     SET VALUES ($1, $2)
 //    WHERE "id" = ${discordUserId}`,
 //     [username, eventsAttended],

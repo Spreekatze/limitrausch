@@ -1,4 +1,4 @@
-import { Guild } from "@limitrausch/contracts";
+import { DiscordRoleOption, Guild } from "@limitrausch/contracts";
 import { client } from "./client.js";
 
 export interface GuildMemberInfo {
@@ -47,4 +47,16 @@ export async function getGuildMemberInfo(
 
     throw error;
   }
+}
+
+export async function getGuildRoles(
+  guildId: string,
+): Promise<DiscordRoleOption[]> {
+  const guild = await client.guilds.fetch(guildId);
+  const roles = await guild.roles.fetch();
+
+  return roles.map((role) => ({
+    id: role.id,
+    name: role.name,
+  }));
 }

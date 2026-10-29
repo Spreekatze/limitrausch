@@ -21,9 +21,9 @@ export const databaseEventRowSchema = z.object({
   eventType: eventTypeSchema,
   eventDifficulty: eventDifficultySchema.nullable(),
   eventGoal: z.string().nullable(),
-  discordServerId: z.string().nullable(),
-  discordServerName: z.string().nullable(),
-  discordServerIcon: z.string().nullable(),
+  discordGuildId: z.string().nullable(),
+  discordGuildName: z.string().nullable(),
+  discordGuildIcon: z.string().nullable(),
   discordTextChannelId: z.string().nullable(),
   discordTextChannelName: z.string().nullable(),
   discordMessageId: z.string().nullable(),
@@ -49,7 +49,7 @@ export const databaseEventSignUpRowSchema = z.object({
   status: statusTypeSchema.nullable(),
   jobFirstPrio: jobIdSchema.nullable(),
   jobFlexSecondPrio: z.array(jobIdSchema).nullable(),
-  usernameOnServer: z.string().nullable(),
+  usernameOnGuild: z.string().nullable(),
 });
 export type DatabaseEventSignUpRow = z.infer<
   typeof databaseEventSignUpRowSchema

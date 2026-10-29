@@ -15,9 +15,9 @@
         <div>
           <q-icon
             class="server-icon"
-            :name="`${getGuildIconUrl(event.discordServer?.id, event.discordServer?.icon)}`"
+            :name="`${getGuildIconUrl(event.discordGuild?.id, event.discordGuild?.icon)}`"
           />
-          {{ event.discordServer?.name }}
+          {{ event.discordGuild?.name }}
         </div>
       </q-card-section>
       <q-card-section class="event-date" horizontal>

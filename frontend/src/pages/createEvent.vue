@@ -1,5 +1,5 @@
 <template>
-  <q-card v-if="!guild"> Etwas lief schief. Der Discord Server wurde nicht gefunden. </q-card>
+  <q-card v-if="!guild"> Etwas lief schief. Der Discord Guild wurde nicht gefunden. </q-card>
   <q-card v-if="guild" class="creation-card">
     <q-card-section class="creation-card__header row items-center relative-position">
       <div class="absolute-center">Erstelle ein Event</div>
@@ -89,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import { createEventOnServer } from '@/api/events';
+import { createEventOnGuild } from '@/api/events';
 import { useNotify } from '@/composable/useNotify';
 import { useSearchOptions } from '@/composable/useSearchOptions';
 import { EVENT_DIFFICULTY_LABELS, EVENT_TYPE_OPTIONS } from '@/constants/event-settings-labels';
@@ -256,7 +256,7 @@ function onTitleInput(value: string | number | null) {
 
 async function createEventFromForm() {
   try {
-    await createEventOnServer(
+    await createEventOnGuild(
       {
         creator: {
           name: '',
@@ -273,7 +273,7 @@ async function createEventFromForm() {
         eventDifficulty: difficulty.value,
         eventGoal: goal.value,
         isPublic: isPublic.value,
-        discordServer: {
+        discordGuild: {
           id: guild.value!.id,
           name: guild.value!.name,
           icon: guild.value!.icon ?? undefined,

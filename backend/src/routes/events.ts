@@ -57,7 +57,7 @@ router.post(
     };
 
     const guild = request.session.authUser?.manageableGuilds.find(
-      (item) => item.id === event.discordServer?.id,
+      (item) => item.id === event.discordGuild?.id,
     );
 
     const createdEvent = await addEvent(event, guild);

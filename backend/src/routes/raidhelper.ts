@@ -3,7 +3,7 @@ import {
   importRaidHelperEventById,
   importRaidHelperEventsFromGuild,
 } from "../services/raidHelperImport.js";
-import { addDiscordServer } from "../store/guildStore.js";
+import { addDiscordGuild } from "../store/guildStore.js";
 
 import requireEventManager from "../middleware/requireGuildManager.js";
 import { HttpError } from "../errors/httpError.js";
@@ -11,20 +11,20 @@ import requireAuth from "../middleware/requireAuth.js";
 
 const router = express.Router();
 
-// Request events from raid-helper by serverId
+// Request events from raid-helper by guildId
 router.get(
-  "/server/:id",
+  "/guild/:id",
   requireEventManager,
   async (request, response, next) => {
-    const serverId = request.params.id;
-    if (typeof serverId !== "string") {
-      return next(new HttpError(400, "Invalid server id"));
+    const guildId = request.params.id;
+    if (typeof guildId !== "string") {
+      return next(new HttpError(400, "Invalid guild id"));
     }
 
-    const server = request.session.authUser?.manageableGuilds.find(
-      (guild) => guild.id === serverId,
+    const guild = request.session.authUser?.manageableGuilds.find(
+      (guild) => guild.id === guildId,
     );
-    if (!server) {
+    if (!guild) {
       return next(
         new HttpError(
           404,
@@ -33,10 +33,10 @@ router.get(
       );
     }
 
-    //TODO: move server adding to its own route
-    await addDiscordServer(server);
+    //TODO: move guild adding to its own route
+    await addDiscordGuild(guild);
 
-    const result = await importRaidHelperEventsFromGuild(server);
+    const result = await importRaidHelperEventsFromGuild(guild);
 
     response.status(200).json(result);
   },
@@ -71,7 +71,7 @@ router.get("/:id", requireAuth, async (request, response, next) => {
   }
   const result = await importRaidHelperEventById(userGuilds, eventId);
   if (result.failed) {
-    return next(new HttpError(500, "Import failed due to server error"));
+    return next(new HttpError(500, "Import failed due to guild error"));
   }
 
   response.status(200).json(result);

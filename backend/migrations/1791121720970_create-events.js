@@ -27,7 +27,7 @@ export const up = (pgm) => {
     },
   });
 
-  pgm.createTable("DiscordServer", {
+  pgm.createTable("DiscordGuild", {
     id: {
       type: "text",
       primaryKey: true,
@@ -57,22 +57,22 @@ export const up = (pgm) => {
       name: {
         type: "text",
       },
-      discordServerId: {
+      discordGuildId: {
         type: "text",
         notNull: true,
-        references: '"DiscordServer"',
+        references: '"DiscordGuild"',
         onDelete: "CASCADE",
       },
     },
     {
       constraints: {
-        unique: ["id", "discordServerId"],
+        unique: ["id", "discordGuildId"],
       },
     },
   );
 
   pgm.createTable(
-    "DiscordServerUser",
+    "DiscordGuildUser",
     {
       discordUserId: {
         type: "text",
@@ -80,20 +80,20 @@ export const up = (pgm) => {
         references: '"DiscordUser"',
         onDelete: "CASCADE",
       },
-      discordServerId: {
+      discordGuildId: {
         type: "text",
         notNull: true,
-        references: '"DiscordServer"',
+        references: '"DiscordGuild"',
         onDelete: "CASCADE",
       },
-      usernameOnServer: {
+      usernameOnGuild: {
         type: "text",
         notNull: true,
       },
     },
     {
       constraints: {
-        primaryKey: ["discordUserId", "discordServerId"],
+        primaryKey: ["discordUserId", "discordGuildId"],
       },
     },
   );
@@ -148,9 +148,9 @@ export const up = (pgm) => {
         type: "bigint",
         notNull: true,
       },
-      discordServerId: {
+      discordGuildId: {
         type: "text",
-        references: '"DiscordServer"',
+        references: '"DiscordGuild"',
       },
       discordTextChannelId: {
         type: "text",
@@ -171,13 +171,13 @@ export const up = (pgm) => {
     {
       constraints: {
         check: [
-          '"discordTextChannelId" IS NULL OR "discordServerId" IS NOT NULL',
+          '"discordTextChannelId" IS NULL OR "discordGuildId" IS NOT NULL',
           '"eventType" IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 999, 998, 997)',
           '"eventDifficulty" IS NULL OR "eventDifficulty" IN (1, 2, 3, 4)',
         ],
         foreignKeys: {
-          columns: ["discordTextChannelId", "discordServerId"],
-          references: '"DiscordTextChannel"("id", "discordServerId")',
+          columns: ["discordTextChannelId", "discordGuildId"],
+          references: '"DiscordTextChannel"("id", "discordGuildId")',
         },
       },
     },
@@ -256,9 +256,9 @@ export const down = (pgm) => {
   pgm.dropTable("EventSignUp");
   pgm.dropTable("EventCoLeader");
   pgm.dropTable("Event");
-  pgm.dropTable("DiscordServerUser");
+  pgm.dropTable("DiscordGuildUser");
   pgm.dropTable("DiscordTextChannel");
-  pgm.dropTable("DiscordServer");
+  pgm.dropTable("DiscordGuild");
   pgm.dropTable("WebsiteUser");
   pgm.dropTable("DiscordUser");
 };

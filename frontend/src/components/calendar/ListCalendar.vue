@@ -32,9 +32,9 @@
                 <q-item-label class="event__guild">
                   <q-icon
                     class="server-icon"
-                    :name="`${getGuildIconUrl(event.discordServer?.id, event.discordServer?.icon)}`"
+                    :name="`${getGuildIconUrl(event.discordGuild?.id, event.discordGuild?.icon)}`"
                   />
-                  {{ event.discordServer?.name }}
+                  {{ event.discordGuild?.name }}
                 </q-item-label>
               </q-item-section>
             </q-item>
@@ -64,7 +64,7 @@
 import { formatEventTime, getEventTitle } from '@/utils/calendar';
 import { type Event } from '@limitrausch/contracts';
 import { nextTick, ref } from 'vue';
-import CalendarHover from './calendar/CalendarHover.vue';
+import CalendarHover from './CalendarHover.vue';
 import { getGuildIconUrl } from '@/utils/discordGuild.js';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';

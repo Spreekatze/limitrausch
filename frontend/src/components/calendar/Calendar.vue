@@ -60,7 +60,7 @@
                 <q-card-actions>
                   <q-icon
                     class="server-icon"
-                    :name="`${getGuildIconUrl(event.discordServer?.id, event.discordServer?.icon)}`"
+                    :name="`${getGuildIconUrl(event.discordGuild?.id, event.discordGuild?.icon)}`"
                   />
                   <div><q-icon name="schedule" /> {{ formatEventTime(event.startTime) }}</div>
                 </q-card-actions>

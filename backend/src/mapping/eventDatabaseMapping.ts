@@ -29,7 +29,7 @@ export function mapDatabaseEventRowToEvent(
       id: signUp.id,
       raidHelperId: signUp.raidHelperId ?? undefined,
       userId: signUp.discordUserId ?? undefined,
-      name: signUp.usernameOnServer ?? undefined,
+      name: signUp.usernameOnGuild ?? undefined,
       status: signUp.status ?? undefined,
       jobFirstPrio: signUp.jobFirstPrio
         ? getJobFromId(signUp.jobFirstPrio)
@@ -65,11 +65,11 @@ export function mapDatabaseEventRowToEvent(
     eventType: row.eventType,
     eventDifficulty: row.eventDifficulty ?? undefined,
     eventGoal: row.eventGoal ?? undefined,
-    discordServer: row.discordServerId
+    discordGuild: row.discordGuildId
       ? {
-          id: row.discordServerId,
-          name: row.discordServerName ?? undefined,
-          icon: row.discordServerIcon ?? undefined,
+          id: row.discordGuildId,
+          name: row.discordGuildName ?? undefined,
+          icon: row.discordGuildIcon ?? undefined,
           textChannelId: row.discordTextChannelId ?? undefined,
           textChannelName: row.discordTextChannelName ?? undefined,
           messageId: row.discordMessageId ?? undefined,

@@ -29,7 +29,7 @@ export function mapRaidHelperGeneralEventDataToEvent(
     startTime: raidhelperEvent.startTime,
     endTime: raidhelperEvent.endTime,
     eventType: EVENT_TYPE.UNDEFINED,
-    discordServer: {
+    discordGuild: {
       id: server.id,
       name: server.name,
       icon: server.icon ?? undefined,
@@ -108,7 +108,7 @@ export function mapRaidHelperDetailledEventDataToEvent(
     startTime: raidhelperEvent.startTime,
     endTime: raidhelperEvent.endTime,
     eventType: EVENT_TYPE.UNDEFINED,
-    discordServer: {
+    discordGuild: {
       id: raidhelperEvent.serverId,
       textChannelId: raidhelperEvent.channelId,
       textChannelName: raidhelperEvent.channelName,

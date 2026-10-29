@@ -19,3 +19,15 @@ export const guildConfigSchema = guildSchema.extend({
   roleIDsBannedFromParticipating: z.array(z.string()).nullish(),
 });
 export type GuildConfig = z.infer<typeof guildConfigSchema>;
+
+const discordRoleOptionSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+export type DiscordRoleOption = z.infer<typeof discordRoleOptionSchema>;
+
+export const guildConfigResponseSchema = z.object({
+  guildConfig: guildConfigSchema,
+  roles: z.array(discordRoleOptionSchema),
+});
+export type GuildConfigResponse = z.infer<typeof guildConfigResponseSchema>;

@@ -1,5 +1,5 @@
 import { getGuildMemberInfo } from "../discord/guildService.js";
-import { getDiscordServerManagerRoles } from "../store/guildStore.js";
+import { getDiscordGuildManagerRoles } from "../store/guildStore.js";
 
 export async function isEventManager(
   userId: string,
@@ -15,7 +15,7 @@ export async function isEventManager(
     return true;
   }
 
-  const allowedRoleIds = await getDiscordServerManagerRoles(guildId);
+  const allowedRoleIds = await getDiscordGuildManagerRoles(guildId);
   const hasAllowedRole = allowedRoleIds.some((roleId) =>
     member.roleIds.includes(roleId),
   );

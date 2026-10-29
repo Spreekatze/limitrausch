@@ -31,7 +31,7 @@ export async function getEvents(date: Date): Promise<ApiEventsResponse> {
   return result.data;
 }
 
-export async function importRaidHelperEventsByServer(
+export async function importRaidHelperEventsByGuild(
   serverId: string,
 ): Promise<RaidHelperImportResponse> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
@@ -150,7 +150,7 @@ export async function importRaidHelperEvent(eventId: string): Promise<RaidHelper
   return result.data;
 }
 
-export async function createEventOnServer(
+export async function createEventOnGuild(
   event: CreateEvent,
   serverId: string,
 ): Promise<ApiEventsResponse> {
