@@ -2,8 +2,8 @@ import express from "express";
 import requireGuildManager from "../middleware/requireGuildManager.js";
 import { guildIdSchema } from "../types/guildSchema.js";
 import { HttpError } from "../errors/httpError.js";
-import { getDiscordGuildById } from "../database/discordGuild.js";
 import { getGuildRoles } from "../discord/guildService.js";
+import { getDiscordGuild } from "../store/guildStore.js";
 
 const router = express.Router();
 
@@ -25,8 +25,10 @@ router.get(
         );
       }
       const guildId = parsedGuildId.data;
-      const guildConfig = getDiscordGuildById(guildId);
-      const guildRoles = getGuildRoles(guildId);
+      const [guildConfig, guildRoles] = await Promise.all([
+        getDiscordGuild(guildId),
+        await getGuildRoles(guildId),
+      ]);
 
       response.json({ guildConfig, guildRoles });
     } catch (error) {

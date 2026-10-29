@@ -8,7 +8,7 @@ const requireGuildManager: RequestHandler = async (req, res, next) => {
     return next(new HttpError(401, "User is not logged in."));
   }
 
-  const guildId = req.params.serverId;
+  const guildId = req.params.guildId;
   if (typeof guildId !== "string" || !/^\d{17,20}$/.test(guildId)) {
     return next(new HttpError(400, "Invalid or missing guildId."));
   }

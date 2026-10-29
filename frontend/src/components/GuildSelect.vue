@@ -35,13 +35,13 @@
 
 <script setup lang="ts">
 import type { UserGuild } from '@limitrausch/contracts';
-import { ref } from 'vue';
-import { useAuthStore } from '@/stores/auth-store';
+import { computed, ref } from 'vue';
 import { getGuildIconUrl } from '@/utils/discordGuild';
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     modelValue: UserGuild | null;
+    guilds: UserGuild[];
     label?: string;
   }>(),
   {
@@ -53,16 +53,18 @@ const emit = defineEmits<{
   'update:modelValue': [guild: UserGuild | null];
 }>();
 
-const userGuilds = useAuthStore().user?.manageableGuilds ?? [];
-const filteredGuilds = ref<UserGuild[]>([...userGuilds]);
+const search = ref('');
+const filteredGuilds = computed(() => {
+  const normalizedSearch = search.value.toLowerCase().trim();
+
+  return normalizedSearch
+    ? props.guilds.filter((guild) => guild.name.toLowerCase().includes(normalizedSearch))
+    : props.guilds;
+});
 
 function filterGuilds(value: string, update: (callback: () => void) => void) {
   update(() => {
-    const search = value.toLowerCase().trim();
-
-    filteredGuilds.value = search
-      ? userGuilds.filter((guild) => guild.name.toLowerCase().includes(search))
-      : userGuilds;
+    search.value = value;
   });
 }
 </script>

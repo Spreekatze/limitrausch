@@ -2,7 +2,11 @@
   <q-card class="server-configuration-card">
     <q-card-section> Serverkonfiguration </q-card-section>
     <q-card-section>
-      <GuildSelect v-model="guild" label="Server auswählen" />
+      <GuildSelect
+        v-model="guild"
+        :guilds="authStore.user?.manageableGuilds ?? []"
+        label="Server auswählen"
+      />
     </q-card-section>
     <q-card-section>
       <q-select
@@ -45,7 +49,11 @@ import type { DiscordRoleOption, UserGuild } from '@limitrausch/contracts';
 import { ref, watch } from 'vue';
 import GuildSelect from '@/components/GuildSelect.vue';
 import { getGuildConfigById } from '@/api/guild';
+import { useAuthStore } from '@/stores/auth-store';
+import { useNotify } from '@/composable/useNotify';
 
+const authStore = useAuthStore();
+const notify = useNotify();
 const guild = ref<UserGuild | null>(null);
 
 const roles = ref<DiscordRoleOption[]>([]);
@@ -74,15 +82,15 @@ watch(
 
       if (cancelled) return;
 
-      roles.value = response.roles;
+      roles.value = response.guildRoles;
 
       roleIdsBannedFromParticipating.value =
-        response.guildConfig.roleIDsBannedFromParticipating ?? [];
+        response.guildConfig?.roleIDsBannedFromParticipating ?? [];
 
-      roleIdsAllowedToManageEvents.value = response.guildConfig.roleIDsAllowedToManageEvents ?? [];
+      roleIdsAllowedToManageEvents.value = response.guildConfig?.roleIDsAllowedToManageEvents ?? [];
     } catch (error) {
       if (!cancelled) {
-        console.error('Serverkonfiguration konnte nicht geladen werden.', error);
+        notify.error(error instanceof Error ? error.message : String(error));
       }
     } finally {
       if (!cancelled) {

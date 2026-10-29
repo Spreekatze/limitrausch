@@ -22,7 +22,7 @@ export async function addDiscordGuild(guild: UserGuild) {
 
 export async function getDiscordGuild(
   guildId: string,
-): Promise<GuildConfig | undefined> {
+): Promise<GuildConfig | null> {
   const result = await pool.query<DatabaseGuildRow>(
     `
     SELECT
@@ -34,7 +34,7 @@ export async function getDiscordGuild(
   );
   const guild = result.rows[0];
   if (!guild) {
-    return undefined;
+    return null;
   }
   return guild;
 }

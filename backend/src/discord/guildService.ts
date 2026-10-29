@@ -1,5 +1,6 @@
 import { DiscordRoleOption, Guild } from "@limitrausch/contracts";
 import { client } from "./client.js";
+import { DiscordAPIError } from "discord.js";
 
 export interface GuildMemberInfo {
   userId: string;
@@ -22,7 +23,18 @@ export async function getGuildMemberInfo(
   guildId: string,
   userId: string,
 ): Promise<GuildMemberInfo | null> {
-  const guild = await client.guilds.fetch(guildId);
+  let guild;
+
+  try {
+    guild = await client.guilds.fetch(guildId);
+  } catch (error: unknown) {
+    // Discord-API-Error 10004: Unknown Guild
+    if (error instanceof DiscordAPIError && error.code === 10004) {
+      return null;
+    }
+
+    throw error;
+  }
 
   try {
     const member = await guild.members.fetch(userId);
@@ -36,12 +48,7 @@ export async function getGuildMemberInfo(
     };
   } catch (error: unknown) {
     // Discord-API-Error 10007: Unknown Member
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "code" in error &&
-      error.code === 10007
-    ) {
+    if (error instanceof DiscordAPIError && error.code === 10007) {
       return null;
     }
 

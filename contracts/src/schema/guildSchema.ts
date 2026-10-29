@@ -27,7 +27,7 @@ const discordRoleOptionSchema = z.object({
 export type DiscordRoleOption = z.infer<typeof discordRoleOptionSchema>;
 
 export const guildConfigResponseSchema = z.object({
-  guildConfig: guildConfigSchema,
-  roles: z.array(discordRoleOptionSchema),
+  guildConfig: guildConfigSchema.nullable(),
+  guildRoles: z.array(discordRoleOptionSchema),
 });
 export type GuildConfigResponse = z.infer<typeof guildConfigResponseSchema>;

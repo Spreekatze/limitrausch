@@ -1,7 +1,6 @@
 import { Pool, PoolClient } from "pg";
 import { pool } from "./databaseConnection.js";
-import { GuildConfig, UserGuild } from "@limitrausch/contracts";
-import { DatabaseGuildRow } from "../types/databaseRowSchema.js";
+import { UserGuild } from "@limitrausch/contracts";
 
 export async function upsertDiscordGuild(
   guild: UserGuild,
@@ -17,20 +16,4 @@ export async function upsertDiscordGuild(
     `,
     [guild.id, guild.name, guild.icon],
   );
-}
-
-export async function getDiscordGuildById(
-  guildId: string,
-  client: Pool | PoolClient = pool,
-): Promise<GuildConfig> {
-  const guildResult = await client.query<DatabaseGuildRow>(
-    `
-      SELECT 
-        "discordGuild".*,
-      WHERE "discordGuild".id = $1
-      `,
-    [guildId],
-  );
-
-  return guildResult.rows[0];
 }
