@@ -39,10 +39,10 @@ export const up = (pgm) => {
     icon: {
       type: "text",
     },
-    rolesAllowedToManageEvents: {
+    roleIDsAllowedToManageEvents: {
       type: "text[]",
     },
-    rolesBannedFromParticipating: {
+    roleIDsBannedFromParticipating: {
       type: "text[]",
     },
   });

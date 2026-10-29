@@ -10,7 +10,7 @@
     </q-card-section>
     <q-card-section>
       <q-select
-        v-model="roleIdsBannedFromParticipating"
+        v-model="roleIDsBannedFromParticipating"
         :options="roles"
         label="Von der Teilnahme ausgeschlossene Rollen"
         option-label="name"
@@ -26,7 +26,7 @@
       />
 
       <q-select
-        v-model="roleIdsAllowedToManageEvents"
+        v-model="roleIDsAllowedToManageEvents"
         :options="roles"
         label="Rollen mit Eventverwaltungsrechten"
         option-label="name"
@@ -40,6 +40,13 @@
         :loading="loading"
         :disable="!guild || loading"
       />
+
+      <q-btn
+        label="Speichern"
+        :loading="isSaving"
+        :disable="isSaving || !guild"
+        @click="saveConfig"
+      />
     </q-card-section>
   </q-card>
 </template>
@@ -48,7 +55,7 @@
 import type { DiscordRoleOption, UserGuild } from '@limitrausch/contracts';
 import { ref, watch } from 'vue';
 import GuildSelect from '@/components/GuildSelect.vue';
-import { getGuildConfigById } from '@/api/guild';
+import { getGuildConfigById, saveGuildConfig } from '@/api/guild';
 import { useAuthStore } from '@/stores/auth-store';
 import { useNotify } from '@/composable/useNotify';
 
@@ -57,9 +64,10 @@ const notify = useNotify();
 const guild = ref<UserGuild | null>(null);
 
 const roles = ref<DiscordRoleOption[]>([]);
-const roleIdsBannedFromParticipating = ref<string[]>([]);
-const roleIdsAllowedToManageEvents = ref<string[]>([]);
+const roleIDsBannedFromParticipating = ref<string[]>([]);
+const roleIDsAllowedToManageEvents = ref<string[]>([]);
 const loading = ref(false);
+const isSaving = ref(false);
 
 watch(
   () => guild.value?.id,
@@ -70,8 +78,8 @@ watch(
     });
 
     roles.value = [];
-    roleIdsBannedFromParticipating.value = [];
-    roleIdsAllowedToManageEvents.value = [];
+    roleIDsBannedFromParticipating.value = [];
+    roleIDsAllowedToManageEvents.value = [];
 
     if (!guildId) return;
 
@@ -84,10 +92,10 @@ watch(
 
       roles.value = response.guildRoles;
 
-      roleIdsBannedFromParticipating.value =
+      roleIDsBannedFromParticipating.value =
         response.guildConfig?.roleIDsBannedFromParticipating ?? [];
 
-      roleIdsAllowedToManageEvents.value = response.guildConfig?.roleIDsAllowedToManageEvents ?? [];
+      roleIDsAllowedToManageEvents.value = response.guildConfig?.roleIDsAllowedToManageEvents ?? [];
     } catch (error) {
       if (!cancelled) {
         notify.error(error instanceof Error ? error.message : String(error));
@@ -99,4 +107,26 @@ watch(
     }
   },
 );
+
+async function saveConfig(): Promise<void> {
+  if (!guild.value || isSaving.value) return;
+
+  isSaving.value = true;
+
+  try {
+    await saveGuildConfig(guild.value.id, {
+      id: guild.value.id,
+      name: guild.value.name,
+      icon: guild.value.icon,
+      roleIDsAllowedToManageEvents: roleIDsAllowedToManageEvents.value,
+      roleIDsBannedFromParticipating: roleIDsBannedFromParticipating.value,
+    });
+
+    notify.success('Konfiguration erfolgreich gespeichert.');
+  } catch (error: unknown) {
+    notify.error(error instanceof Error ? error.message : String(error));
+  } finally {
+    isSaving.value = false;
+  }
+}
 </script>

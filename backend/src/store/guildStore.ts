@@ -1,6 +1,9 @@
 import { GuildConfig, UserGuild } from "@limitrausch/contracts";
 import { pool } from "../database/databaseConnection.js";
-import { upsertDiscordGuild } from "../database/discordGuild.js";
+import {
+  upsertDiscordGuild,
+  upsertDiscordGuildWithConfig,
+} from "../database/discordGuild.js";
 import { DatabaseGuildRow } from "../types/databaseRowSchema.js";
 
 export async function addDiscordGuild(guild: UserGuild) {
@@ -56,4 +59,43 @@ export async function getDiscordGuildManagerRoles(
     return [];
   }
   return roles.rolesAllowedToManageEvents ?? [];
+}
+
+// export async function updateDiscordGuildById(
+//   guildId: string,
+//   update: GuildConfig,
+// ): Promise<boolean> {
+//   const result = await pool.query(
+//     `
+//       UPDATE "DiscordGuild"
+//       SET
+//         "roleIDsAllowedToManageEvents" = $2,
+//         "roleIDsBannedFromParticipating" = $3
+//       WHERE id = $1
+//     `,
+//     [
+//       guildId,
+//       update.roleIDsAllowedToManageEvents,
+//       update.roleIDsBannedFromParticipating,
+//     ],
+//   );
+
+//   return (result.rowCount ?? 0) > 0;
+// }
+
+export async function upsertGuildConfig(guildId: string, update: GuildConfig) {
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    await upsertDiscordGuildWithConfig(guildId, update, client);
+
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 }
