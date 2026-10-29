@@ -2,7 +2,7 @@ import express from "express";
 import requireGuildManager from "../middleware/requireGuildManager.js";
 import { guildIdSchema } from "../types/guildSchema.js";
 import { HttpError } from "../errors/httpError.js";
-import { getGuildRoles } from "../discord/guildService.js";
+import { getGuildRoles } from "../discordBot/guildService.js";
 import { getDiscordGuild } from "../store/guildStore.js";
 
 const router = express.Router();

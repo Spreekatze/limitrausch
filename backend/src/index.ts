@@ -13,7 +13,7 @@ import { renderRouteRows } from "./views/route-list.js";
 import { testDatabaseConnection } from "./database/databaseConnection.js";
 import errorHandler from "./errors/errorHandler.js";
 import requestLogger from "./middleware/requestLogger.js";
-import { connectDiscord } from "./discord/client.js";
+import { connectDiscord } from "./discordBot/client.js";
 
 // Initialize Express app and configure environment variables
 const app = express();

@@ -1,6 +1,7 @@
 import type { RequestHandler } from "express";
 import { HttpError } from "../errors/httpError.js";
 import { authGuildSchema } from "../types/guildSchema.js";
+import { getValidDiscordAccessToken } from "../services/discordService.js";
 
 const requireGuildManager: RequestHandler = async (req, res, next) => {
   const authUser = req.session.authUser;
@@ -8,7 +9,7 @@ const requireGuildManager: RequestHandler = async (req, res, next) => {
     return next(new HttpError(401, "User is not logged in."));
   }
 
-  const accessToken = req.session.discordAccessToken;
+  const accessToken = await getValidDiscordAccessToken(req);
   if (!accessToken) {
     throw new HttpError(401, "Discord authorization required.");
   }

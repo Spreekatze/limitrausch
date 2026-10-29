@@ -1,4 +1,4 @@
-import { getGuildMemberInfo } from "../discord/guildService.js";
+import { getGuildMemberInfo } from "../discordBot/guildService.js";
 import { getDiscordGuildManagerRoles } from "../store/guildStore.js";
 
 export async function isEventManager(

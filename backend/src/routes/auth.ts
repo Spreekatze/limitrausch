@@ -8,7 +8,7 @@ import {
 import { HttpError } from "../errors/httpError.js";
 import { mapGuildDataToUserGuild } from "../mapping/guildMapping.js";
 import { authGuildSchema } from "../types/guildSchema.js";
-import { getGuilds } from "../discord/guildService.js";
+import { getGuilds } from "../discordBot/guildService.js";
 import { discordTokenResponseSchema } from "../types/discordSchema.js";
 
 const router = express.Router();

@@ -12,17 +12,18 @@
     "types": ["node"]
   },
   "include": [
-    "src/index.ts",
-    "src/routes/**/*.ts",
-    "src/views/**/*.ts",
-    "src/types/**/*.ts",
-    "src/middleware/**/*.ts",
-    "services/**/*.ts",
-    "mapping/**/*.ts",
-    "store/**/*.ts",
     "config/**/*.ts",
     "src/database/**/*.ts",
-    "data/jobs.ts"
+    "src/discordBot/**/*.ts",
+    "src/errors/**/*.ts",
+    "src/mapping/**/*.ts",
+    "src/middleware/**/*.ts",
+    "src/routes/**/*.ts",
+    "src/services/**/*.ts",
+    "src/store/**/*.ts",
+    "src/types/**/*.ts",
+    "src/views/**/*.ts",
+    "src/index.ts"
   ],
   "exclude": ["node_modules", "dist"]
 }
