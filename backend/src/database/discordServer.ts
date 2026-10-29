@@ -1,9 +1,9 @@
 import { Pool, PoolClient } from "pg";
 import { pool } from "./databaseConnection.js";
-import { DiscordGuild } from "@limitrausch/contracts";
+import { UserGuild } from "@limitrausch/contracts";
 
 export async function upsertDiscordServer(
-  server: DiscordGuild,
+  server: UserGuild,
   client: Pool | PoolClient = pool,
 ): Promise<void> {
   await client.query(

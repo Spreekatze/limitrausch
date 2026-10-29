@@ -28,7 +28,6 @@ export const useAuthStore = defineStore('auth', {
         const response = await getLoginStatus();
         this.loggedIn = response.loggedIn;
         this.user = response.loggedIn ? response.user : null;
-        this.isAdmin = response.loggedIn && response.user.isAdmin;
       } catch (error: unknown) {
         console.error(error);
         notify.error(error instanceof Error ? error.message : String(error));

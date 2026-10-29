@@ -20,7 +20,7 @@ import {
   CreateEvent,
   UpdateEvent,
   Event,
-  DiscordGuild,
+  UserGuild,
 } from "@limitrausch/contracts";
 import { upsertDiscordServer } from "../database/discordServer.js";
 
@@ -133,7 +133,7 @@ export const getEventByRaidHelperId = (id: string) =>
 
 export async function addEvent(
   event: CreateEvent,
-  guild?: DiscordGuild,
+  guild?: UserGuild,
 ): Promise<Event> {
   const client = await pool.connect();
 

@@ -3,11 +3,11 @@ import crypto from "crypto";
 import {
   authStatusResponseSchema,
   authUserSchema,
-  discordGuildSchema,
   discordOAuthUserSchema,
 } from "@limitrausch/contracts";
-import { getGuilds } from "../discord/guildService.js";
 import { HttpError } from "../errors/httpError.js";
+import { mapGuildDataToUserGuild } from "../mapping/guildMapping.js";
+import { authGuildSchema } from "../types/guildSchema.js";
 
 const router = express.Router();
 
@@ -78,12 +78,12 @@ router.get("/discord/callback", async (request, response, next) => {
       Authorization: `Bearer ${tokenData.access_token}`,
     },
   });
-  const discordUser = await userResponse.json();
   if (!userResponse.ok) {
     throw new HttpError(502, "Discord OAuth user request failed.", {
       upstreamStatus: userResponse.status,
     });
   }
+  const discordUser = await userResponse.json();
 
   const discordOAuthUserResult = discordOAuthUserSchema.safeParse(discordUser);
   if (!discordOAuthUserResult.success) {
@@ -106,17 +106,17 @@ router.get("/discord/callback", async (request, response, next) => {
       upstreamStatus: userGuildsResponse.status,
     });
   }
-
-  const discordUserGuildsResult = discordGuildSchema
+  const discordUserGuildsResult = authGuildSchema
     .array()
     .safeParse(discordUserGuilds);
   if (!discordUserGuildsResult.success) {
     throw new HttpError(502, "Discord returned invalid guild data.");
   }
-  const botGuilds = await getGuilds();
-  const botGuildIds = new Set(botGuilds.map((guild) => guild.id));
-  const sharedGuilds = discordUserGuildsResult.data.filter((guild) =>
-    botGuildIds.has(guild.id),
+
+  const manageableGuilds = await Promise.all(
+    discordUserGuildsResult.data.map((guild) =>
+      mapGuildDataToUserGuild(discordOAuthUser.id, guild),
+    ),
   );
 
   // Check if the user is in the whitelist of admins
@@ -133,7 +133,7 @@ router.get("/discord/callback", async (request, response, next) => {
     username: discordOAuthUser.global_name,
     avatar: discordOAuthUser.avatar,
     isAdmin,
-    userGuilds: sharedGuilds,
+    manageableGuilds,
   });
 
   const frontendUrl = process.env.FRONTEND_URL;

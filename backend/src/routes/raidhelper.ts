@@ -21,7 +21,7 @@ router.get(
       return next(new HttpError(400, "Invalid server id"));
     }
 
-    const server = request.session.authUser?.userGuilds.find(
+    const server = request.session.authUser?.manageableGuilds.find(
       (guild) => guild.id === serverId,
     );
     if (!server) {
@@ -63,7 +63,7 @@ router.get("/:id", requireAuth, async (request, response, next) => {
   if (typeof eventId !== "string") {
     return next(new HttpError(400, "Invalid event id"));
   }
-  const userGuilds = request.session.authUser?.userGuilds;
+  const userGuilds = request.session.authUser?.manageableGuilds;
   if (!userGuilds) {
     return next(
       new HttpError(404, "Import failed due to missing guild information"),

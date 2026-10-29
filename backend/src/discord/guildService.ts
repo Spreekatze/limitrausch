@@ -1,4 +1,4 @@
-import { DiscordGuild } from "@limitrausch/contracts";
+import { Guild } from "@limitrausch/contracts";
 import { client } from "./client.js";
 
 export interface GuildMemberInfo {
@@ -9,7 +9,7 @@ export interface GuildMemberInfo {
   isAdmin: boolean;
 }
 
-export async function getGuilds(): Promise<DiscordGuild[]> {
+export async function getGuilds(): Promise<Guild[]> {
   const guilds = await client.guilds.fetch();
   return guilds.map((guild) => ({
     id: guild.id,

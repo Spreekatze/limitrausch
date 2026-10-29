@@ -89,7 +89,7 @@ import Calendar from '@/components/Calendar.vue';
 import { useAuthStore } from '@/stores/auth-store';
 import { downloadWeeklyCalendarAsImage } from '../utils/calendar-export';
 import ListCalendar from '@/components/ListCalendar.vue';
-import { type DiscordGuild } from '@limitrausch/contracts';
+import { type UserGuild } from '@limitrausch/contracts';
 import { useRouter } from 'vue-router';
 import { getGuildIconUrl } from '@/utils/discordGuild';
 import { useNotify } from '@/composable/useNotify';
@@ -126,9 +126,9 @@ const monthlyWeeksDateArray = computed(() => generateMonthlyWeekArray());
 const displayedWeeks = computed(() => generateDisplayedWeekDates());
 
 const showCreateDialog = ref<boolean>(false);
-const guild = ref<DiscordGuild | null>(null);
-const userGuilds = authStore.user?.userGuilds ?? [];
-const filteredGuilds = ref<DiscordGuild[]>([...userGuilds]);
+const guild = ref<UserGuild | null>(null);
+const userGuilds = authStore.user?.manageableGuilds ?? [];
+const filteredGuilds = ref<UserGuild[]>([...userGuilds]);
 const router = useRouter();
 
 onMounted(() => {

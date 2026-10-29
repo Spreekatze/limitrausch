@@ -18,10 +18,10 @@ import {
   getEventFromRaidHelperById,
   getEventsFromRaidHelperByServer,
 } from "./raidHelperAPI.js";
-import { DiscordGuild, RaidHelperImportResponse } from "@limitrausch/contracts";
+import { RaidHelperImportResponse, UserGuild } from "@limitrausch/contracts";
 
 export async function importRaidHelperEventsFromGuild(
-  guild: DiscordGuild,
+  guild: UserGuild,
   fetchEvents = getEventsFromRaidHelperByServer,
 ): Promise<RaidHelperImportResponse> {
   let imported = 0;
@@ -81,7 +81,7 @@ export async function importRaidHelperEventsFromGuild(
 }
 
 export async function importRaidHelperEventById(
-  guilds: DiscordGuild[],
+  guilds: UserGuild[],
   eventId: string,
   fetchEvents = getEventFromRaidHelperById,
 ): Promise<RaidHelperImportResponse> {

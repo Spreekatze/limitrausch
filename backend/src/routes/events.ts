@@ -56,7 +56,7 @@ router.post(
       ...result.data,
     };
 
-    const guild = request.session.authUser?.userGuilds.find(
+    const guild = request.session.authUser?.manageableGuilds.find(
       (item) => item.id === event.discordServer?.id,
     );
 

@@ -1,9 +1,9 @@
-import { DiscordGuild } from "@limitrausch/contracts";
+import { GuildConfig, UserGuild } from "@limitrausch/contracts";
 import { pool } from "../database/databaseConnection.js";
 import { upsertDiscordServer } from "../database/discordServer.js";
 import { DatabaseGuildRow } from "../types/databaseRowSchema.js";
 
-export async function addDiscordServer(server: DiscordGuild) {
+export async function addDiscordServer(server: UserGuild) {
   const client = await pool.connect();
 
   try {
@@ -22,7 +22,7 @@ export async function addDiscordServer(server: DiscordGuild) {
 
 export async function getDiscordServer(
   serverId: string,
-): Promise<DiscordGuild | undefined> {
+): Promise<GuildConfig | undefined> {
   const result = await pool.query<DatabaseGuildRow>(
     `
     SELECT
