@@ -38,6 +38,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/calendar': RouteRecordInfo<
+      '/calendar',
+      '/calendar',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/createEvent': RouteRecordInfo<
       '/createEvent',
       '/createEvent',
@@ -59,9 +66,9 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/eventOverview': RouteRecordInfo<
-      '/eventOverview',
-      '/eventOverview',
+    '/guild': RouteRecordInfo<
+      '/guild',
+      '/guild',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -82,6 +89,14 @@ declare module 'vue-router/auto-routes' {
     'src/pages/index.vue': {
       routes:
         | '/'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/pages/calendar.vue': {
+      routes:
+        | '/calendar'
       views:
         | never
       pathParamNames:
@@ -111,9 +126,9 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
-    'src/pages/eventOverview.vue': {
+    'src/pages/guild.vue': {
       routes:
-        | '/eventOverview'
+        | '/guild'
       views:
         | never
       pathParamNames:

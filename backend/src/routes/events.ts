@@ -11,7 +11,7 @@ import {
   createEventSchema,
   updateEventSchema,
 } from "@limitrausch/contracts";
-import requireGuildManager from "../middleware/requireGuildManager.js";
+import requireEventManager from "../middleware/requireEventManager.js";
 import { HttpError } from "../errors/httpError.js";
 import raidhelperRoutes from "./raidhelper.js";
 
@@ -41,30 +41,34 @@ router.get("/", async (request, response) => {
 });
 
 // Create an event
-router.post("/new", requireGuildManager, async (request, response, next) => {
-  const result = createEventSchema.safeParse(request.body);
-  if (!result.success) {
-    return next(
-      new HttpError(400, "Invalid event data", {}, result.error.issues),
+router.post(
+  "/:guildId/new",
+  requireEventManager,
+  async (request, response, next) => {
+    const result = createEventSchema.safeParse(request.body);
+    if (!result.success) {
+      return next(
+        new HttpError(400, "Invalid event data", {}, result.error.issues),
+      );
+    }
+
+    const event: CreateEvent = {
+      ...result.data,
+    };
+
+    const guild = request.session.authUser?.manageableGuilds.find(
+      (item) => item.id === event.discordGuild?.id,
     );
-  }
 
-  const event: CreateEvent = {
-    ...result.data,
-  };
+    const createdEvent = await addEvent(event, guild);
 
-  const guild = request.session.authUser?.userGuilds.find(
-    (item) => item.id === event.discordServer?.id,
-  );
-
-  const createdEvent = await addEvent(event, guild);
-
-  // TODO: probably this should be a redirect
-  response.status(201).json({ postedEvents: [createdEvent] });
-});
+    // TODO: probably this should be a redirect
+    response.status(201).json({ postedEvents: [createdEvent] });
+  },
+);
 
 // Edit (Update) a single event by id
-router.patch("/:id", requireGuildManager, async (request, response, next) => {
+router.patch("/:id", requireEventManager, async (request, response, next) => {
   const id = Number(request.params.id);
   if (!Number.isSafeInteger(id) || id <= 0) {
     return next(new HttpError(400, "Invalid event id"));
@@ -92,7 +96,7 @@ router.patch("/:id", requireGuildManager, async (request, response, next) => {
 });
 
 // Delete a single event by id
-router.delete("/:id", requireGuildManager, async (request, response, next) => {
+router.delete("/:id", requireEventManager, async (request, response, next) => {
   const id = Number(request.params.id);
   if (!Number.isSafeInteger(id) || id <= 0) {
     return next(new HttpError(400, "Invalid event id"));

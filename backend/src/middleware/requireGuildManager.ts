@@ -1,7 +1,7 @@
 import type { RequestHandler } from "express";
-import { client } from "../discord/client.js";
 import { HttpError } from "../errors/httpError.js";
-import { getDiscordServerManagerRoles } from "../store/guildStore.js";
+import { authGuildSchema } from "../types/guildSchema.js";
+import { getValidDiscordAccessToken } from "../services/discordService.js";
 
 const requireGuildManager: RequestHandler = async (req, res, next) => {
   const authUser = req.session.authUser;
@@ -9,19 +9,24 @@ const requireGuildManager: RequestHandler = async (req, res, next) => {
     return next(new HttpError(401, "User is not logged in."));
   }
 
-  const guildId: unknown = req.params.id;
+  const accessToken = await getValidDiscordAccessToken(req);
+  if (!accessToken) {
+    throw new HttpError(401, "Discord authorization required.");
+  }
+
+  const guildId = req.params.guildId;
   if (typeof guildId !== "string" || !/^\d{17,20}$/.test(guildId)) {
     return next(new HttpError(400, "Invalid or missing guildId."));
   }
 
   try {
-    const isManager = await isGuildManager(authUser.id, guildId);
+    const isManager = await isGuildOwnerOrAdmin(accessToken, guildId);
 
     if (!isManager) {
       return next(
         new HttpError(
           403,
-          "User is not authorized to manage events on this server.",
+          "User is not authorized to manage the settings of this server.",
         ),
       );
     }
@@ -32,36 +37,37 @@ const requireGuildManager: RequestHandler = async (req, res, next) => {
   }
 };
 
-async function isGuildManager(
-  userId: string,
+async function isGuildOwnerOrAdmin(
+  accessToken: string,
   guildId: string,
 ): Promise<boolean> {
-  const allowedRoleIds = await getDiscordServerManagerRoles(guildId);
+  const response = await fetch("https://discord.com/api/users/@me/guilds", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 
-  if (allowedRoleIds.length === 0) {
+  if (!response.ok) {
+    throw new HttpError(502, "Discord OAuth user guild request failed.", {
+      upstreamStatus: response.status,
+    });
+  }
+
+  const userGuild = await response.json();
+  const discordUserGuildsResult = authGuildSchema.array().safeParse(userGuild);
+  if (!discordUserGuildsResult.success) {
+    throw new HttpError(502, "Discord returned invalid guild data.");
+  }
+
+  const guild = discordUserGuildsResult.data.find(
+    (entry) => entry.id === guildId,
+  );
+
+  if (!guild) {
     return false;
   }
 
-  const guild = await client.guilds.fetch(guildId);
-
-  let member;
-  try {
-    member = await guild.members.fetch(userId);
-  } catch (error: unknown) {
-    // Discord-Error 10007: Unknown Member
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "code" in error &&
-      error.code === 10007
-    ) {
-      return false;
-    }
-
-    throw error;
-  }
-
-  return allowedRoleIds.some((roleId) => member.roles.cache.has(roleId));
+  return guild.owner || guild.permissions.has("Administrator");
 }
 
 export default requireGuildManager;

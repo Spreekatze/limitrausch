@@ -1,5 +1,5 @@
 <template>
-  <q-card v-if="!guild"> Etwas lief schief. Der Discord Server wurde nicht gefunden. </q-card>
+  <q-card v-if="!guild"> Etwas lief schief. Der Discord Guild wurde nicht gefunden. </q-card>
   <q-card v-if="guild" class="creation-card">
     <q-card-section class="creation-card__header row items-center relative-position">
       <div class="absolute-center">Erstelle ein Event</div>
@@ -89,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import { createEvent } from '@/api/events';
+import { createEventOnGuild } from '@/api/events';
 import { useNotify } from '@/composable/useNotify';
 import { useSearchOptions } from '@/composable/useSearchOptions';
 import { EVENT_DIFFICULTY_LABELS, EVENT_TYPE_OPTIONS } from '@/constants/event-settings-labels';
@@ -112,7 +112,7 @@ const authStore = useAuthStore();
 const notify = useNotify();
 const { locale } = useI18n();
 const guild = computed(() =>
-  authStore.user?.userGuilds.find((guild) => guild.id === String(route.query.serverId)),
+  authStore.user?.manageableGuilds.find((guild) => guild.id === String(route.query.serverId)),
 );
 
 const date = ref<string>('');
@@ -256,30 +256,33 @@ function onTitleInput(value: string | number | null) {
 
 async function createEventFromForm() {
   try {
-    await createEvent({
-      creator: {
-        name: '',
-        id: authStore.user!.id,
+    await createEventOnGuild(
+      {
+        creator: {
+          name: '',
+          id: authStore.user!.id,
+        },
+        leader: leader.value,
+        coLeaders: coLeaders.value,
+        title: title.value,
+        description: description.value,
+        imageUrl: imageUrl.value,
+        startTime: toUnixTimes(date.value, startTime.value, endTime.value).startTime,
+        endTime: toUnixTimes(date.value, startTime.value, endTime.value).endTime,
+        eventType: type.value!,
+        eventDifficulty: difficulty.value,
+        eventGoal: goal.value,
+        isPublic: isPublic.value,
+        discordGuild: {
+          id: guild.value!.id,
+          name: guild.value!.name,
+          icon: guild.value!.icon ?? undefined,
+          textChannelId: channel.value?.id,
+          textChannelName: channel.value?.name,
+        },
       },
-      leader: leader.value,
-      coLeaders: coLeaders.value,
-      title: title.value,
-      description: description.value,
-      imageUrl: imageUrl.value,
-      startTime: toUnixTimes(date.value, startTime.value, endTime.value).startTime,
-      endTime: toUnixTimes(date.value, startTime.value, endTime.value).endTime,
-      eventType: type.value!,
-      eventDifficulty: difficulty.value,
-      eventGoal: goal.value,
-      isPublic: isPublic.value,
-      discordServer: {
-        id: guild.value!.id,
-        name: guild.value!.name,
-        icon: guild.value!.icon ?? undefined,
-        textChannelId: channel.value?.id,
-        textChannelName: channel.value?.name,
-      },
-    });
+      guild.value!.id,
+    );
   } catch (error) {
     notify.error(error instanceof Error ? error.message : String(error));
   }

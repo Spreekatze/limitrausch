@@ -31,11 +31,13 @@ export async function getEvents(date: Date): Promise<ApiEventsResponse> {
   return result.data;
 }
 
-export async function importRaidHelperEventsByServer(
-  serverId: string,
+export async function importRaidHelperEventsByGuild(
+  guildId: string,
 ): Promise<RaidHelperImportResponse> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
-  const response = await fetch(`${apiBaseUrl}/events/raid-helper/server/${serverId}`);
+  const response = await fetch(
+    `${apiBaseUrl}/events/raid-helper/server/${encodeURIComponent(guildId)}`,
+  );
 
   if (!response.ok) {
     let message = `Request failed (${response.status})`;
@@ -113,7 +115,7 @@ export async function importRaidHelperEventsByUser(): Promise<RaidHelperImportRe
 
 export async function importRaidHelperEvent(eventId: string): Promise<RaidHelperImportResponse> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
-  const response = await fetch(`${apiBaseUrl}/events/raid-helper/${eventId}`);
+  const response = await fetch(`${apiBaseUrl}/events/raid-helper/${encodeURIComponent(eventId)}`);
 
   if (!response.ok) {
     let message = `Request failed (${response.status})`;
@@ -150,9 +152,12 @@ export async function importRaidHelperEvent(eventId: string): Promise<RaidHelper
   return result.data;
 }
 
-export async function createEvent(event: CreateEvent): Promise<ApiEventsResponse> {
+export async function createEventOnGuild(
+  event: CreateEvent,
+  guildId: string,
+): Promise<ApiEventsResponse> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
-  const response = await fetch(`${apiBaseUrl}/events/new`, {
+  const response = await fetch(`${apiBaseUrl}/events/${encodeURIComponent(guildId)}/new`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -174,7 +179,7 @@ export async function createEvent(event: CreateEvent): Promise<ApiEventsResponse
 
 export async function getEventById(id: string): Promise<Event> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
-  const response = await fetch(`${apiBaseUrl}/events/${id}`);
+  const response = await fetch(`${apiBaseUrl}/events/${encodeURIComponent(id)}`);
 
   if (!response.ok) {
     const text = await response.text();

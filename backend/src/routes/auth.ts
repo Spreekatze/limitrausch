@@ -3,11 +3,13 @@ import crypto from "crypto";
 import {
   authStatusResponseSchema,
   authUserSchema,
-  discordGuildSchema,
   discordOAuthUserSchema,
 } from "@limitrausch/contracts";
-import { getGuilds } from "../discord/guildService.js";
 import { HttpError } from "../errors/httpError.js";
+import { mapGuildDataToUserGuild } from "../mapping/guildMapping.js";
+import { authGuildSchema } from "../types/guildSchema.js";
+import { getGuilds } from "../discordBot/guildService.js";
+import { discordTokenResponseSchema } from "../types/discordSchema.js";
 
 const router = express.Router();
 
@@ -65,12 +67,17 @@ router.get("/discord/callback", async (request, response, next) => {
       redirect_uri: process.env.DISCORD_REDIRECT_URI!,
     }),
   });
-  const tokenData = await tokenResponse.json();
   if (!tokenResponse.ok) {
     throw new HttpError(502, "Discord OAuth token request failed.", {
       upstreamStatus: tokenResponse.status,
     });
   }
+  const tokenResult = await tokenResponse.json();
+  const tokenParsed = discordTokenResponseSchema.safeParse(tokenResult);
+  if (!tokenParsed.success) {
+    throw new HttpError(502, "Discord returned an invalid token.");
+  }
+  const tokenData = tokenParsed.data;
 
   // Use the access token to fetch user information
   const userResponse = await fetch("https://discord.com/api/users/@me", {
@@ -78,12 +85,12 @@ router.get("/discord/callback", async (request, response, next) => {
       Authorization: `Bearer ${tokenData.access_token}`,
     },
   });
-  const discordUser = await userResponse.json();
   if (!userResponse.ok) {
     throw new HttpError(502, "Discord OAuth user request failed.", {
       upstreamStatus: userResponse.status,
     });
   }
+  const discordUser = await userResponse.json();
 
   const discordOAuthUserResult = discordOAuthUserSchema.safeParse(discordUser);
   if (!discordOAuthUserResult.success) {
@@ -106,7 +113,7 @@ router.get("/discord/callback", async (request, response, next) => {
       upstreamStatus: userGuildsResponse.status,
     });
   }
-  const discordUserGuildsResult = discordGuildSchema
+  const discordUserGuildsResult = authGuildSchema
     .array()
     .safeParse(discordUserGuilds);
   if (!discordUserGuildsResult.success) {
@@ -114,8 +121,11 @@ router.get("/discord/callback", async (request, response, next) => {
   }
   const botGuilds = await getGuilds();
   const botGuildIds = new Set(botGuilds.map((guild) => guild.id));
-  const sharedGuilds = discordUserGuildsResult.data.filter((guild) =>
-    botGuildIds.has(guild.id),
+
+  const manageableGuilds = await Promise.all(
+    discordUserGuildsResult.data.map((guild) =>
+      mapGuildDataToUserGuild(discordOAuthUser.id, guild, botGuildIds),
+    ),
   );
 
   // Check if the user is in the whitelist of admins
@@ -126,19 +136,24 @@ router.get("/discord/callback", async (request, response, next) => {
   const isAdmin = Boolean(whitelist?.includes(discordOAuthUser.id));
 
   //TODO: fetch preferences and get them in the session.authuser
-
   request.session.authUser = authUserSchema.parse({
     id: discordOAuthUser.id,
     username: discordOAuthUser.global_name,
     avatar: discordOAuthUser.avatar,
     isAdmin,
-    userGuilds: sharedGuilds,
+    manageableGuilds,
   });
 
   const frontendUrl = process.env.FRONTEND_URL;
   if (!frontendUrl) {
     throw new HttpError(500, "Frontend URL is not configured.");
   }
+
+  // Save access token
+  request.session.discordAccessToken = tokenData.access_token;
+  request.session.discordRefreshToken = tokenData.refresh_token;
+  request.session.discordTokenExpiresAt =
+    Date.now() + tokenData.expires_in * 1000;
 
   request.session.save((error) => {
     if (error) {

@@ -60,7 +60,7 @@
                 <q-card-actions>
                   <q-icon
                     class="server-icon"
-                    :name="`${getGuildIconUrl(event.discordServer?.id, event.discordServer?.icon)}`"
+                    :name="`${getGuildIconUrl(event.discordGuild?.id, event.discordGuild?.icon)}`"
                   />
                   <div><q-icon name="schedule" /> {{ formatEventTime(event.startTime) }}</div>
                 </q-card-actions>
@@ -107,7 +107,7 @@ import {
   getEventTitle,
   isCurrentMonth,
   isToday,
-} from '../utils/calendar';
+} from '../../utils/calendar';
 import CalendarHover from './CalendarHover.vue';
 import { getGuildIconUrl } from '@/utils/discordGuild';
 import { useRouter } from 'vue-router';

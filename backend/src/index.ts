@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import express from "express";
 import session from "express-session";
 import eventRoutes from "./routes/events.js";
+import guildRoutes from "./routes/guild.js";
 import statusRoutes from "./routes/status.js";
 import authRoutes from "./routes/auth.js";
 import webHookRoutes from "./routes/webhooks.js";
@@ -12,7 +13,7 @@ import { renderRouteRows } from "./views/route-list.js";
 import { testDatabaseConnection } from "./database/databaseConnection.js";
 import errorHandler from "./errors/errorHandler.js";
 import requestLogger from "./middleware/requestLogger.js";
-import { connectDiscord } from "./discord/client.js";
+import { connectDiscord } from "./discordBot/client.js";
 
 // Initialize Express app and configure environment variables
 const app = express();
@@ -66,6 +67,7 @@ app.get("/", (request, response) => {
 app.use("/status", statusRoutes);
 app.use("/auth", authRoutes);
 app.use("/events", eventRoutes);
+app.use("/guild", guildRoutes);
 app.use("/webhooks", webHookRoutes);
 
 // Handle errors

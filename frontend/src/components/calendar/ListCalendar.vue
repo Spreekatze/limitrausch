@@ -32,9 +32,9 @@
                 <q-item-label class="event__guild">
                   <q-icon
                     class="server-icon"
-                    :name="`${getGuildIconUrl(event.discordServer?.id, event.discordServer?.icon)}`"
+                    :name="`${getGuildIconUrl(event.discordGuild?.id, event.discordGuild?.icon)}`"
                   />
-                  {{ event.discordServer?.name }}
+                  {{ event.discordGuild?.name }}
                 </q-item-label>
               </q-item-section>
             </q-item>

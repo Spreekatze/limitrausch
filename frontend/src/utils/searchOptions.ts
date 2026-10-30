@@ -17,9 +17,9 @@ export function filterOptions<T extends SearchOption>(
     const search = input.toLowerCase().trim();
 
     filteredOptions.value = options.filter((option) => {
-      const labels: string[] = [option.label.de, option.label.en];
+      const label: string[] = option.label;
       const aliases: string[] = [...(option.aliases?.de ?? []), ...(option.aliases.en ?? [])];
-      return [...labels, ...aliases].some((text) => text.toLowerCase().includes(search));
+      return [...label, ...aliases].some((text) => text.toLowerCase().includes(search));
     });
   });
 }

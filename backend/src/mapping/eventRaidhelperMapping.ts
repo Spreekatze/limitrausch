@@ -1,5 +1,4 @@
 import {
-  DiscordGuild,
   CreateEvent,
   EVENT_TYPE,
   STATUS_TYPE,
@@ -7,6 +6,7 @@ import {
   StatusType,
   statusTypeSchema,
   CreateSignUp,
+  UserGuild,
 } from "@limitrausch/contracts";
 import { jobsByRaidHelperName } from "../services/jobService.js";
 import {
@@ -17,7 +17,7 @@ import {
 
 export function mapRaidHelperGeneralEventDataToEvent(
   raidhelperEvent: RaidHelperEvent,
-  server: DiscordGuild,
+  server: UserGuild,
 ): CreateEvent {
   const event: CreateEvent = {
     creator: raidhelperEvent.creator,
@@ -29,7 +29,7 @@ export function mapRaidHelperGeneralEventDataToEvent(
     startTime: raidhelperEvent.startTime,
     endTime: raidhelperEvent.endTime,
     eventType: EVENT_TYPE.UNDEFINED,
-    discordServer: {
+    discordGuild: {
       id: server.id,
       name: server.name,
       icon: server.icon ?? undefined,
@@ -108,7 +108,7 @@ export function mapRaidHelperDetailledEventDataToEvent(
     startTime: raidhelperEvent.startTime,
     endTime: raidhelperEvent.endTime,
     eventType: EVENT_TYPE.UNDEFINED,
-    discordServer: {
+    discordGuild: {
       id: raidhelperEvent.serverId,
       textChannelId: raidhelperEvent.channelId,
       textChannelName: raidhelperEvent.channelName,

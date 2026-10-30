@@ -70,7 +70,7 @@ export const eventSchema = z.object({
   isPublic: z.boolean(),
   signUpCount: z.number().optional(),
   signUps: z.array(eventSignUpSchema).optional(),
-  discordServer: eventDiscordDataSchema.optional(),
+  discordGuild: eventDiscordDataSchema.optional(),
 });
 export type Event = z.infer<typeof eventSchema>;
 
