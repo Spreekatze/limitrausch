@@ -44,7 +44,7 @@
       <GuildSelect
         v-model="guild"
         :guilds="authStore.user?.manageableGuilds ?? []"
-        label="Server auswählen/eingeben"
+        placeholder="Server auswählen/eingeben"
         @update:model-value="onGuildSelected"
       />
     </q-card>

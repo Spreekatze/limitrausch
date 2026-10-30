@@ -1,9 +1,13 @@
-import { DiscordGuild } from "@limitrausch/contracts";
+import { UserGuild } from "@limitrausch/contracts";
 import type { RaidHelperEvent } from "../../types/raidhelperSchema.js";
 
-export const validServer: DiscordGuild = {
+export const validServer: UserGuild = {
   id: "1408172814879559721",
   name: "Ætheris DE",
+  icon: null,
+  botIsPresent: false,
+  hasEventManagingRights: false,
+  isAdminOrOwner: false,
 };
 
 export const createRaidHelperEvents = (): RaidHelperEvent[] => [
