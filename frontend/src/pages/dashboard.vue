@@ -20,7 +20,7 @@
 
     <div v-if="authStore.loggedIn && !authStore.isAdmin" class="column align-center text-center">
       <p>Hier stehen später spannende Dinge für dich!</p>
-      <q-btn label="Server-Konfigurationen" to="/guild"></q-btn>
+      <q-btn v-if="hasAdminRightsSomewhere" label="Server-Konfigurationen" to="/guild"></q-btn>
     </div>
     <div v-else-if="authStore.loggedIn && authStore.isAdmin">
       <p>Spannende Dinge für die Admins sind grad auskommentiert</p>
@@ -50,8 +50,17 @@
 // import { type RaidHelperImportResponse } from '@limitrausch/contracts';
 // import { ref } from 'vue';
 import { useAuthStore } from '@/stores/auth-store';
+import { computed } from 'vue';
 
 const authStore = useAuthStore();
+const hasAdminRightsSomewhere = computed(
+  () => authStore.user?.manageableGuilds.some((guild) => guild.isAdminOrOwner) ?? false,
+);
+
+// const hasEventManagingRightsSomewhere = computed(
+//   () => authStore.user?.manageableGuilds.some((guild) => guild.hasEventManagingRights) ?? false,
+// );
+
 // const notify = useNotify();
 // const importMessage = ref<RaidHelperImportResponse | null>(null);
 

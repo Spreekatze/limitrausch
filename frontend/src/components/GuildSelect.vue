@@ -1,14 +1,15 @@
 <template>
   <q-select
     :model-value="modelValue"
-    :label="label"
+    :placeholder="modelValue ? undefined : placeholder"
     :options="filteredGuilds"
     option-label="name"
     option-value="id"
     outlined
     use-input
+    clearable
     @filter="filterGuilds"
-    @update:model-value="emit('update:modelValue', $event)"
+    @update:model-value="onGuildSelected"
   >
     <template #option="scope">
       <q-item v-bind="scope.itemProps">
@@ -30,6 +31,13 @@
       </q-item-section>
       <q-item-section>{{ scope.opt.name }}</q-item-section>
     </template>
+    <template #no-option>
+      <q-item>
+        <q-item-section class="text-grey text-center">
+          {{ search ? 'Keine passende Gilde gefunden.' : 'Keine Gilden verfügbar.' }}
+        </q-item-section>
+      </q-item>
+    </template>
   </q-select>
 </template>
 
@@ -42,10 +50,10 @@ const props = withDefaults(
   defineProps<{
     modelValue: UserGuild | null;
     guilds: UserGuild[];
-    label?: string;
+    placeholder?: string;
   }>(),
   {
-    label: 'Server auswählen',
+    placeholder: 'Server auswählen',
   },
 );
 
@@ -65,6 +73,20 @@ const filteredGuilds = computed(() => {
 function filterGuilds(value: string, update: (callback: () => void) => void) {
   update(() => {
     search.value = value;
+  });
+}
+
+function onGuildSelected(guild: UserGuild | null) {
+  emit('update:modelValue', guild);
+  search.value = '';
+
+  // Suchfeld nach Auswahl verlassen
+  requestAnimationFrame(() => {
+    const input = document.activeElement;
+
+    if (input instanceof HTMLElement) {
+      input.blur();
+    }
   });
 }
 </script>

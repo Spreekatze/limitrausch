@@ -1,51 +1,108 @@
 <template>
-  <q-card class="server-configuration-card">
-    <q-card-section> Serverkonfiguration </q-card-section>
-    <q-card-section>
+  <q-card class="guild-configuration-card">
+    <q-card-section class="titel"> Serverkonfiguration </q-card-section>
+    <q-card-section class="guild-select">
       <GuildSelect
         v-model="guild"
-        :guilds="authStore.user?.manageableGuilds ?? []"
-        label="Server auswählen"
+        :guilds="
+          authStore.user?.manageableGuilds.filter((guild) => guild.isAdminOrOwner === true) ?? []
+        "
+        placeholder="Server auswählen"
       />
     </q-card-section>
-    <q-card-section>
-      <q-select
-        v-model="roleIDsBannedFromParticipating"
-        :options="roles"
-        label="Von der Teilnahme ausgeschlossene Rollen"
-        option-label="name"
-        option-value="id"
-        emit-value
-        map-options
-        multiple
-        use-input
-        use-chips
-        clearable
+    <q-card-section class="config">
+      <q-table
+        class="role-table"
+        row-key="id"
+        flat
+        dense
+        bordered
+        title="Rollenberechtigungen"
         :loading="loading"
-        :disable="!guild || loading"
-      />
+        :rows="roles"
+        :columns="roleColumns"
+        :filter="roleFilter"
+        no-data-label="Gilde nicht gewählt oder deiner Gilde fehlt der Discord-Bot."
+        no-results-label="Dem Filter entspricht keine Rolle."
+        virtual-scroll
+        :rows-per-page-options="[0]"
+      >
+        <template #top-right>
+          <q-input
+            v-model="roleFilter"
+            placeholder="Rollen filtern"
+            outlined
+            dense
+            clearable
+            debounce="300"
+          >
+            <template #append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
 
-      <q-select
-        v-model="roleIDsAllowedToManageEvents"
-        :options="roles"
-        label="Rollen mit Eventverwaltungsrechten"
-        option-label="name"
-        option-value="id"
-        emit-value
-        map-options
-        multiple
-        use-input
-        use-chips
-        clearable
-        :loading="loading"
-        :disable="!guild || loading"
-      />
+        <template #header-cell="props">
+          <q-th :props="props">
+            <div
+              class="row items-center no-wrap"
+              :class="props.col.align === 'center' ? 'justify-center' : ''"
+            >
+              {{ props.col.label }}
+
+              <q-icon
+                v-if="columnTooltips[props.col.name]"
+                name="info"
+                size="16px"
+                class="q-ml-xs cursor-help text-grey-7"
+              >
+                <q-tooltip>
+                  {{ columnTooltips[props.col.name] }}
+                </q-tooltip>
+              </q-icon>
+            </div>
+          </q-th>
+        </template>
+
+        <template #body-cell-allowed="props">
+          <q-td :props="props" class="text-center">
+            <q-checkbox
+              :model-value="roleIDsAllowedToManageEvents.includes(props.row.id)"
+              :disable="!guild || loading || isSaving"
+              @update:model-value="(checked) => setRolePermission(props.row.id, 'allowed', checked)"
+            />
+          </q-td>
+        </template>
+
+        <template #body-cell-banned="props">
+          <q-td :props="props" class="text-center">
+            <q-checkbox
+              :model-value="roleIDsBannedFromParticipating.includes(props.row.id)"
+              :disable="!guild || loading || isSaving"
+              @update:model-value="(checked) => setRolePermission(props.row.id, 'banned', checked)"
+            />
+          </q-td>
+        </template>
+
+        <template #no-data="{ icon, message, filter }">
+          <div class="full-width row flex-center q-gutter-sm text-grey-7">
+            <q-icon size="2em" name="sentiment_dissatisfied" />
+            <span> Ohje... {{ message }} </span>
+            <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
+          </div>
+        </template>
+
+        <template #loading>
+          <q-inner-loading showing color="primary" />
+        </template>
+      </q-table>
 
       <q-btn
         label="Speichern"
         :loading="isSaving"
-        :disable="isSaving || !guild"
+        :disable="isSaving || !guild || loading"
         @click="saveConfig"
+        class="q-mt-md"
       />
     </q-card-section>
   </q-card>
@@ -58,6 +115,7 @@ import GuildSelect from '@/components/GuildSelect.vue';
 import { getGuildConfigById, saveGuildConfig } from '@/api/guild';
 import { useAuthStore } from '@/stores/auth-store';
 import { useNotify } from '@/composable/useNotify';
+import type { QTableColumn } from 'quasar';
 
 const authStore = useAuthStore();
 const notify = useNotify();
@@ -66,6 +124,8 @@ const guild = ref<UserGuild | null>(null);
 const roles = ref<DiscordRoleOption[]>([]);
 const roleIDsBannedFromParticipating = ref<string[]>([]);
 const roleIDsAllowedToManageEvents = ref<string[]>([]);
+const roleFilter = ref('');
+
 const loading = ref(false);
 const isSaving = ref(false);
 
@@ -107,6 +167,68 @@ watch(
     }
   },
 );
+
+const roleColumns: QTableColumn[] = [
+  {
+    name: 'name',
+    label: 'Rolle',
+    field: 'name',
+    align: 'left',
+    sortable: true,
+    headerStyle: 'width: 70%',
+  },
+  {
+    name: 'allowed',
+    label: 'Event-Manager',
+    field: 'id',
+    align: 'center',
+    headerStyle: 'width: 15%',
+  },
+  {
+    name: 'banned',
+    label: 'Teilnahme-Verbot',
+    field: 'id',
+    align: 'center',
+    headerStyle: 'width: 15%',
+  },
+];
+const columnTooltips: Record<string, string> = {
+  allowed: 'Mitglieder mit dieser Rolle dürfen Events verwalten.',
+  banned: 'Mitglieder mit dieser Rolle dürfen nicht an Events teilnehmen.',
+};
+
+type RolePermission = 'allowed' | 'banned';
+function setRolePermission(roleId: string, permission: RolePermission, checked: boolean): void {
+  if (permission === 'allowed') {
+    if (checked) {
+      if (!roleIDsAllowedToManageEvents.value.includes(roleId)) {
+        roleIDsAllowedToManageEvents.value = [...roleIDsAllowedToManageEvents.value, roleId];
+      }
+
+      roleIDsBannedFromParticipating.value = roleIDsBannedFromParticipating.value.filter(
+        (id) => id !== roleId,
+      );
+    } else {
+      roleIDsAllowedToManageEvents.value = roleIDsAllowedToManageEvents.value.filter(
+        (id) => id !== roleId,
+      );
+    }
+  } else {
+    if (checked) {
+      if (!roleIDsBannedFromParticipating.value.includes(roleId)) {
+        roleIDsBannedFromParticipating.value = [...roleIDsBannedFromParticipating.value, roleId];
+      }
+
+      roleIDsAllowedToManageEvents.value = roleIDsAllowedToManageEvents.value.filter(
+        (id) => id !== roleId,
+      );
+    } else {
+      roleIDsBannedFromParticipating.value = roleIDsBannedFromParticipating.value.filter(
+        (id) => id !== roleId,
+      );
+    }
+  }
+}
 
 async function saveConfig(): Promise<void> {
   if (!guild.value || isSaving.value) return;
