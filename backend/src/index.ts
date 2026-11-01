@@ -28,6 +28,9 @@ const backendPageTemplate = await readFile(
   "utf8",
 );
 
+// Middleware to log incoming requests before parsing or session handling can fail
+app.use(requestLogger);
+
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
@@ -44,9 +47,6 @@ app.use(
     },
   }),
 );
-
-// Middleware to log incoming requests
-app.use(requestLogger);
 
 // Serve static assets from the "views/assets" directory
 app.use(

@@ -95,6 +95,7 @@ import { useSearchOptions } from '@/composable/useSearchOptions';
 import { EVENT_DIFFICULTY_LABELS, EVENT_TYPE_OPTIONS } from '@/constants/event-settings-labels';
 import { GAME_CONTENT } from '@/constants/game-content';
 import { useAuthStore } from '@/stores/auth-store';
+import { getUserErrorMessage } from '@/utils/error-messages';
 import { getGuildIconUrl } from '@/utils/discordGuild';
 import { createLocalizedSearchFields } from '@/utils/searchOptions';
 import {
@@ -292,7 +293,7 @@ async function createEventFromForm() {
     );
     await router.push({ name: '/event-list', query: { serverId: guildData.id } });
   } catch (error) {
-    notify.error(error instanceof Error ? error.message : String(error));
+    notify.error(getUserErrorMessage(error));
   }
 }
 </script>

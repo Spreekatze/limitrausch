@@ -55,35 +55,12 @@ export async function importRaidHelperEventsByGuild(
   );
 
   if (!response.ok) {
-    let message = `Request failed (${response.status})`;
-
-    try {
-      const body: unknown = await response.json();
-
-      if (
-        typeof body === 'object' &&
-        body !== null &&
-        'message' in body &&
-        typeof body.message === 'string'
-      ) {
-        message = body.message;
-      } else if (
-        typeof body === 'object' &&
-        body !== null &&
-        'error' in body &&
-        typeof body.error === 'string'
-      ) {
-        message = body.error;
-      }
-    } catch {
-      // Response wasnt valid JSON
-    }
-    throw new Error(message || `Import failed: ${response.status}`);
+    await handleApiError(response);
   }
 
   const result = raidHelperImportResponseSchema.safeParse(await response.json());
   if (!result.success) {
-    throw new Error('The import API call returned an unexpected response format.');
+    throw new ApiError('INVALID_API_RESPONSE', 502);
   }
 
   return result.data;
@@ -94,35 +71,12 @@ export async function importRaidHelperEventsByUser(): Promise<RaidHelperImportRe
   const response = await fetch(`${apiBaseUrl}/events/raid-helper/user`);
 
   if (!response.ok) {
-    let message = `Request failed (${response.status})`;
-
-    try {
-      const body: unknown = await response.json();
-
-      if (
-        typeof body === 'object' &&
-        body !== null &&
-        'message' in body &&
-        typeof body.message === 'string'
-      ) {
-        message = body.message;
-      } else if (
-        typeof body === 'object' &&
-        body !== null &&
-        'error' in body &&
-        typeof body.error === 'string'
-      ) {
-        message = body.error;
-      }
-    } catch {
-      // Response wasnt valid JSON
-    }
-    throw new Error(message || `Import failed: ${response.status}`);
+    await handleApiError(response);
   }
 
   const result = raidHelperImportResponseSchema.safeParse(await response.json());
   if (!result.success) {
-    throw new Error('The import API call returned an unexpected response format.');
+    throw new ApiError('INVALID_API_RESPONSE', 502);
   }
 
   return result.data;
@@ -133,35 +87,12 @@ export async function importRaidHelperEvent(eventId: string): Promise<RaidHelper
   const response = await fetch(`${apiBaseUrl}/events/raid-helper/${encodeURIComponent(eventId)}`);
 
   if (!response.ok) {
-    let message = `Request failed (${response.status})`;
-
-    try {
-      const body: unknown = await response.json();
-
-      if (
-        typeof body === 'object' &&
-        body !== null &&
-        'message' in body &&
-        typeof body.message === 'string'
-      ) {
-        message = body.message;
-      } else if (
-        typeof body === 'object' &&
-        body !== null &&
-        'error' in body &&
-        typeof body.error === 'string'
-      ) {
-        message = body.error;
-      }
-    } catch {
-      // Response wasnt valid JSON
-    }
-    throw new Error(message || `Import failed: ${response.status}`);
+    await handleApiError(response);
   }
 
   const result = raidHelperImportResponseSchema.safeParse(await response.json());
   if (!result.success) {
-    throw new Error('The import API call returned an unexpected response format.');
+    throw new ApiError('INVALID_API_RESPONSE', 502);
   }
 
   return result.data;
@@ -180,13 +111,12 @@ export async function createEventOnGuild(
     body: JSON.stringify(event),
   });
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`API failed: ${response.status} ${text}`);
+    await handleApiError(response);
   }
 
   const result = eventsResponseSchema.safeParse(await response.json());
   if (!result.success) {
-    throw new Error(result.error.message);
+    throw new ApiError('INVALID_API_RESPONSE', 502);
   }
 
   return result.data;
@@ -197,13 +127,12 @@ export async function getEventById(eventId: string): Promise<Event> {
   const response = await fetch(`${apiBaseUrl}/events/${encodeURIComponent(eventId)}`);
 
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`API failed: ${response.status} ${text}`);
+    await handleApiError(response);
   }
 
   const result = eventSchema.safeParse(await response.json());
   if (!result.success) {
-    throw new Error('The events API returned an unexpected response format.');
+    throw new ApiError('INVALID_API_RESPONSE', 502);
   }
 
   return result.data;
@@ -214,9 +143,7 @@ export async function deleteEventById(eventId: number) {
   const response = await fetch(`${apiBaseUrl}/events/${encodeURIComponent(eventId)}`, {
     method: 'DELETE',
   });
-
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`API failed: ${response.status} ${text}`);
+    await handleApiError(response);
   }
 }

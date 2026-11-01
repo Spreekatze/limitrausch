@@ -116,6 +116,7 @@ import GuildSelect from '@/components/GuildSelect.vue';
 import { getGuildConfigById, saveGuildConfig } from '@/api/guild';
 import { useAuthStore } from '@/stores/auth-store';
 import { useNotify } from '@/composable/useNotify';
+import { getUserErrorMessage } from '@/utils/error-messages';
 import type { QTableColumn } from 'quasar';
 
 const authStore = useAuthStore();
@@ -159,7 +160,7 @@ watch(
       roleIDsAllowedToManageEvents.value = response.guildConfig?.roleIDsAllowedToManageEvents ?? [];
     } catch (error) {
       if (!cancelled) {
-        notify.error(error instanceof Error ? error.message : String(error));
+        notify.error(getUserErrorMessage(error));
       }
     } finally {
       if (!cancelled) {
@@ -247,7 +248,7 @@ async function saveConfig(): Promise<void> {
 
     notify.success('Konfiguration erfolgreich gespeichert.');
   } catch (error: unknown) {
-    notify.error(error instanceof Error ? error.message : String(error));
+    notify.error(getUserErrorMessage(error));
   } finally {
     isSaving.value = false;
   }

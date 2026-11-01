@@ -62,6 +62,7 @@ import { downloadWeeklyCalendarAsImage } from '../utils/calendar-export';
 import ListCalendar from '@/components/calendar/ListCalendar.vue';
 import { useRouter } from 'vue-router';
 import { useNotify } from '@/composable/useNotify';
+import { getUserErrorMessage } from '@/utils/error-messages';
 import GuildSelect from '@/components/GuildSelect.vue';
 
 definePage({
@@ -110,7 +111,7 @@ onMounted(() => {
       events.value = response.postedEvents;
     })
     .catch((error: unknown) => {
-      notify.error(error instanceof Error ? error.message : String(error));
+      notify.error(getUserErrorMessage(error));
     });
 });
 

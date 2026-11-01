@@ -1,5 +1,16 @@
 import type { ErrorRequestHandler } from "express";
+import { API_ERROR_CODES, apiErrorCodeForStatus } from "@limitrausch/contracts";
 import { HttpError } from "./httpError.js";
+
+function isInvalidJsonError(
+  error: unknown,
+): error is Error & { type: "entity.parse.failed" } {
+  return (
+    error instanceof Error &&
+    "type" in error &&
+    error.type === "entity.parse.failed"
+  );
+}
 
 const errorHandler: ErrorRequestHandler = (error, request, response, next) => {
   if (response.headersSent) {
@@ -11,6 +22,17 @@ const errorHandler: ErrorRequestHandler = (error, request, response, next) => {
     method: request.method,
     path: request.path,
   };
+
+  if (isInvalidJsonError(error)) {
+    const status = 400;
+    request.log.warn({ ...context, status }, "Invalid JSON request body");
+    response.status(status).json({
+      error: {
+        code: apiErrorCodeForStatus(status),
+      },
+    });
+    return;
+  }
 
   if (error instanceof HttpError) {
     const logContext = {
@@ -26,14 +48,19 @@ const errorHandler: ErrorRequestHandler = (error, request, response, next) => {
     }
 
     response.status(error.status).json({
-      error: error.message,
-      ...(error.details === undefined ? {} : { details: error.details }),
+      error: {
+        code: error.code,
+      },
     });
     return;
   }
 
   request.log.error({ ...context, err: error }, "Unhandled request error");
-  response.status(500).json({ error: "Internal server error" });
+  response.status(500).json({
+    error: {
+      code: API_ERROR_CODES.INTERNAL_SERVER_ERROR,
+    },
+  });
 };
 
 export default errorHandler;

@@ -81,6 +81,7 @@
 <script setup lang="ts">
 import { getEventById } from '@/api/events';
 import { useNotify } from '@/composable/useNotify';
+import { getUserErrorMessage } from '@/utils/error-messages';
 import { getJobIcon } from '@/constants/job-icons';
 import { formatEventDay, formatEventTime, getEventTitle } from '@/utils/calendar';
 import { getGuildIconUrl } from '@/utils/discordGuild';
@@ -122,7 +123,7 @@ onMounted(async () => {
     event.value = await getEventById(String(route.query.id));
     loading.value = false;
   } catch (error) {
-    notify.error(error instanceof Error ? error.message : String(error));
+    notify.error(getUserErrorMessage(error));
   }
 });
 </script>

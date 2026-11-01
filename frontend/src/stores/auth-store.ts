@@ -1,5 +1,6 @@
 import { beginDiscordLogin, getLoginStatus, logout } from '@/api/auth';
 import { useNotify } from '@/composable/useNotify';
+import { getUserErrorMessage } from '@/utils/error-messages';
 import type { AuthUser } from '@limitrausch/contracts';
 import { defineStore, acceptHMRUpdate } from 'pinia';
 
@@ -30,7 +31,7 @@ export const useAuthStore = defineStore('auth', {
         this.user = response.loggedIn ? response.user : null;
       } catch (error: unknown) {
         console.error(error);
-        notify.error(error instanceof Error ? error.message : String(error));
+        notify.error(getUserErrorMessage(error));
         this.loggedIn = false;
         this.user = null;
         this.isAdmin = false;
@@ -66,7 +67,7 @@ export const useAuthStore = defineStore('auth', {
         this.isAdmin = false;
       } catch (error: unknown) {
         console.error(error);
-        notify.error(error instanceof Error ? error.message : String(error));
+        notify.error(getUserErrorMessage(error));
       } finally {
         this.loading = false;
       }
