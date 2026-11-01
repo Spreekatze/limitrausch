@@ -45,7 +45,7 @@
         <template #top-right>
           <q-input
             v-model="eventFilter"
-            placeholder="Rollen filtern"
+            placeholder="Events nach Titel filtern"
             outlined
             dense
             clearable
