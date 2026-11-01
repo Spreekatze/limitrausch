@@ -160,7 +160,7 @@ router.get("/discord/callback", async (request, response, next) => {
       next(error);
       return;
     }
-    response.redirect(`${frontendUrl}/#/dashboard`);
+    response.redirect(`${frontendUrl}/dashboard`);
   });
 });
 
