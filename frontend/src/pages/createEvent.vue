@@ -1,5 +1,5 @@
 <template>
-  <q-card v-if="!guild"> Etwas lief schief. Der Discord Guild wurde nicht gefunden. </q-card>
+  <q-card v-if="!guild"> Etwas lief schief. Der Discord Server wurde nicht gefunden. </q-card>
   <q-card v-if="guild" class="creation-card">
     <q-card-section class="creation-card__header row items-center relative-position">
       <div class="absolute-center">Erstelle ein Event</div>
@@ -105,9 +105,10 @@ import {
 } from '@limitrausch/contracts';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
+const router = useRouter();
 const authStore = useAuthStore();
 const notify = useNotify();
 const { locale } = useI18n();
@@ -255,6 +256,12 @@ function onTitleInput(value: string | number | null) {
 }
 
 async function createEventFromForm() {
+  const guildData = guild.value;
+  if (!guildData) {
+    notify.error('Discord Server konnte nicht gefunden werden.');
+    return;
+  }
+
   try {
     await createEventOnGuild(
       {
@@ -274,20 +281,22 @@ async function createEventFromForm() {
         eventGoal: goal.value,
         isPublic: isPublic.value,
         discordGuild: {
-          id: guild.value!.id,
-          name: guild.value!.name,
-          icon: guild.value!.icon ?? undefined,
+          id: guildData.id,
+          name: guildData.name,
+          icon: guildData.icon ?? undefined,
           textChannelId: channel.value?.id,
           textChannelName: channel.value?.name,
         },
       },
-      guild.value!.id,
+      guildData.id,
     );
+    await router.push({ name: '/event-list', query: { serverId: guildData.id } });
   } catch (error) {
     notify.error(error instanceof Error ? error.message : String(error));
   }
 }
 </script>
+
 <style lang="scss">
 .creation-card {
   margin: 5vh 2vw;

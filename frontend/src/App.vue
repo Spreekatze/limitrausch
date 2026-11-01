@@ -24,7 +24,6 @@ const notify = useNotify();
 
 onMounted(() => {
   authStore.initAuth().catch((error) => {
-    console.error('Failed to load authentication status:', error);
     notify.error(error instanceof Error ? error.message : String(error));
   });
 });

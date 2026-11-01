@@ -8,12 +8,17 @@ import {
   type EventType,
   type EventsResponse,
 } from '@limitrausch/contracts';
+import { ApiError, handleApiError } from './apiError';
 
 export type { Event, EventType };
 export type DiscordUser = EventDiscordUser;
 export type ApiEventsResponse = EventsResponse;
 
-export async function getEvents(date?: Date, guildId?: string): Promise<ApiEventsResponse> {
+export async function getEvents(
+  date?: Date,
+  guildId?: string,
+  signal?: AbortSignal,
+): Promise<ApiEventsResponse> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
   const params = new URLSearchParams({});
 
@@ -25,16 +30,17 @@ export async function getEvents(date?: Date, guildId?: string): Promise<ApiEvent
     params.set('guildId', guildId);
   }
 
-  const response = await fetch(`${apiBaseUrl}/events?${params}`);
+  const response = await fetch(`${apiBaseUrl}/events?${params}`, {
+    ...(signal ? { signal } : {}),
+  });
 
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`API failed: ${response.status} ${text}`);
+    await handleApiError(response);
   }
 
   const result = eventsResponseSchema.safeParse(await response.json());
   if (!result.success) {
-    throw new Error('The events API returned an unexpected response format.');
+    throw new ApiError('INVALID_API_RESPONSE', 502);
   }
 
   return result.data;
