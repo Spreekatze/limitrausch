@@ -1,4 +1,7 @@
 export default {
+  navigation: {
+    calendar: 'Event-Kalender',
+  },
   event: {
     signUpStatus: {
       Registered: 'Angemeldet',

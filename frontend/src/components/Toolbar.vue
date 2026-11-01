@@ -15,7 +15,7 @@
         icon="dashboard"
         to="/dashboard"
       />
-      <q-btn flat class="app-header__button" label="Kalender" icon="event" to="/calendar" />
+      <q-btn flat class="app-header__button" label="Kalender" icon="event" to="/kalender" />
 
       <!-- TODO: when you enable the below: remove login button from dashboard and enable beforeEach on Router -->
       <!-- <q-btn
@@ -46,7 +46,7 @@
               <q-item-section>Guides</q-item-section>
             </q-item> -->
             <q-item clickable to="/events">
-              <q-item-section>Eventkalender</q-item-section>
+              <q-item-section>{{ t('navigation.calendar') }}</q-item-section>
             </q-item>
           </q-list>
         </q-menu>
@@ -73,7 +73,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useI18n } from 'vue-i18n';
 
 const authStore = useAuthStore();
-const { locale } = useI18n();
+const { locale, t } = useI18n();
 
 const darkModeStorageKey = 'limitrausch-dark-mode';
 const darkMode = ref(localStorage.getItem(darkModeStorageKey) === 'false' ? false : true);

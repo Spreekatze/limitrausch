@@ -9,22 +9,27 @@
       icon="login"
       @click="authStore.loginUser"
     />
-    <q-btn
-      v-if="authStore.loggedIn && !authStore.loading"
-      flat
-      class="app-header__button"
-      label="Abmelden"
-      icon="logout"
-      @click="authStore.logoutCurrentUser"
-    />
 
-    <div v-if="authStore.loggedIn && !authStore.isAdmin" class="column align-center text-center">
+    <div v-if="authStore.loggedIn">
+      <q-btn
+        v-if="!authStore.loading"
+        flat
+        class="app-header__button"
+        label="Abmelden"
+        icon="logout"
+        @click="authStore.logoutCurrentUser"
+      />
       <p>Hier stehen später spannende Dinge für dich!</p>
-      <q-btn v-if="hasAdminRightsSomewhere" label="Server-Konfigurationen" to="/guild"></q-btn>
+      <template v-if="hasAdminRightsSomewhere">
+        <q-btn label="Server-Konfigurationen" to="/guild" style="width: 400px" />
+        <q-btn label="Import von Raidhelper" to="/import" style="width: 400px" />
+      </template>
+      <template v-if="hasEventManagingRightsSomewhere">
+        <q-btn label="Events bearbeiten" to="/event-list" style="width: 400px" />
+      </template>
     </div>
-    <div v-else-if="authStore.loggedIn && authStore.isAdmin">
-      <p>Spannende Dinge für die Admins sind grad auskommentiert</p>
-      <!-- <q-btn
+
+    <!-- <q-btn
         class="app-header__button"
         label="Import von Aetheris"
         icon="admin_panel_settings"
@@ -33,10 +38,6 @@
       <q-input outlined v-model="eventId" label="ID eines Raid-Helper Events" />
       <q-btn label="Import Event" @click="importRaidHelperEventById" />
       <q-btn label="Import Events eines Users" @click="importRaidHelperEventsByUser" /> -->
-    </div>
-    <div v-else>
-      <p>Aktuell nur für Admins nützlich.</p>
-    </div>
   </div>
 </template>
 
@@ -57,9 +58,9 @@ const hasAdminRightsSomewhere = computed(
   () => authStore.user?.manageableGuilds.some((guild) => guild.isAdminOrOwner) ?? false,
 );
 
-// const hasEventManagingRightsSomewhere = computed(
-//   () => authStore.user?.manageableGuilds.some((guild) => guild.hasEventManagingRights) ?? false,
-// );
+const hasEventManagingRightsSomewhere = computed(
+  () => authStore.user?.manageableGuilds.some((guild) => guild.hasEventManagingRights) ?? false,
+);
 
 // const notify = useNotify();
 // const importMessage = ref<RaidHelperImportResponse | null>(null);

@@ -36,7 +36,11 @@ router.get("/:id", async (request, response, next) => {
 
 // Get all events
 router.get("/", async (request, response) => {
-  const events = await getEvents();
+  const guildId = request.query.guildId
+    ? String(request.query.guildId)
+    : undefined;
+
+  const events = await getEvents(guildId);
   response.json({ postedEvents: events });
 });
 
@@ -68,45 +72,53 @@ router.post(
 );
 
 // Edit (Update) a single event by id
-router.patch("/:id", requireEventManager, async (request, response, next) => {
-  const id = Number(request.params.id);
-  if (!Number.isSafeInteger(id) || id <= 0) {
-    return next(new HttpError(400, "Invalid event id"));
-  }
+router.patch(
+  "/:eventId",
+  requireEventManager,
+  async (request, response, next) => {
+    const id = Number(request.params.eventId);
+    if (!Number.isSafeInteger(id) || id <= 0) {
+      return next(new HttpError(400, "Invalid event id"));
+    }
 
-  const result = updateEventSchema.safeParse({
-    ...request.body,
-  });
+    const result = updateEventSchema.safeParse({
+      ...request.body,
+    });
 
-  if (!result.success) {
-    return next(
-      new HttpError(400, "Invalid event data", {}, result.error.issues),
-    );
-  }
+    if (!result.success) {
+      return next(
+        new HttpError(400, "Invalid event data", {}, result.error.issues),
+      );
+    }
 
-  const updatedEvent = await updateEventById(id, {
-    ...result.data,
-  });
+    const updatedEvent = await updateEventById(id, {
+      ...result.data,
+    });
 
-  if (!updatedEvent) {
-    return next(new HttpError(404, "Event not found"));
-  }
+    if (!updatedEvent) {
+      return next(new HttpError(404, "Event not found"));
+    }
 
-  response.json(updatedEvent);
-});
+    response.json(updatedEvent);
+  },
+);
 
 // Delete a single event by id
-router.delete("/:id", requireEventManager, async (request, response, next) => {
-  const id = Number(request.params.id);
-  if (!Number.isSafeInteger(id) || id <= 0) {
-    return next(new HttpError(400, "Invalid event id"));
-  }
-  const deleted = await deleteEventById(id);
-  if (!deleted) {
-    return next(new HttpError(404, "Event not found"));
-  }
-  response.status(204).send();
-});
+router.delete(
+  "/:eventId",
+  requireEventManager,
+  async (request, response, next) => {
+    const id = Number(request.params.eventId);
+    if (!Number.isSafeInteger(id) || id <= 0) {
+      return next(new HttpError(400, "Invalid event id"));
+    }
+    const deleted = await deleteEventById(id);
+    if (!deleted) {
+      return next(new HttpError(404, "Event not found"));
+    }
+    response.status(204).send();
+  },
+);
 
 //TODO: delete by server id
 export default router;

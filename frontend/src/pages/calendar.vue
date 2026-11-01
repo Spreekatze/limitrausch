@@ -64,6 +64,11 @@ import { useRouter } from 'vue-router';
 import { useNotify } from '@/composable/useNotify';
 import GuildSelect from '@/components/GuildSelect.vue';
 
+definePage({
+  path: '/kalender',
+  alias: ['/calendar'],
+});
+
 const authStore = useAuthStore();
 const notify = useNotify();
 const isAdmin = computed(() => authStore.isAdmin);

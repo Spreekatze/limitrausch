@@ -1,5 +1,6 @@
 <template>
-  <div class="calendar-list">
+  <div v-if="eventsByDay.size === 0">Aktuell sind keine Events geplant.</div>
+  <div v-else class="calendar-list">
     <template v-for="(week, weekIndex) in displayedWeeks" :key="weekIndex">
       <template v-for="day in week" :key="day.toDateString()">
         <template v-if="eventsByDay.get(day.toDateString())?.length">

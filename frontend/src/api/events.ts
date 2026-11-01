@@ -13,10 +13,19 @@ export type { Event, EventType };
 export type DiscordUser = EventDiscordUser;
 export type ApiEventsResponse = EventsResponse;
 
-export async function getEvents(date: Date): Promise<ApiEventsResponse> {
+export async function getEvents(date?: Date, guildId?: string): Promise<ApiEventsResponse> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
-  const startTime = Math.floor(date.getTime() / 1000);
-  const response = await fetch(`${apiBaseUrl}/events?startTime=${startTime}`);
+  const params = new URLSearchParams({});
+
+  if (date) {
+    params.set('startTime', String(Math.floor(date.getTime() / 1000)));
+  }
+
+  if (guildId) {
+    params.set('guildId', guildId);
+  }
+
+  const response = await fetch(`${apiBaseUrl}/events?${params}`);
 
   if (!response.ok) {
     const text = await response.text();
@@ -177,9 +186,9 @@ export async function createEventOnGuild(
   return result.data;
 }
 
-export async function getEventById(id: string): Promise<Event> {
+export async function getEventById(eventId: string): Promise<Event> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
-  const response = await fetch(`${apiBaseUrl}/events/${encodeURIComponent(id)}`);
+  const response = await fetch(`${apiBaseUrl}/events/${encodeURIComponent(eventId)}`);
 
   if (!response.ok) {
     const text = await response.text();
@@ -192,4 +201,16 @@ export async function getEventById(id: string): Promise<Event> {
   }
 
   return result.data;
+}
+
+export async function deleteEventById(eventId: number) {
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+  const response = await fetch(`${apiBaseUrl}/events/${encodeURIComponent(eventId)}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`API failed: ${response.status} ${text}`);
+  }
 }

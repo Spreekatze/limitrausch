@@ -86,9 +86,10 @@
 
         <template #no-data="{ icon, message, filter }">
           <div class="full-width row flex-center q-gutter-sm text-grey-7">
-            <q-icon size="2em" name="sentiment_dissatisfied" />
-            <span> Ohje... {{ message }} </span>
-            <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
+            <q-spinner v-if="loading" size="2em" color="primary" />
+            <q-icon v-else size="2em" name="sentiment_dissatisfied" />
+            <span> {{ message }} </span>
+            <q-icon v-if="!loading" size="2em" :name="filter ? 'filter_b_and_w' : icon" />
           </div>
         </template>
 
