@@ -167,7 +167,7 @@ function onGuildSelected(selectedGuild: UserGuild | null) {
     return;
   }
   showCreateDialog.value = false;
-  void router.push({ name: '/createEvent', query: { serverId: selectedGuild.id } });
+  void router.push({ path: '/event/neu', query: { serverId: selectedGuild.id } });
 }
 </script>
 

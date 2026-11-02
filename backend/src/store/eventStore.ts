@@ -331,6 +331,7 @@ export async function updateEventById(
     if (hasField("startTime")) assign("startTime", update.startTime);
     if (hasField("endTime")) assign("endTime", update.endTime);
     if (hasField("eventType")) assign("eventType", update.eventType);
+    if (hasField("eventContent")) assign("eventContent", update.eventContent);
     if (hasField("eventDifficulty")) {
       assign("eventDifficulty", update.eventDifficulty);
     }

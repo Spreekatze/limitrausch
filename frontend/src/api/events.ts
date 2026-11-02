@@ -1,4 +1,4 @@
-import type { CreateEvent, RaidHelperImportResponse } from '@limitrausch/contracts';
+import type { CreateEvent, RaidHelperImportResponse, UpdateEvent } from '@limitrausch/contracts';
 import {
   eventSchema,
   eventsResponseSchema,
@@ -125,6 +125,28 @@ export async function createEventOnGuild(
 export async function getEventById(eventId: string): Promise<Event> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
   const response = await fetch(`${apiBaseUrl}/events/${encodeURIComponent(eventId)}`);
+
+  if (!response.ok) {
+    await handleApiError(response);
+  }
+
+  const result = eventSchema.safeParse(await response.json());
+  if (!result.success) {
+    throw new ApiError('INVALID_API_RESPONSE', 502);
+  }
+
+  return result.data;
+}
+
+export async function updateEventById(eventId: number, update: UpdateEvent): Promise<Event> {
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+  const response = await fetch(`${apiBaseUrl}/events/${encodeURIComponent(eventId)}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(update),
+  });
 
   if (!response.ok) {
     await handleApiError(response);

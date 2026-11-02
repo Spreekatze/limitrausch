@@ -1,112 +1,119 @@
 <template>
-  <q-card class="guild-configuration-card">
-    <q-card-section class="titel"> Serverkonfiguration </q-card-section>
-    <q-card-section class="guild-select">
-      <GuildSelect
-        v-model="guild"
-        :guilds="
-          authStore.user?.manageableGuilds.filter((guild) => guild.isAdminOrOwner === true) ?? []
-        "
-        placeholder="Server auswählen"
-      />
-    </q-card-section>
-    <q-card-section class="config">
-      <q-table
-        class="role-table"
-        row-key="id"
-        flat
-        dense
-        bordered
-        title="Rollenberechtigungen"
-        :loading="loading"
-        :rows="roles"
-        :columns="roleColumns"
-        :filter="roleFilter"
-        no-data-label="Gilde nicht gewählt oder deiner Gilde fehlt der Discord-Bot."
-        no-results-label="Dem Filter entspricht keine Rolle."
-        virtual-scroll
-        :rows-per-page-options="[0]"
-      >
-        <template #top-right>
-          <q-input
-            v-model="roleFilter"
-            placeholder="Rollen filtern"
-            outlined
-            dense
-            clearable
-            debounce="300"
-          >
-            <template #append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </template>
-
-        <template #header-cell="props">
-          <q-th :props="props">
-            <div
-              class="row items-center no-wrap"
-              :class="props.col.align === 'center' ? 'justify-center' : ''"
+  <div class="guild-management-page">
+    <q-btn flat icon="arrow_back" label="Zurück" class="page-back-button" @click="goBack" />
+    <q-card class="guild-configuration-card">
+      <q-card-section class="titel"> Serverkonfiguration </q-card-section>
+      <q-card-section class="guild-select">
+        <GuildSelect
+          v-model="guild"
+          :guilds="
+            authStore.user?.manageableGuilds.filter((guild) => guild.isAdminOrOwner === true) ?? []
+          "
+          placeholder="Server auswählen"
+        />
+      </q-card-section>
+      <q-card-section class="config">
+        <q-table
+          class="role-table"
+          row-key="id"
+          flat
+          dense
+          bordered
+          title="Rollenberechtigungen"
+          :loading="loading"
+          :rows="roles"
+          :columns="roleColumns"
+          :filter="roleFilter"
+          no-data-label="Gilde nicht gewählt oder deiner Gilde fehlt der Discord-Bot."
+          no-results-label="Dem Filter entspricht keine Rolle."
+          virtual-scroll
+          :rows-per-page-options="[0]"
+        >
+          <template #top-right>
+            <q-input
+              v-model="roleFilter"
+              placeholder="Rollen filtern"
+              outlined
+              dense
+              clearable
+              debounce="300"
             >
-              {{ props.col.label }}
+              <template #append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </template>
 
-              <q-icon
-                v-if="columnTooltips[props.col.name]"
-                name="info"
-                size="16px"
-                class="q-ml-xs cursor-help text-grey-7"
+          <template #header-cell="props">
+            <q-th :props="props">
+              <div
+                class="row items-center no-wrap"
+                :class="props.col.align === 'center' ? 'justify-center' : ''"
               >
-                <q-tooltip>
-                  {{ columnTooltips[props.col.name] }}
-                </q-tooltip>
-              </q-icon>
+                {{ props.col.label }}
+
+                <q-icon
+                  v-if="columnTooltips[props.col.name]"
+                  name="info"
+                  size="16px"
+                  class="q-ml-xs cursor-help text-grey-7"
+                >
+                  <q-tooltip>
+                    {{ columnTooltips[props.col.name] }}
+                  </q-tooltip>
+                </q-icon>
+              </div>
+            </q-th>
+          </template>
+
+          <template #body-cell-allowed="props">
+            <q-td :props="props" class="text-center">
+              <q-checkbox
+                :model-value="roleIDsAllowedToManageEvents.includes(props.row.id)"
+                :disable="!guild || loading || isSaving"
+                @update:model-value="
+                  (checked) => setRolePermission(props.row.id, 'allowed', checked)
+                "
+              />
+            </q-td>
+          </template>
+
+          <template #body-cell-banned="props">
+            <q-td :props="props" class="text-center">
+              <q-checkbox
+                :model-value="roleIDsBannedFromParticipating.includes(props.row.id)"
+                :disable="!guild || loading || isSaving"
+                @update:model-value="
+                  (checked) => setRolePermission(props.row.id, 'banned', checked)
+                "
+              />
+            </q-td>
+          </template>
+
+          <template #no-data="{ icon, message, filter }">
+            <div class="full-width row flex-center q-gutter-sm text-grey-7">
+              <q-spinner v-if="loading" size="2em" color="primary" />
+              <q-icon v-else size="2em" name="sentiment_dissatisfied" />
+              <span> {{ message }} </span>
+              <q-icon v-if="!loading" size="2em" :name="filter ? 'filter_b_and_w' : icon" />
             </div>
-          </q-th>
-        </template>
+          </template>
 
-        <template #body-cell-allowed="props">
-          <q-td :props="props" class="text-center">
-            <q-checkbox
-              :model-value="roleIDsAllowedToManageEvents.includes(props.row.id)"
-              :disable="!guild || loading || isSaving"
-              @update:model-value="(checked) => setRolePermission(props.row.id, 'allowed', checked)"
-            />
-          </q-td>
-        </template>
+          <template #loading>
+            <q-inner-loading showing color="primary" />
+          </template>
+        </q-table>
 
-        <template #body-cell-banned="props">
-          <q-td :props="props" class="text-center">
-            <q-checkbox
-              :model-value="roleIDsBannedFromParticipating.includes(props.row.id)"
-              :disable="!guild || loading || isSaving"
-              @update:model-value="(checked) => setRolePermission(props.row.id, 'banned', checked)"
-            />
-          </q-td>
-        </template>
-
-        <template #no-data="{ icon, message, filter }">
-          <div class="full-width row flex-center q-gutter-sm text-grey-7">
-            <q-spinner v-if="loading" size="2em" color="primary" />
-            <q-icon v-else size="2em" name="sentiment_dissatisfied" />
-            <span> {{ message }} </span>
-            <q-icon v-if="!loading" size="2em" :name="filter ? 'filter_b_and_w' : icon" />
-          </div>
-        </template>
-
-        <template #loading>
-          <q-inner-loading showing color="primary" />
-        </template>
-      </q-table>
-
-      <q-btn
-        label="Speichern"
-        :loading="isSaving"
-        :disable="isSaving || !guild || loading"
-        @click="saveConfig"
-        class="q-mt-md"
-      />
-    </q-card-section>
-  </q-card>
+        <q-btn
+          label="Speichern"
+          :loading="isSaving"
+          :disable="isSaving || !guild || loading"
+          @click="saveConfig"
+          class="q-mt-md"
+        />
+      </q-card-section>
+    </q-card>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -118,8 +125,10 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useNotify } from '@/composable/useNotify';
 import { getUserErrorMessage } from '@/utils/error-messages';
 import type { QTableColumn } from 'quasar';
+import { useRouter } from 'vue-router';
 
 const authStore = useAuthStore();
+const router = useRouter();
 const notify = useNotify();
 const guild = ref<UserGuild | null>(null);
 
@@ -130,6 +139,14 @@ const roleFilter = ref('');
 
 const loading = ref(false);
 const isSaving = ref(false);
+
+function goBack() {
+  if (window.history.state.back) {
+    router.back();
+  } else {
+    void router.push({ name: '/dashboard' });
+  }
+}
 
 watch(
   () => guild.value?.id,

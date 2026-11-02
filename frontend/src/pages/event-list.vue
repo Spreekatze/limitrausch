@@ -1,91 +1,99 @@
 <template>
-  <q-card class="event-list-card">
-    <q-card-section class="titel"> Event-Management </q-card-section>
-    <q-card-section class="guild-select row">
-      <GuildSelect
-        :model-value="selectedGuild"
-        @update:model-value="selectGuild"
-        :guilds="
-          authStore.user?.manageableGuilds.filter(
-            (guild) => guild.hasEventManagingRights === true,
-          ) ?? []
-        "
-        placeholder="Server auswählen"
-      />
-      <q-btn :disable="!selectedGuild" @click="createEvent">Event erstellen</q-btn>
-    </q-card-section>
-    <q-card-section v-if="selectedGuild" class="event-list">
-      <div v-if="loadError" class="text-negative q-pa-md">
-        <q-icon name="error_outline" class="q-mr-sm" />
-        Die Events konnten nicht geladen werden.
+  <div class="event-management-page">
+    <q-btn flat icon="arrow_back" label="Zurück" class="page-back-button" @click="goBack" />
+    <q-card class="event-list-card">
+      <q-card-section class="titel">
+        Event-Management
+        <q-icon name="info" size="16px" class="q-ml-xs cursor-help text-grey-7">
+          <q-tooltip> Discord-Bot von Limitrausch benötigt. </q-tooltip>
+        </q-icon>
+      </q-card-section>
+      <q-card-section class="guild-select row">
+        <GuildSelect
+          :model-value="selectedGuild"
+          @update:model-value="selectGuild"
+          :guilds="
+            authStore.user?.manageableGuilds.filter(
+              (guild) => guild.hasEventManagingRights === true,
+            ) ?? []
+          "
+          placeholder="Server auswählen"
+        />
+        <q-btn :disable="!selectedGuild" @click="createEvent">Event erstellen</q-btn>
+      </q-card-section>
+      <q-card-section v-if="selectedGuild" class="event-list">
+        <div v-if="loadError" class="text-negative q-pa-md">
+          <q-icon name="error_outline" class="q-mr-sm" />
+          Die Events konnten nicht geladen werden.
 
-        <div class="text-caption">{{ loadError }}</div>
+          <div class="text-caption">{{ loadError }}</div>
 
-        <q-btn flat dense color="primary" label="Erneut versuchen" @click="reloadEvents" />
-      </div>
-      <q-table
-        v-else
-        class="event-table"
-        row-key="id"
-        flat
-        dense
-        bordered
-        :loading="loading"
-        :rows="eventsByGuild"
-        :columns="columns"
-        :filter="eventFilter"
-        :pagination="{
-          sortBy: 'date',
-          descending: false,
-          rowsPerPage: 0,
-        }"
-        no-data-label="Für diesen Server wurden noch keine Events erstellt."
-        no-results-label="Kein Event für den Filter gefunden."
-      >
-        <template #top-right>
-          <q-input
-            v-model="eventFilter"
-            placeholder="Events nach Titel filtern"
-            outlined
-            dense
-            clearable
-            debounce="300"
-          >
-            <template #append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </template>
-
-        <template #body-cell-actions="props">
-          <q-td :props="props" class="text-right">
-            <q-btn
-              flat
-              round
+          <q-btn flat dense color="primary" label="Erneut versuchen" @click="reloadEvents" />
+        </div>
+        <q-table
+          v-else
+          class="event-table"
+          row-key="id"
+          flat
+          dense
+          bordered
+          :loading="loading"
+          :rows="eventsByGuild"
+          :columns="columns"
+          :filter="eventFilter"
+          :pagination="{
+            sortBy: 'date',
+            descending: false,
+            rowsPerPage: 0,
+          }"
+          no-data-label="Für diesen Server wurden noch keine Events erstellt."
+          no-results-label="Kein Event für den Filter gefunden."
+        >
+          <template #top-right>
+            <q-input
+              v-model="eventFilter"
+              placeholder="Events nach Titel filtern"
+              outlined
               dense
-              icon="edit"
-              color="primary"
-              @click.stop="editEvent(props.row.id)"
+              clearable
+              debounce="300"
             >
-              <q-tooltip>Bearbeiten</q-tooltip>
-            </q-btn>
+              <template #append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </template>
 
-            <q-btn
-              flat
-              round
-              dense
-              icon="delete"
-              color="negative"
-              :loading="deletingEventId === props.row.id"
-              @click.stop="confirmDelete(props.row)"
-            >
-              <q-tooltip>Löschen</q-tooltip>
-            </q-btn>
-          </q-td>
-        </template>
-      </q-table>
-    </q-card-section>
-  </q-card>
+          <template #body-cell-actions="props">
+            <q-td :props="props" class="text-right">
+              <q-btn
+                flat
+                round
+                dense
+                icon="edit"
+                color="primary"
+                @click.stop="editEvent(props.row.id)"
+              >
+                <q-tooltip>Bearbeiten</q-tooltip>
+              </q-btn>
+
+              <q-btn
+                flat
+                round
+                dense
+                icon="delete"
+                color="negative"
+                :loading="deletingEventId === props.row.id"
+                @click.stop="confirmDelete(props.row)"
+              >
+                <q-tooltip>Löschen</q-tooltip>
+              </q-btn>
+            </q-td>
+          </template>
+        </q-table>
+      </q-card-section>
+    </q-card>
+  </div>
   <q-dialog v-model="showDeleteDialog" persistent>
     <q-card>
       <q-card-section class="row items-center">
@@ -189,6 +197,14 @@ const columns = [
   },
 ];
 
+function goBack() {
+  if (window.history.state.back) {
+    router.back();
+  } else {
+    void router.push({ name: '/dashboard' });
+  }
+}
+
 function selectGuild(guild: UserGuild | null) {
   const query = { ...route.query };
 
@@ -281,11 +297,11 @@ function reloadEvents() {
 }
 
 function createEvent() {
-  void router.push({ name: '/createEvent', query: { serverId: selectedGuild.value?.id } });
+  void router.push({ path: '/event/neu', query: { serverId: selectedGuild.value?.id } });
 }
 
 function editEvent(id: number) {
-  void router.push(`/event/${id}/edit`);
+  void router.push({ path: '/event/bearbeiten', query: { eventId: String(id) } });
 }
 
 function confirmDelete(event: Event) {
@@ -315,3 +331,17 @@ async function deleteEvent(event: Event | undefined) {
   }
 }
 </script>
+
+<style scoped lang="scss">
+.event-management-page {
+  width: 90vw;
+  margin: 5vh auto;
+}
+
+.event-list-card {
+  margin: 0;
+  padding: 1vw 2vw;
+  width: 100%;
+  justify-self: center;
+}
+</style>
