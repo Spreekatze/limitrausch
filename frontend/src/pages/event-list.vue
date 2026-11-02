@@ -48,6 +48,7 @@
           }"
           no-data-label="Für diesen Server wurden noch keine Events erstellt."
           no-results-label="Kein Event für den Filter gefunden."
+          @row-click="openEvent"
         >
           <template #top-right>
             <q-input
@@ -298,6 +299,10 @@ function reloadEvents() {
 
 function createEvent() {
   void router.push({ path: '/event/neu', query: { serverId: selectedGuild.value?.id } });
+}
+
+function openEvent(_event: globalThis.Event, event: Event) {
+  void router.push({ name: '/event', query: { id: String(event.id) } });
 }
 
 function editEvent(id: number) {

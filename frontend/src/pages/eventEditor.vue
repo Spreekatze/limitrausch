@@ -98,18 +98,21 @@
             />
           </div>
 
+          <div class="creation-form__leader row">
+            <!-- TODO: leader -->
+            <!-- TODO: Coleaders -->
+          </div>
+          <div class="creation-form__channel row"></div>
           <q-input :model-value="title" label="Titel" filled @update:model-value="onTitleInput" />
           <q-input v-model.lazy="description" label="Beschreibung" type="textarea" filled />
-          <!-- TODO: leader -->
-          <!-- TODO: Coleaders -->
           <!-- TODO: Image -->
           <!-- TODO: isPublic -->
+          <q-btn v-if="!isEditMode" label="Formular zurücksetzen" @click="resetForm" />
           <q-btn
             :label="isEditMode ? 'Änderungen speichern' : 'Event erstellen'"
             type="submit"
             :disable="!creationAllowed || loading"
           />
-          <!-- TODO: reset button -->
         </q-form>
       </q-card-section>
     </q-card>
@@ -482,7 +485,10 @@ async function submitEvent() {
             name: '',
             id: authStore.user!.id,
           },
-          leader: leader.value,
+          leader: leader.value ?? {
+            name: '',
+            id: authStore.user!.id,
+          },
           coLeaders: coLeaders.value,
           title: title.value,
           description: description.value,
