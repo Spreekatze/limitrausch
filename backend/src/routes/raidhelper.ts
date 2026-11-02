@@ -13,12 +13,12 @@ const router = express.Router();
 
 // Request events from raid-helper by guildId
 router.get(
-  "/guild/:id",
+  "/guild/:guildId",
   requireEventManager,
   async (request, response, next) => {
-    const guildId = request.params.id;
+    const guildId = request.params.guildId;
     if (typeof guildId !== "string") {
-      return next(new HttpError(400, "Invalid guild id"));
+      return next(new HttpError(400, "Import failed due to invalid guild id"));
     }
 
     const guild = request.session.authUser?.manageableGuilds.find(
@@ -58,10 +58,10 @@ router.get("/user", requireAuth, async (request, response, next) => {
 });
 
 // Request event from raid-helper by eventId
-router.get("/:id", requireAuth, async (request, response, next) => {
+router.get("/:eventId", requireAuth, async (request, response, next) => {
   const eventId = request.params.id;
   if (typeof eventId !== "string") {
-    return next(new HttpError(400, "Invalid event id"));
+    return next(new HttpError(400, "Import failed due to invalid event id"));
   }
   const userGuilds = request.session.authUser?.manageableGuilds;
   if (!userGuilds) {

@@ -51,7 +51,7 @@ export async function importRaidHelperEventsByGuild(
 ): Promise<RaidHelperImportResponse> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
   const response = await fetch(
-    `${apiBaseUrl}/events/raid-helper/server/${encodeURIComponent(guildId)}`,
+    `${apiBaseUrl}/events/raid-helper/guild/${encodeURIComponent(guildId)}`,
   );
 
   if (!response.ok) {

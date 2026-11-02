@@ -19,7 +19,9 @@ const requireEventManager: RequestHandler = async (req, res, next) => {
       const eventId = Number(req.params.eventId);
 
       if (!Number.isSafeInteger(eventId) || eventId <= 0) {
-        return next(new HttpError(400, "Invalid or missing eventId."));
+        return next(
+          new HttpError(400, "Invalid or missing eventId  at authorization."),
+        );
       }
 
       const result = await getEventById(eventId);
