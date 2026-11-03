@@ -481,6 +481,12 @@ async function submitEvent() {
     return;
   }
 
+  const creator = authStore.user;
+  if (!creator) {
+    notify.error(getUserErrorMessage(API_ERROR_CODES.UNAUTHORIZED));
+    return;
+  }
+
   try {
     const times = toUnixTimes(date.value, startTime.value, endTime.value);
     if (isEditMode.value && eventToEdit.value) {
@@ -502,12 +508,12 @@ async function submitEvent() {
       await createEventOnGuild(
         {
           creator: {
-            name: '',
-            id: authStore.user!.id,
+            name: creator.username,
+            id: creator.id,
           },
           leader: leader.value ?? {
-            name: '',
-            id: authStore.user!.id,
+            name: creator.username,
+            id: creator.id,
           },
           coLeaders: coLeaders.value,
           title: title.value,
