@@ -19,6 +19,10 @@ export const eventDataDiscordUserSchema = z.object({
 });
 export type EventDiscordUser = z.infer<typeof eventDataDiscordUserSchema>;
 
+export const eventDiscordUserListSchema = z.array(eventDataDiscordUserSchema);
+export const eventDiscordUserSuggestionsSchema =
+  eventDiscordUserListSchema.max(5);
+
 export const eventSignUpSchema = z.object({
   id: z.number(),
   raidHelperId: z.string().optional(),
@@ -62,7 +66,7 @@ export const eventSchema = z.object({
   startTime: z.number(),
   endTime: z.number(),
   leader: eventDataDiscordUserSchema.optional(),
-  coLeaders: z.array(eventDataDiscordUserSchema).optional(),
+  coLeaders: eventDiscordUserListSchema.optional(),
   title: z.string().optional(),
   description: z.string().optional(),
   imageUrl: z.string().optional(),

@@ -24,8 +24,21 @@ import {
 } from "@limitrausch/contracts";
 import { upsertDiscordGuild } from "../database/discordGuild.js";
 
-export async function getEvents(): Promise<Event[]> {
-  const result = await pool.query<DatabaseEventRow>(`
+export async function getEvents(guildId?: string): Promise<Event[]> {
+  const conditions: string[] = [];
+  const values: (number | string)[] = [];
+
+  if (guildId !== undefined) {
+    values.push(guildId);
+    conditions.push(`event."discordGuildId" = $${values.length}`);
+  }
+
+  const whereClause = conditions.length
+    ? `WHERE ${conditions.join(" AND ")}`
+    : "";
+
+  const result = await pool.query<DatabaseEventRow>(
+    `
     SELECT
       event.*,
       creator."usernameOnGuild" AS "creatorName",
@@ -45,7 +58,10 @@ export async function getEvents(): Promise<Event[]> {
     LEFT JOIN "DiscordTextChannel" channel
       ON channel.id = event."discordTextChannelId"
       AND channel."discordGuildId" = event."discordGuildId"
-  `);
+    ${whereClause}
+    `,
+    values,
+  );
 
   return result.rows.map((row) => mapDatabaseEventRowToEvent(row));
 }
@@ -315,6 +331,7 @@ export async function updateEventById(
     if (hasField("startTime")) assign("startTime", update.startTime);
     if (hasField("endTime")) assign("endTime", update.endTime);
     if (hasField("eventType")) assign("eventType", update.eventType);
+    if (hasField("eventContent")) assign("eventContent", update.eventContent);
     if (hasField("eventDifficulty")) {
       assign("eventDifficulty", update.eventDifficulty);
     }

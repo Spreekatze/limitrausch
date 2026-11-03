@@ -23,21 +23,23 @@ function createRequest(method: string, path: string): Request {
 }
 
 describe("errorHandler", () => {
-  it("returns the status and message from an HttpError", () => {
+  it("returns a stable error code without exposing the internal message", () => {
     const response = createResponse();
 
     errorHandler(
-      new HttpError(404, "Event not found"),
+      new HttpError(404, "Database query failed"),
       createRequest("GET", "/events/unknown"),
       response,
       vi.fn() as NextFunction,
     );
 
     expect(response.status).toHaveBeenCalledWith(404);
-    expect(response.json).toHaveBeenCalledWith({ error: "Event not found" });
+    expect(response.json).toHaveBeenCalledWith({
+      error: { code: "NOT_FOUND" },
+    });
   });
 
-  it("includes provided validation details in the response", () => {
+  it("does not expose validation details in the response", () => {
     const response = createResponse();
     const details = [{ path: ["title"], message: "Required" }];
 
@@ -50,9 +52,11 @@ describe("errorHandler", () => {
 
     expect(response.status).toHaveBeenCalledWith(400);
     expect(response.json).toHaveBeenCalledWith({
-      error: "Invalid event data",
-      details,
+      error: { code: "VALIDATION_ERROR" },
     });
+    expect(response.json).not.toHaveBeenCalledWith(
+      expect.objectContaining({ details }),
+    );
   });
 
   it("hides unknown error details behind a generic 500 response", () => {
@@ -67,7 +71,26 @@ describe("errorHandler", () => {
 
     expect(response.status).toHaveBeenCalledWith(500);
     expect(response.json).toHaveBeenCalledWith({
-      error: "Internal server error",
+      error: { code: "INTERNAL_SERVER_ERROR" },
+    });
+  });
+
+  it("returns a validation error for malformed JSON without exposing parser details", () => {
+    const response = createResponse();
+    const error = Object.assign(new SyntaxError("Unexpected token"), {
+      type: "entity.parse.failed",
+    });
+
+    errorHandler(
+      error,
+      createRequest("POST", "/events"),
+      response,
+      vi.fn() as NextFunction,
+    );
+
+    expect(response.status).toHaveBeenCalledWith(400);
+    expect(response.json).toHaveBeenCalledWith({
+      error: { code: "VALIDATION_ERROR" },
     });
   });
 

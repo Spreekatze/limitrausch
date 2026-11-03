@@ -1,6 +1,7 @@
-import type { CreateEvent, RaidHelperImportResponse } from '@limitrausch/contracts';
+import type { CreateEvent, RaidHelperImportResponse, UpdateEvent } from '@limitrausch/contracts';
 import {
   eventSchema,
+  eventDiscordUserSuggestionsSchema,
   eventsResponseSchema,
   raidHelperImportResponseSchema,
   type Event,
@@ -8,24 +9,39 @@ import {
   type EventType,
   type EventsResponse,
 } from '@limitrausch/contracts';
+import { ApiError, handleApiError } from './apiError';
 
 export type { Event, EventType };
 export type DiscordUser = EventDiscordUser;
 export type ApiEventsResponse = EventsResponse;
 
-export async function getEvents(date: Date): Promise<ApiEventsResponse> {
+export async function getEvents(
+  date?: Date,
+  guildId?: string,
+  signal?: AbortSignal,
+): Promise<ApiEventsResponse> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
-  const startTime = Math.floor(date.getTime() / 1000);
-  const response = await fetch(`${apiBaseUrl}/events?startTime=${startTime}`);
+  const params = new URLSearchParams({});
+
+  if (date) {
+    params.set('startTime', String(Math.floor(date.getTime() / 1000)));
+  }
+
+  if (guildId) {
+    params.set('guildId', guildId);
+  }
+
+  const response = await fetch(`${apiBaseUrl}/events?${params}`, {
+    ...(signal ? { signal } : {}),
+  });
 
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`API failed: ${response.status} ${text}`);
+    await handleApiError(response);
   }
 
   const result = eventsResponseSchema.safeParse(await response.json());
   if (!result.success) {
-    throw new Error('The events API returned an unexpected response format.');
+    throw new ApiError('INVALID_API_RESPONSE', 502);
   }
 
   return result.data;
@@ -36,39 +52,16 @@ export async function importRaidHelperEventsByGuild(
 ): Promise<RaidHelperImportResponse> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
   const response = await fetch(
-    `${apiBaseUrl}/events/raid-helper/server/${encodeURIComponent(guildId)}`,
+    `${apiBaseUrl}/events/raid-helper/guild/${encodeURIComponent(guildId)}`,
   );
 
   if (!response.ok) {
-    let message = `Request failed (${response.status})`;
-
-    try {
-      const body: unknown = await response.json();
-
-      if (
-        typeof body === 'object' &&
-        body !== null &&
-        'message' in body &&
-        typeof body.message === 'string'
-      ) {
-        message = body.message;
-      } else if (
-        typeof body === 'object' &&
-        body !== null &&
-        'error' in body &&
-        typeof body.error === 'string'
-      ) {
-        message = body.error;
-      }
-    } catch {
-      // Response wasnt valid JSON
-    }
-    throw new Error(message || `Import failed: ${response.status}`);
+    await handleApiError(response);
   }
 
   const result = raidHelperImportResponseSchema.safeParse(await response.json());
   if (!result.success) {
-    throw new Error('The import API call returned an unexpected response format.');
+    throw new ApiError('INVALID_API_RESPONSE', 502);
   }
 
   return result.data;
@@ -79,35 +72,12 @@ export async function importRaidHelperEventsByUser(): Promise<RaidHelperImportRe
   const response = await fetch(`${apiBaseUrl}/events/raid-helper/user`);
 
   if (!response.ok) {
-    let message = `Request failed (${response.status})`;
-
-    try {
-      const body: unknown = await response.json();
-
-      if (
-        typeof body === 'object' &&
-        body !== null &&
-        'message' in body &&
-        typeof body.message === 'string'
-      ) {
-        message = body.message;
-      } else if (
-        typeof body === 'object' &&
-        body !== null &&
-        'error' in body &&
-        typeof body.error === 'string'
-      ) {
-        message = body.error;
-      }
-    } catch {
-      // Response wasnt valid JSON
-    }
-    throw new Error(message || `Import failed: ${response.status}`);
+    await handleApiError(response);
   }
 
   const result = raidHelperImportResponseSchema.safeParse(await response.json());
   if (!result.success) {
-    throw new Error('The import API call returned an unexpected response format.');
+    throw new ApiError('INVALID_API_RESPONSE', 502);
   }
 
   return result.data;
@@ -118,35 +88,12 @@ export async function importRaidHelperEvent(eventId: string): Promise<RaidHelper
   const response = await fetch(`${apiBaseUrl}/events/raid-helper/${encodeURIComponent(eventId)}`);
 
   if (!response.ok) {
-    let message = `Request failed (${response.status})`;
-
-    try {
-      const body: unknown = await response.json();
-
-      if (
-        typeof body === 'object' &&
-        body !== null &&
-        'message' in body &&
-        typeof body.message === 'string'
-      ) {
-        message = body.message;
-      } else if (
-        typeof body === 'object' &&
-        body !== null &&
-        'error' in body &&
-        typeof body.error === 'string'
-      ) {
-        message = body.error;
-      }
-    } catch {
-      // Response wasnt valid JSON
-    }
-    throw new Error(message || `Import failed: ${response.status}`);
+    await handleApiError(response);
   }
 
   const result = raidHelperImportResponseSchema.safeParse(await response.json());
   if (!result.success) {
-    throw new Error('The import API call returned an unexpected response format.');
+    throw new ApiError('INVALID_API_RESPONSE', 502);
   }
 
   return result.data;
@@ -165,30 +112,86 @@ export async function createEventOnGuild(
     body: JSON.stringify(event),
   });
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`API failed: ${response.status} ${text}`);
+    await handleApiError(response);
   }
 
   const result = eventsResponseSchema.safeParse(await response.json());
   if (!result.success) {
-    throw new Error(result.error.message);
+    throw new ApiError('INVALID_API_RESPONSE', 502);
   }
 
   return result.data;
 }
 
-export async function getEventById(id: string): Promise<Event> {
+export async function getEventById(eventId: string): Promise<Event> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
-  const response = await fetch(`${apiBaseUrl}/events/${encodeURIComponent(id)}`);
+  const response = await fetch(`${apiBaseUrl}/events/${encodeURIComponent(eventId)}`);
 
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`API failed: ${response.status} ${text}`);
+    await handleApiError(response);
   }
 
   const result = eventSchema.safeParse(await response.json());
   if (!result.success) {
-    throw new Error('The events API returned an unexpected response format.');
+    throw new ApiError('INVALID_API_RESPONSE', 502);
+  }
+
+  return result.data;
+}
+
+export async function updateEventById(eventId: number, update: UpdateEvent): Promise<Event> {
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+  const response = await fetch(`${apiBaseUrl}/events/${encodeURIComponent(eventId)}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(update),
+  });
+
+  if (!response.ok) {
+    await handleApiError(response);
+  }
+
+  const result = eventSchema.safeParse(await response.json());
+  if (!result.success) {
+    throw new ApiError('INVALID_API_RESPONSE', 502);
+  }
+
+  return result.data;
+}
+
+export async function deleteEventById(eventId: number) {
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+  const response = await fetch(`${apiBaseUrl}/events/${encodeURIComponent(eventId)}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    await handleApiError(response);
+  }
+}
+
+export async function searchGuildMembers(
+  guildId: string,
+  query: string,
+  signal?: AbortSignal,
+): Promise<EventDiscordUser[]> {
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+  const normalizedQuery = query.trim();
+
+  const params = new URLSearchParams({ query: normalizedQuery });
+  const response = await fetch(
+    `${apiBaseUrl}/events/${encodeURIComponent(guildId)}/members?${params}`,
+    signal ? { signal } : undefined,
+  );
+
+  if (!response.ok) {
+    await handleApiError(response);
+  }
+
+  const result = eventDiscordUserSuggestionsSchema.safeParse(await response.json());
+  if (!result.success) {
+    throw new ApiError('INVALID_API_RESPONSE', 502);
   }
 
   return result.data;

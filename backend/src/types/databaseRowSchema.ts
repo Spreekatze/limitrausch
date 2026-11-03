@@ -20,6 +20,7 @@ export const databaseEventRowSchema = z.object({
   endTime: z.string(),
   eventType: eventTypeSchema,
   eventDifficulty: eventDifficultySchema.nullable(),
+  eventContent: z.string().nullable(),
   eventGoal: z.string().nullable(),
   discordGuildId: z.string().nullable(),
   discordGuildName: z.string().nullable(),

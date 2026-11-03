@@ -38,20 +38,6 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/calendar': RouteRecordInfo<
-      '/calendar',
-      '/calendar',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
-    '/createEvent': RouteRecordInfo<
-      '/createEvent',
-      '/createEvent',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
     '/dashboard': RouteRecordInfo<
       '/dashboard',
       '/dashboard',
@@ -66,9 +52,30 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/event-list': RouteRecordInfo<
+      '/event-list',
+      '/event-list',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/eventEditor': RouteRecordInfo<
+      '/eventEditor',
+      '/event/:mode',
+      { mode: ParamValue<true> },
+      { mode: ParamValue<false> },
+      | never
+    >,
     '/guild': RouteRecordInfo<
       '/guild',
       '/guild',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/calendar': RouteRecordInfo<
+      '/calendar',
+      '/kalender',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -94,22 +101,6 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
-    'src/pages/calendar.vue': {
-      routes:
-        | '/calendar'
-      views:
-        | never
-      pathParamNames:
-        | never
-    }
-    'src/pages/createEvent.vue': {
-      routes:
-        | '/createEvent'
-      views:
-        | never
-      pathParamNames:
-        | never
-    }
     'src/pages/dashboard.vue': {
       routes:
         | '/dashboard'
@@ -126,9 +117,33 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
+    'src/pages/event-list.vue': {
+      routes:
+        | '/event-list'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/pages/eventEditor.vue': {
+      routes:
+        | '/eventEditor'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
     'src/pages/guild.vue': {
       routes:
         | '/guild'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/pages/calendar.vue': {
+      routes:
+        | '/calendar'
       views:
         | never
       pathParamNames:

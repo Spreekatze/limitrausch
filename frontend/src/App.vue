@@ -16,6 +16,7 @@
 import { onMounted } from 'vue';
 import { useNotify } from './composable/useNotify';
 import { useAuthStore } from './stores/auth-store.js';
+import { getUserErrorMessage } from './utils/error-messages';
 import Toolbar from './components/Toolbar.vue';
 import Footer from './components/Footer.vue';
 import KofiButton from './components/KofiButton.vue';
@@ -24,8 +25,7 @@ const notify = useNotify();
 
 onMounted(() => {
   authStore.initAuth().catch((error) => {
-    console.error('Failed to load authentication status:', error);
-    notify.error(error instanceof Error ? error.message : String(error));
+    notify.error(getUserErrorMessage(error));
   });
 });
 </script>

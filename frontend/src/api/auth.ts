@@ -1,4 +1,5 @@
 import { authStatusResponseSchema, type AuthStatusResponse } from '@limitrausch/contracts';
+import { ApiError, handleApiError } from './apiError';
 
 export function beginDiscordLogin(): void {
   const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '');
@@ -12,13 +13,12 @@ export async function getLoginStatus(): Promise<AuthStatusResponse> {
   });
 
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`API failed: ${response.status} ${text}`);
+    await handleApiError(response);
   }
 
   const result = authStatusResponseSchema.safeParse(await response.json());
   if (!result.success) {
-    throw new Error('The authentication API returned an unexpected response format.');
+    throw new ApiError('INVALID_API_RESPONSE', 502);
   }
 
   return result.data;
@@ -29,15 +29,13 @@ export async function logout(): Promise<void> {
   const response = await fetch(`${apiBaseUrl}/auth/logout`, {
     credentials: 'include', // TODO: take proper care of CORS later
   });
-
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`API failed: ${response.status} ${text}`);
+    await handleApiError(response);
   }
 
   const result = authStatusResponseSchema.safeParse(await response.json());
   if (!result.success) {
-    throw new Error('The authentication API returned an unexpected response format.');
+    throw new ApiError('INVALID_API_RESPONSE', 502);
   }
 
   return;

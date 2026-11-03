@@ -16,7 +16,9 @@ const requireGuildManager: RequestHandler = async (req, res, next) => {
 
   const guildId = req.params.guildId;
   if (typeof guildId !== "string" || !/^\d{17,20}$/.test(guildId)) {
-    return next(new HttpError(400, "Invalid or missing guildId."));
+    return next(
+      new HttpError(400, "Invalid or missing guildId at authorization."),
+    );
   }
 
   try {
