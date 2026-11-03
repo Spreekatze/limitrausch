@@ -22,6 +22,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "test": "vitest run --exclude dist/**",
     "lint:fix": "prettier --write \"**/*.{js,mjs,cjs,ts,json,md,yml,yaml}\" --ignore-path ../.gitignore && eslint --fix \"src/**/*.{js,mjs,cjs,ts}\"",
     "lint:check": "prettier --check \"**/*.{js,mjs,cjs,ts,json,md,yml,yaml}\" --ignore-path ../.gitignore && eslint \"src/**/*.{js,mjs,cjs,ts}\"",
     "typecheck": "tsc --noEmit -p tsconfig.json"
@@ -33,6 +34,7 @@
     "@eslint/js": "^10.0.1",
     "eslint": "^10.8.0",
     "typescript-eslint": "8.70.1",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "vitest": "^5.0.5"
   }
 }

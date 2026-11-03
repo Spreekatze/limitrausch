@@ -89,6 +89,14 @@ Run the following commands from the repository root.
 
 The shared contracts are built before the frontend and backend where required.
 
+The test command runs Vitest suites for all three workspaces. Frontend component
+tests run in jsdom; backend route integration tests use an ephemeral local HTTP
+server. Tests mock Discord and PostgreSQL boundaries, so they do not require
+credentials, a running database, or external network access. To run one
+workspace only, use `npm test --workspace=frontend`,
+`npm test --workspace=backend`, or
+`npm test --workspace=@limitrausch/contracts`.
+
 ## Database Migrations
 
 Database migrations are managed with `node-pg-migrate`.

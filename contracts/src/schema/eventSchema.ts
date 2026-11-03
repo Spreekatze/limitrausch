@@ -55,7 +55,24 @@ export const eventDiscordDataSchema = z.object({
 });
 export type EventDiscordData = z.infer<typeof eventDiscordDataSchema>;
 
-export const eventSchema = z.object({
+const eventTimeRangeMessage = "End time must be after start time";
+const validateEventTimeRange = (event: {
+  startTime: number;
+  endTime: number;
+}) => event.endTime > event.startTime;
+
+const eventTimeRangeValidation = {
+  path: ["endTime"],
+  message: eventTimeRangeMessage,
+};
+export const eventTimeRangeSchema = z
+  .object({
+    startTime: z.number(),
+    endTime: z.number(),
+  })
+  .refine(validateEventTimeRange, eventTimeRangeValidation);
+
+const eventFieldsSchema = z.object({
   id: z.number(),
   lastUpdated: z.number(),
   creator: eventDataDiscordUserSchema.optional(),
@@ -76,9 +93,14 @@ export const eventSchema = z.object({
   signUps: z.array(eventSignUpSchema).optional(),
   discordGuild: eventDiscordDataSchema.optional(),
 });
+
+export const eventSchema = eventFieldsSchema.refine(
+  validateEventTimeRange,
+  eventTimeRangeValidation,
+);
 export type Event = z.infer<typeof eventSchema>;
 
-export const createEventSchema = eventSchema
+export const createEventSchema = eventFieldsSchema
   .omit({
     id: true,
     lastUpdated: true,
@@ -86,10 +108,11 @@ export const createEventSchema = eventSchema
   })
   .extend({
     signUps: z.array(createEventSignUpSchema).optional(),
-  });
+  })
+  .refine(validateEventTimeRange, eventTimeRangeValidation);
 export type CreateEvent = z.infer<typeof createEventSchema>;
 
-export const updateEventSchema = eventSchema
+export const updateEventSchema = eventFieldsSchema
   .omit({
     id: true,
     lastUpdated: true,
@@ -101,7 +124,27 @@ export const updateEventSchema = eventSchema
       .union([z.array(eventSignUpSchema), z.array(createEventSignUpSchema)])
       .optional(),
   })
-  .partial();
+  .partial()
+  .superRefine((event, context) => {
+    if (Object.keys(event).length === 0) {
+      context.addIssue({
+        code: "custom",
+        message: "Update must have at least one field.",
+      });
+    }
+
+    if (event.startTime === undefined || event.endTime === undefined) {
+      return;
+    }
+
+    const timeRange = eventTimeRangeSchema.safeParse(event);
+    if (!timeRange.success) {
+      context.addIssue({
+        code: "custom",
+        ...eventTimeRangeValidation,
+      });
+    }
+  });
 
 export type UpdateEvent = z.infer<typeof updateEventSchema>;
 

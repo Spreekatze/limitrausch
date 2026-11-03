@@ -11,19 +11,6 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": [
-    "config/**/*.ts",
-    "src/database/**/*.ts",
-    "src/discordBot/**/*.ts",
-    "src/errors/**/*.ts",
-    "src/mapping/**/*.ts",
-    "src/middleware/**/*.ts",
-    "src/routes/**/*.ts",
-    "src/services/**/*.ts",
-    "src/store/**/*.ts",
-    "src/types/**/*.ts",
-    "src/views/**/*.ts",
-    "src/index.ts"
-  ],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "src/**/*.test.ts"]
 }

@@ -13,6 +13,7 @@
     "build": "quasar build",
     "pretypecheck": "npm run build:contracts",
     "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run",
     "postinstall": "quasar prepare --silent"
   },
   "dependencies": {
@@ -39,9 +40,13 @@
     "@types/node": "^22.19.11",
     "@intlify/unplugin-vue-i18n": "^11.0.0",
     "@quasar/app-vite": "^3.10.0",
+    "@vitejs/plugin-vue": "^6.0.1",
     "autoprefixer": "^10.4.27",
     "postcss": "^8.5.8",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "@vue/test-utils": "^2.4.6",
+    "jsdom": "^26.1.0",
+    "vitest": "^5.0.5"
   },
   "keywords": [
     "quasar",

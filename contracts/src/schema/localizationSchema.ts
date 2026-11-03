@@ -13,7 +13,7 @@ export const localizedAliasesSchema = z.object({
   de: z.array(z.string()),
   en: z.array(z.string()),
 });
-export type LocalizedAliases = z.infer<typeof localizedLabelsSchema>;
+export type LocalizedAliases = z.infer<typeof localizedAliasesSchema>;
 
 export interface LabelOptions {
   labels: LocalizedLabels;
