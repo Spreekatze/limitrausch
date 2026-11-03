@@ -99,8 +99,19 @@
           </div>
 
           <div class="creation-form__leader row">
-            <!-- TODO: leader -->
-            <!-- TODO: Coleaders -->
+            <GuildMemberSelect
+              v-model="leaderSelection"
+              :guild-id="guild?.id"
+              label="Raidlead"
+              placeholder="Discord-Namen eingeben. Leer lassen, wenn du selbst Raidlead bist."
+              :limit="1"
+            />
+            <!-- <GuildMemberSelect
+              v-model="coLeaders"
+              :guild-id="guild?.id"
+              label="Co-Leader"
+              placeholder="Discord-Namen eingeben."
+            /> -->
           </div>
           <div class="creation-form__channel row"></div>
           <q-input :model-value="title" label="Titel" filled @update:model-value="onTitleInput" />
@@ -122,6 +133,7 @@
 <script setup lang="ts">
 import { ApiError } from '@/api/apiError';
 import { createEventOnGuild, getEventById, updateEventById } from '@/api/events';
+import GuildMemberSelect from '@/components/GuildMemberSelect.vue';
 import GuildSelect from '@/components/GuildSelect.vue';
 import { useNotify } from '@/composable/useNotify';
 import { useSearchOptions } from '@/composable/useSearchOptions';
@@ -241,7 +253,13 @@ const imageUrl = ref<string>('');
 const isPublic = ref<boolean>(false); //TODO: enable this as toggle when you enable the feature
 const channel = ref<DiscordChannel | undefined>(undefined);
 const leader = ref<EventDiscordUser | undefined>(undefined);
-const coLeaders = ref<EventDiscordUser[] | undefined>(undefined);
+const coLeaders = ref<EventDiscordUser[]>([]);
+const leaderSelection = computed<EventDiscordUser[]>({
+  get: () => (leader.value ? [leader.value] : []),
+  set: (value) => {
+    leader.value = value[0];
+  },
+});
 
 const creationAllowed = computed(() =>
   Boolean(title.value && startTime.value && endTime.value && type.value),
@@ -364,7 +382,7 @@ function resetForm() {
   isPublic.value = false;
   channel.value = undefined;
   leader.value = undefined;
-  coLeaders.value = undefined;
+  coLeaders.value = [];
 }
 
 function setFormFromEvent(event: Event) {
@@ -380,7 +398,7 @@ function setFormFromEvent(event: Event) {
   imageUrl.value = event.imageUrl ?? '';
   isPublic.value = event.isPublic;
   leader.value = event.leader;
-  coLeaders.value = event.coLeaders;
+  coLeaders.value = event.coLeaders ?? [];
   channel.value =
     event.discordGuild?.textChannelId && event.discordGuild.textChannelName
       ? {
@@ -477,6 +495,8 @@ async function submitEvent() {
         eventDifficulty: difficulty.value,
         eventGoal: goal.value ?? '',
         isPublic: isPublic.value,
+        leader: leader.value,
+        coLeaders: coLeaders.value,
       });
     } else {
       await createEventOnGuild(
@@ -543,6 +563,17 @@ async function submitEvent() {
   }
 
   .creation-form__event-type {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    > * {
+      flex: 1 1 250px;
+      min-width: 0;
+    }
+  }
+
+  .creation-form__leader {
     display: flex;
     gap: 16px;
     flex-wrap: wrap;

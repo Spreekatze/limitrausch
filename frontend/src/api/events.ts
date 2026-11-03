@@ -1,6 +1,7 @@
 import type { CreateEvent, RaidHelperImportResponse, UpdateEvent } from '@limitrausch/contracts';
 import {
   eventSchema,
+  eventDiscordUserSuggestionsSchema,
   eventsResponseSchema,
   raidHelperImportResponseSchema,
   type Event,
@@ -168,4 +169,30 @@ export async function deleteEventById(eventId: number) {
   if (!response.ok) {
     await handleApiError(response);
   }
+}
+
+export async function searchGuildMembers(
+  guildId: string,
+  query: string,
+  signal?: AbortSignal,
+): Promise<EventDiscordUser[]> {
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+  const normalizedQuery = query.trim();
+
+  const params = new URLSearchParams({ query: normalizedQuery });
+  const response = await fetch(
+    `${apiBaseUrl}/events/${encodeURIComponent(guildId)}/members?${params}`,
+    signal ? { signal } : undefined,
+  );
+
+  if (!response.ok) {
+    await handleApiError(response);
+  }
+
+  const result = eventDiscordUserSuggestionsSchema.safeParse(await response.json());
+  if (!result.success) {
+    throw new ApiError('INVALID_API_RESPONSE', 502);
+  }
+
+  return result.data;
 }

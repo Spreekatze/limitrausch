@@ -48,7 +48,7 @@ export async function getDiscordGuildManagerRoles(
   const result = await pool.query<Partial<DatabaseGuildRow>>(
     `
     SELECT
-    guild."rolesAllowedToManageEvents"
+    guild."roleIDsAllowedToManageEvents" AS "rolesAllowedToManageEvents"
     FROM "DiscordGuild" guild
     WHERE guild.id = $1
   `,

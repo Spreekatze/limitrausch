@@ -14,14 +14,17 @@ import {
 import requireEventManager from "../middleware/requireEventManager.js";
 import { HttpError } from "../errors/httpError.js";
 import raidhelperRoutes from "./raidhelper.js";
+import { searchGuildMembers } from "../discordBot/guildService.js";
+import { getDiscordGuildManagerRoles } from "../store/guildStore.js";
+import { guildMemberSearchQuerySchema } from "../types/eventSchema.js";
 
 const router = express.Router();
 
 router.use("/raid-helper", raidhelperRoutes);
 
 // Get (request) a single event by id
-router.get("/:id", async (request, response, next) => {
-  const id = Number(request.params.id);
+router.get("/:eventId", async (request, response, next) => {
+  const id = Number(request.params.eventId);
   if (!Number.isSafeInteger(id) || id <= 0) {
     return next(new HttpError(400, "Invalid event id"));
   }
@@ -34,7 +37,7 @@ router.get("/:id", async (request, response, next) => {
   response.json(event);
 });
 
-// Get all events
+// Get all events by guild (optional)
 router.get("/", async (request, response) => {
   const guildId = request.query.guildId
     ? String(request.query.guildId)
@@ -117,6 +120,40 @@ router.delete(
       return next(new HttpError(404, "Event not found"));
     }
     response.status(204).send();
+  },
+);
+
+// Get members of a guild
+router.get(
+  "/:guildId/members",
+  requireEventManager,
+  async (request, response, next) => {
+    const queryResult = guildMemberSearchQuerySchema.safeParse(
+      request.query.query,
+    );
+    if (!queryResult.success) {
+      return next(
+        new HttpError(
+          400,
+          "Invalid member search query",
+          {},
+          queryResult.error.issues,
+        ),
+      );
+    }
+
+    const guildId = request.params.guildId;
+    if (typeof guildId !== "string") {
+      return next(new HttpError(400, "Invalid guild id"));
+    }
+
+    const allowedRoleIds = await getDiscordGuildManagerRoles(guildId);
+    const members = await searchGuildMembers(
+      guildId,
+      queryResult.data,
+      allowedRoleIds,
+    );
+    response.json(members);
   },
 );
 
