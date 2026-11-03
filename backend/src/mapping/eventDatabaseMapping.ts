@@ -63,6 +63,7 @@ export function mapDatabaseEventRowToEvent(
     startTime: Number(row.startTime),
     endTime: Number(row.endTime),
     eventType: row.eventType,
+    eventContent: row.eventContent ?? undefined,
     eventDifficulty: row.eventDifficulty ?? undefined,
     eventGoal: row.eventGoal ?? undefined,
     discordGuild: row.discordGuildId
