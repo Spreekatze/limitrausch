@@ -59,7 +59,7 @@ router.get("/user", requireAuth, async (request, response, next) => {
 
 // Request event from raid-helper by eventId
 router.get("/:eventId", requireAuth, async (request, response, next) => {
-  const eventId = request.params.id;
+  const eventId = request.params.eventId;
   if (typeof eventId !== "string") {
     return next(new HttpError(400, "Import failed due to invalid event id"));
   }

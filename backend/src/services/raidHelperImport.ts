@@ -49,17 +49,17 @@ export async function importRaidHelperEventsFromGuild(
 
   for (const raidHelperEvent of result.data.postedEvents) {
     try {
+      if (existingRaidHelperEventIds.has(raidHelperEvent.id)) {
+        skipped++;
+        continue;
+      }
+
       const mappedEvent = mapRaidHelperGeneralEventDataToEvent(
         raidHelperEvent,
         guild,
       );
 
       //TODO: add updating
-      if (existingRaidHelperEventIds.has(mappedEvent.raidHelperId)) {
-        skipped++;
-        continue;
-      }
-
       await addEvent(mappedEvent);
       existingRaidHelperEventIds.add(mappedEvent.raidHelperId);
       imported++;

@@ -4,7 +4,12 @@ import { raidHelperDetailledEventSchema } from "../types/raidhelperSchema.js";
 
 const validateRaidHelperWebhook: RequestHandler = (request, response, next) => {
   const webhookKey = request.header("Authorization");
-  if (webhookKey !== process.env.RAIDHELPER_WEBHOOK_KEY) {
+  const configuredWebhookKey = process.env.RAIDHELPER_WEBHOOK_KEY;
+  if (
+    !configuredWebhookKey ||
+    !webhookKey ||
+    webhookKey !== configuredWebhookKey
+  ) {
     return next(new HttpError(401, "Unauthorized webhook request."));
   }
 
