@@ -67,4 +67,74 @@ describe("mapDatabaseEventRowToEvent", () => {
       jobFlexSecondPrio: [{ id: job?.id }],
     });
   });
+
+  it("maps creator, leader and Discord guild data", () => {
+    const event = mapDatabaseEventRowToEvent({
+      ...row,
+      creatorId: "creator-1",
+      creatorName: "Creator",
+      leaderId: "leader-1",
+      leaderName: "Leader",
+      discordGuildId: "guild-1",
+      discordGuildName: "Guild",
+      discordGuildIcon: "icon-hash",
+      discordTextChannelId: "channel-1",
+      discordTextChannelName: "events",
+      discordMessageId: "message-1",
+    });
+
+    expect(event.creator).toEqual({
+      id: "creator-1",
+      name: "Creator",
+    });
+
+    expect(event.leader).toEqual({
+      id: "leader-1",
+      name: "Leader",
+    });
+
+    expect(event.discordGuild).toEqual({
+      id: "guild-1",
+      name: "Guild",
+      icon: "icon-hash",
+      textChannelId: "channel-1",
+      textChannelName: "events",
+      messageId: "message-1",
+    });
+  });
+
+  it("converts timestamps to numbers and maps null values to undefined", () => {
+    const event = mapDatabaseEventRowToEvent(row);
+
+    expect(event.lastUpdated).toBe(1);
+    expect(event.startTime).toBe(1);
+    expect(event.endTime).toBe(2);
+
+    expect(event.description).toBeUndefined();
+    expect(event.imageUrl).toBeUndefined();
+    expect(event.eventDifficulty).toBeUndefined();
+    expect(event.eventGoal).toBeUndefined();
+    expect(event.raidHelperId).toBeUndefined();
+  });
+
+  it("throws an error for an unknown job id", () => {
+    expect(() =>
+      mapDatabaseEventRowToEvent(
+        row,
+        [],
+        [
+          {
+            id: 1,
+            eventId: row.id,
+            discordUserId: "user-1",
+            raidHelperId: null,
+            status: null,
+            jobFirstPrio: -1 as Job["id"],
+            jobFlexSecondPrio: null,
+            usernameOnGuild: null,
+          },
+        ],
+      ),
+    ).toThrow("Unknown job: -1");
+  });
 });
