@@ -23,8 +23,9 @@ type MockQueryResult = {
   rows: Record<string, unknown>[];
   rowCount: number | null;
 };
+type MockQueryArguments = [sql: string, values?: unknown[]];
 const queryMock = vi.fn(
-  async (..._args: unknown[]): Promise<MockQueryResult> => ({
+  async (..._args: MockQueryArguments): Promise<MockQueryResult> => ({
     rows: [],
     rowCount: 1,
   }),
@@ -196,9 +197,9 @@ describe("database query adapters", () => {
       event.eventDifficulty,
       event.eventContent,
       event.eventGoal,
-      event.discordGuild.id,
-      event.discordGuild.textChannelId,
-      event.discordGuild.messageId,
+      event.discordGuild?.id,
+      event.discordGuild?.textChannelId,
+      event.discordGuild?.messageId,
       event.raidHelperId,
       event.isPublic,
     ]);

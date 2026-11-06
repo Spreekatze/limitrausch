@@ -1,6 +1,6 @@
 import { mapDatabaseEventRowToEvent } from "../eventDatabaseMapping.js";
 import type { DatabaseEventRow } from "../../types/databaseRowSchema.js";
-import { JOBS } from "@limitrausch/contracts";
+import { JOBS, type Job } from "@limitrausch/contracts";
 import { describe, expect, it } from "vitest";
 
 const row: DatabaseEventRow = {
