@@ -18,11 +18,25 @@ import {
 import { ensureDiscordGuildUser } from "../database/discordGuildUser.js";
 import {
   CreateEvent,
+  eventTimeRangeSchema,
   UpdateEvent,
   Event,
   UserGuild,
 } from "@limitrausch/contracts";
 import { upsertDiscordGuild } from "../database/discordGuild.js";
+import { HttpError } from "../errors/httpError.js";
+
+function assertEventTimeRange(startTime: unknown, endTime: unknown): void {
+  const result = eventTimeRangeSchema.safeParse({ startTime, endTime });
+  if (!result.success) {
+    throw new HttpError(
+      400,
+      "Invalid event time range",
+      {},
+      result.error.issues,
+    );
+  }
+}
 
 export async function getEvents(guildId?: string): Promise<Event[]> {
   const conditions: string[] = [];
@@ -151,17 +165,25 @@ export async function addEvent(
   event: CreateEvent,
   guild?: UserGuild,
 ): Promise<Event> {
+  assertEventTimeRange(event.startTime, event.endTime);
+  if (!event.discordGuild && (event.signUps?.length ?? 0) > 0) {
+    throw new HttpError(
+      400,
+      "Events without a Discord guild cannot have sign-ups.",
+    );
+  }
+
   const client = await pool.connect();
 
   try {
     await client.query("BEGIN");
 
     if (guild) {
-      await upsertDiscordGuild(guild);
+      await upsertDiscordGuild(guild, client);
     }
 
     if (event.discordGuild?.textChannelId && event.discordGuild?.id) {
-      //TODO: add fetching channel name
+      //TODO: add fetching channel name and validate that the channel belongs to the guild
       await upsertDiscordTextChannel(
         event.discordGuild?.textChannelId,
         "",
@@ -241,13 +263,15 @@ export async function updateEventById(
   try {
     await client.query("BEGIN");
 
-    // Fetch current pair of discord guild and textchannel for the event
+    // Fetch current event fields that are needed to validate a partial update.
     const existingResult = await client.query<{
       discordGuildId: string | null;
       discordTextChannelId: string | null;
+      startTime: string;
+      endTime: string;
     }>(
       `
-      SELECT "discordGuildId", "discordTextChannelId"
+      SELECT "discordGuildId", "discordTextChannelId", "startTime", "endTime"
       FROM "Event"
       WHERE "id" = $1
       FOR UPDATE
@@ -256,7 +280,7 @@ export async function updateEventById(
     );
     const existingEvent = existingResult.rows[0];
 
-    // If event is not found rollback
+    // Rollback if event to be updated is not found
     if (!existingEvent) {
       await client.query("ROLLBACK");
       return undefined;
@@ -264,6 +288,32 @@ export async function updateEventById(
 
     const hasField = (field: keyof Event) =>
       Object.prototype.hasOwnProperty.call(update, field);
+
+    // Validate that the Discord guild cannot be changed for an existing event.
+    if (hasField("discordGuild")) {
+      const newGuildId = update.discordGuild?.id ?? null;
+
+      if (newGuildId !== existingEvent.discordGuildId) {
+        throw new HttpError(
+          400,
+          "Cannot change the Discord guild of an existing event.",
+        );
+      }
+    }
+    // Validate that events without a Discord guild cannot have sign-ups.
+    if (!existingEvent.discordGuildId && (update.signUps?.length ?? 0) > 0) {
+      throw new HttpError(
+        400,
+        "Events without a Discord guild cannot have sign-ups.",
+      );
+    }
+    // Validate that the event time range is valid, using the updated values if provided.
+    assertEventTimeRange(
+      hasField("startTime")
+        ? update.startTime
+        : Number(existingEvent.startTime),
+      hasField("endTime") ? update.endTime : Number(existingEvent.endTime),
+    );
 
     if (existingEvent.discordGuildId) {
       if (update.leader) {
@@ -377,5 +427,9 @@ export async function updateEventById(
 
 export async function deleteEventById(id: number): Promise<boolean> {
   const client = await pool.connect();
-  return await deleteEvent(id, client);
+  try {
+    return await deleteEvent(id, client);
+  } finally {
+    client.release();
+  }
 }
