@@ -22,7 +22,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "vitest run --exclude \"dist/**\"",
+    "test": "vitest run",
     "lint:fix": "prettier --write \"**/*.{js,mjs,cjs,ts,json,md,yml,yaml}\" --ignore-path ../.gitignore && eslint --fix \"src/**/*.{js,mjs,cjs,ts}\"",
     "lint:check": "prettier --check \"**/*.{js,mjs,cjs,ts,json,md,yml,yaml}\" --ignore-path ../.gitignore && eslint \"src/**/*.{js,mjs,cjs,ts}\"",
     "typecheck": "tsc --noEmit -p tsconfig.json"
