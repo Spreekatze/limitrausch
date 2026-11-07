@@ -11,7 +11,7 @@ import {
   updateEventById,
 } from "../store/eventStore.js";
 import {
-  raidHelperDetailledEventSchema,
+  raidHelperDetailedEventSchema,
   raidHelperEventsResponseSchema,
 } from "../types/raidhelperSchema.js";
 import {
@@ -90,7 +90,7 @@ export async function importRaidHelperEventById(
   let failed = 0;
 
   const raidHelperData = await fetchEvents(eventId);
-  const result = raidHelperDetailledEventSchema.safeParse(raidHelperData);
+  const result = raidHelperDetailedEventSchema.safeParse(raidHelperData);
   if (!result.success) {
     throw new HttpError(502, "Invalid answer from raid-helper.xyz", {
       eventId: eventId,

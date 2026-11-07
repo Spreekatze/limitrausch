@@ -12,7 +12,7 @@ import { jobsByRaidHelperName } from "../services/jobService.js";
 import {
   RaidHelperEvent,
   RaidHelperSignUp,
-  RaidHelperDetailledEvent,
+  RaidHelperDetailedEvent,
 } from "../types/raidhelperSchema.js";
 
 export function mapRaidHelperGeneralEventDataToEvent(
@@ -90,7 +90,7 @@ function mapRaidHelperSignUpsToEventSignUps(
 }
 
 export function mapRaidHelperDetailledEventDataToEvent(
-  raidhelperEvent: RaidHelperDetailledEvent,
+  raidhelperEvent: RaidHelperDetailedEvent,
 ): CreateEvent {
   const event: CreateEvent = {
     creator: raidhelperEvent.creator,

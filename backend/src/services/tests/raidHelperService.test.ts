@@ -13,18 +13,6 @@ const mockSuccessfulFetch = () => {
 };
 
 describe("getRaidHelperEvents", () => {
-  // TODO: Valid test coverage checklist for this service
-  // DONE - allows a whitelisted server id to fetch events
-  // DONE - rejects server ids that are not on the whitelist
-  // - no whitelist env var configured should reject with 403
-  // DONE - missing RAIDHELPER_API_KEY should reject with 503
-  // - response.ok === false should reject with the upstream HTTP status
-  // DONE - non-JSON content type should reject with 502 "Raid Helper API response is not JSON"
-  // DONE - invalid JSON from response.json() should reject with 502 "Raid Helper API returned invalid JSON"
-  // DONE - timeout/network error should reject with 504 "Raid Helper API request timed out"
-  // - whitelist parsing should allow comma-separated values with spaces, e.g. "id1, id2, id3"
-  // DONE - generic unexpected fetch errors should reject with 502 "Raid Helper API request failed"
-
   beforeEach(() => {
     vi.stubEnv("RAIDHELPER_DISCORDSERVER_ID_WHITELIST", validServer.id);
     vi.stubEnv("RAIDHELPER_API_KEY", "test-api-key");
@@ -45,6 +33,25 @@ describe("getRaidHelperEvents", () => {
     });
   });
 
+  it("allows multiple whitelisted server ids", async () => {
+    vi.stubEnv(
+      "RAIDHELPER_DISCORDSERVER_ID_WHITELIST",
+      "12345678901234567,98765432109876543",
+    );
+
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(createSuccessfulFetchResponse());
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(
+      getEventsFromRaidHelperByServer("98765432109876543"),
+    ).resolves.toMatchObject({ pages: 1 });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it("does not call RaidHelper for server ids that are not on the whitelist", async () => {
     const fetchMock = vi
       .fn()
@@ -59,6 +66,31 @@ describe("getRaidHelperEvents", () => {
         "Server not-whitelisted is not allowed to fetch Raid Helper events",
     });
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("rejects all servers when no whitelist is configured", async () => {
+    vi.stubEnv("RAIDHELPER_DISCORDSERVER_ID_WHITELIST", "");
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(
+      getEventsFromRaidHelperByServer(validServer.id),
+    ).rejects.toMatchObject({ status: 403 });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("preserves upstream HTTP status errors", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: false, status: 429 }),
+    );
+
+    await expect(
+      getEventsFromRaidHelperByServer(validServer.id),
+    ).rejects.toMatchObject({
+      status: 429,
+      message: "Raid Helper API request failed with status 429",
+    });
   });
 
   it("rejects non-JSON content types", async () => {

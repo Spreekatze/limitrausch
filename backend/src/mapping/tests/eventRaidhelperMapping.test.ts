@@ -9,7 +9,7 @@ import {
   validServer,
 } from "../../services/tests/raidHelperTestUtils.js";
 import type {
-  RaidHelperDetailledEvent,
+  RaidHelperDetailedEvent,
   RaidHelperEvent,
   RaidHelperSignUp,
 } from "../../types/raidhelperSchema.js";
@@ -25,8 +25,8 @@ function createGeneralEvent(
 }
 
 function createDetailedEvent(
-  overrides: Partial<RaidHelperDetailledEvent> = {},
-): RaidHelperDetailledEvent {
+  overrides: Partial<RaidHelperDetailedEvent> = {},
+): RaidHelperDetailedEvent {
   return {
     id: "detail-1",
     date: "2025-01-01",

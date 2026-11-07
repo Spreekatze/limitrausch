@@ -1,6 +1,6 @@
 import type { RequestHandler } from "express";
 import { HttpError } from "../errors/httpError.js";
-import { raidHelperDetailledEventSchema } from "../types/raidhelperSchema.js";
+import { raidHelperDetailedEventSchema } from "../types/raidhelperSchema.js";
 
 const validateRaidHelperWebhook: RequestHandler = (request, response, next) => {
   const webhookKey = request.header("Authorization");
@@ -13,7 +13,7 @@ const validateRaidHelperWebhook: RequestHandler = (request, response, next) => {
     return next(new HttpError(401, "Unauthorized webhook request."));
   }
 
-  const result = raidHelperDetailledEventSchema.safeParse(request.body);
+  const result = raidHelperDetailedEventSchema.safeParse(request.body);
 
   if (!result.success) {
     return next(
