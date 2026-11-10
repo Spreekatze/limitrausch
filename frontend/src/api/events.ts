@@ -9,7 +9,7 @@ import {
   type EventType,
   type EventsResponse,
 } from '@limitrausch/contracts';
-import { ApiError, handleApiError } from './apiError';
+import { ApiError, handleApiError, readApiResponseJson } from './apiError';
 
 export type { Event, EventType };
 export type DiscordUser = EventDiscordUser;
@@ -39,7 +39,7 @@ export async function getEvents(
     await handleApiError(response);
   }
 
-  const result = eventsResponseSchema.safeParse(await response.json());
+  const result = eventsResponseSchema.safeParse(await readApiResponseJson(response));
   if (!result.success) {
     throw new ApiError('INVALID_API_RESPONSE', 502);
   }
@@ -59,7 +59,7 @@ export async function importRaidHelperEventsByGuild(
     await handleApiError(response);
   }
 
-  const result = raidHelperImportResponseSchema.safeParse(await response.json());
+  const result = raidHelperImportResponseSchema.safeParse(await readApiResponseJson(response));
   if (!result.success) {
     throw new ApiError('INVALID_API_RESPONSE', 502);
   }
@@ -75,7 +75,7 @@ export async function importRaidHelperEventsByUser(): Promise<RaidHelperImportRe
     await handleApiError(response);
   }
 
-  const result = raidHelperImportResponseSchema.safeParse(await response.json());
+  const result = raidHelperImportResponseSchema.safeParse(await readApiResponseJson(response));
   if (!result.success) {
     throw new ApiError('INVALID_API_RESPONSE', 502);
   }
@@ -91,7 +91,7 @@ export async function importRaidHelperEvent(eventId: string): Promise<RaidHelper
     await handleApiError(response);
   }
 
-  const result = raidHelperImportResponseSchema.safeParse(await response.json());
+  const result = raidHelperImportResponseSchema.safeParse(await readApiResponseJson(response));
   if (!result.success) {
     throw new ApiError('INVALID_API_RESPONSE', 502);
   }
@@ -115,7 +115,7 @@ export async function createEventOnGuild(
     await handleApiError(response);
   }
 
-  const result = eventsResponseSchema.safeParse(await response.json());
+  const result = eventsResponseSchema.safeParse(await readApiResponseJson(response));
   if (!result.success) {
     throw new ApiError('INVALID_API_RESPONSE', 502);
   }
@@ -131,7 +131,7 @@ export async function getEventById(eventId: string): Promise<Event> {
     await handleApiError(response);
   }
 
-  const result = eventSchema.safeParse(await response.json());
+  const result = eventSchema.safeParse(await readApiResponseJson(response));
   if (!result.success) {
     throw new ApiError('INVALID_API_RESPONSE', 502);
   }
@@ -153,7 +153,7 @@ export async function updateEventById(eventId: number, update: UpdateEvent): Pro
     await handleApiError(response);
   }
 
-  const result = eventSchema.safeParse(await response.json());
+  const result = eventSchema.safeParse(await readApiResponseJson(response));
   if (!result.success) {
     throw new ApiError('INVALID_API_RESPONSE', 502);
   }
@@ -189,7 +189,7 @@ export async function searchGuildMembers(
     await handleApiError(response);
   }
 
-  const result = eventDiscordUserSuggestionsSchema.safeParse(await response.json());
+  const result = eventDiscordUserSuggestionsSchema.safeParse(await readApiResponseJson(response));
   if (!result.success) {
     throw new ApiError('INVALID_API_RESPONSE', 502);
   }

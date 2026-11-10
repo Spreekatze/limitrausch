@@ -3,7 +3,7 @@ import {
   type GuildConfigResponse,
   guildConfigResponseSchema,
 } from '@limitrausch/contracts';
-import { ApiError, handleApiError } from './apiError';
+import { ApiError, handleApiError, readApiResponseJson } from './apiError';
 
 export async function getGuildConfigById(guildId: string): Promise<GuildConfigResponse> {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
@@ -13,7 +13,7 @@ export async function getGuildConfigById(guildId: string): Promise<GuildConfigRe
     await handleApiError(response);
   }
 
-  const result = guildConfigResponseSchema.safeParse(await response.json());
+  const result = guildConfigResponseSchema.safeParse(await readApiResponseJson(response));
   if (!result.success) {
     throw new ApiError('INVALID_API_RESPONSE', 502);
   }

@@ -38,6 +38,14 @@ export function getApiErrorMessage(code: ApiErrorCode): string {
   return apiErrorMessages[code];
 }
 
+export async function readApiResponseJson(response: Response): Promise<unknown> {
+  try {
+    return await response.json();
+  } catch {
+    throw new ApiError(API_ERROR_CODES.INVALID_API_RESPONSE, 502);
+  }
+}
+
 export async function handleApiError(response: Response): Promise<never> {
   const body: unknown = await response.json().catch(() => null);
   const parsed = apiErrorResponseSchema.safeParse(body);

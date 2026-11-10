@@ -1,5 +1,5 @@
 import { authStatusResponseSchema, type AuthStatusResponse } from '@limitrausch/contracts';
-import { ApiError, handleApiError } from './apiError';
+import { ApiError, handleApiError, readApiResponseJson } from './apiError';
 
 export function beginDiscordLogin(): void {
   const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '');
@@ -16,7 +16,7 @@ export async function getLoginStatus(): Promise<AuthStatusResponse> {
     await handleApiError(response);
   }
 
-  const result = authStatusResponseSchema.safeParse(await response.json());
+  const result = authStatusResponseSchema.safeParse(await readApiResponseJson(response));
   if (!result.success) {
     throw new ApiError('INVALID_API_RESPONSE', 502);
   }
@@ -33,7 +33,7 @@ export async function logout(): Promise<void> {
     await handleApiError(response);
   }
 
-  const result = authStatusResponseSchema.safeParse(await response.json());
+  const result = authStatusResponseSchema.safeParse(await readApiResponseJson(response));
   if (!result.success) {
     throw new ApiError('INVALID_API_RESPONSE', 502);
   }
